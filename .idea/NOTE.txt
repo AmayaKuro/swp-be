@@ -1,0 +1,6 @@
+﻿Mục đích của `Services`:
+ - Source:https://chatgpt.com/share/dd942b8a-30be-405d-a9fe-80c51ec0d6bf
+ - Nói chung là service sẽ perform data từ database, và trả về cho `Controllers`. kinda like DTO. Nhưng C# ko nói thế
+
+ Mục đích của `Repositories`:
+ - Data để giao tiếp với client dc Định nghĩa ở đây
