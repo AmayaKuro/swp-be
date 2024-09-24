@@ -25,7 +25,7 @@ namespace swp_be.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Koi>>> GetKois()
         {
-            return await _context.Kois.ToListAsync();
+            return await _context.Kois.Take(10).ToListAsync();
         }
 
         // GET: api/Koi/5

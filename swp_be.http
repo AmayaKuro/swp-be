@@ -3,7 +3,4 @@
 GET {{swp_be_HostAddress}}/
 Accept: */*
 
-GET {{swp_be_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
