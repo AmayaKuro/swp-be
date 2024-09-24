@@ -8,16 +8,25 @@ namespace swp_be.Services
     public class KoiService
     {
         // Create a service class for Koi in repository + service pattern
-        private readonly KoiRepository koiRepository;
+        private ApplicationDBContext _context;
+        private readonly UnitOfWork unitOfWork;
 
         public KoiService(ApplicationDBContext _context)
         {
-            this.koiRepository= new KoiRepository(_context);
+            this._context = _context;
+            this.unitOfWork = new UnitOfWork(_context);
         }
 
         public async Task<IEnumerable<Koi>> GetKois()
         {
-            return await koiRepository.GetAllAsync();
+            return await unitOfWork.KoiRepository.GetAllAsync();
+        }
+
+        public async Task<Koi> CreateKoi(Koi koi)
+        {
+            unitOfWork.KoiRepository.Create(koi);
+            unitOfWork.Save();
+            return koi;
         }
     }
 }

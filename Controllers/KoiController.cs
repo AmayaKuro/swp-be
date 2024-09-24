@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using swp_be.Data;
+using swp_be.Data.Repositories;
 using swp_be.Models;
+using swp_be.Services;
 
 namespace swp_be.Controllers
 {
@@ -15,17 +17,20 @@ namespace swp_be.Controllers
     public class KoiController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
+        private readonly KoiService koiService;
 
         public KoiController(ApplicationDBContext context)
         {
-            _context = context;
+            this._context = context;
+            this.koiService = new KoiService(context);
         }
 
         // GET: api/Koi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Koi>>> GetKois()
         {
-            return await _context.Kois.Take(10).ToListAsync();
+            return Ok(await koiService.GetKois());
+            //return await _context.Kois.Take(10).ToListAsync();
         }
 
         // GET: api/Koi/5
@@ -78,8 +83,7 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<ActionResult<Koi>> PostKoi(Koi koi)
         {
-            _context.Kois.Add(koi);
-            await _context.SaveChangesAsync();
+            await koiService.CreateKoi(koi);
 
             return CreatedAtAction("GetKoi", new { id = koi.KoiID }, koi);
         }

@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PMS.Repository.Base
+namespace swp_be.data.Repositories
 {
-    public class GenericRepository<T> : IDisposable where T : class
+    public class GenericRepository<T> where T : class
     {
-        protected ApplicationDBContext _context;
+        private ApplicationDBContext _context;
 
         public GenericRepository(ApplicationDBContext _context) => _context = _context;
         public List<T> GetAll()
@@ -22,20 +22,18 @@ namespace PMS.Repository.Base
         public void Create(T entity)
         {
             _context.Add(entity);
-            _context.SaveChanges();
         }
 
         public void Update(T entity)
         {
             var tracker = _context.Attach(entity);
             tracker.State = EntityState.Modified;
-            _context.SaveChanges();
         }
 
         public bool Remove(T entity)
         {
             _context.Remove(entity);
-            _context.SaveChanges();
+
             return true;
         }
 
