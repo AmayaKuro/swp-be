@@ -12,7 +12,7 @@ namespace swp_be.data.Repositories
     {
         private ApplicationDBContext _context;
 
-        public GenericRepository(ApplicationDBContext _context) => _context = _context;
+        public GenericRepository(ApplicationDBContext _context) => this._context = _context;
         public List<T> GetAll()
         {
             return _context.Set<T>().ToList();
