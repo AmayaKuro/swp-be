@@ -9,13 +9,20 @@ namespace swp_be.Data
         {
         }
 
-        public DbSet<swp_be.Models.User> Users { get; set; }
-        public DbSet<swp_be.Models.Customer> Customers { get; set; }
-        public DbSet<swp_be.Models.Koi> Kois { get; set; }
-        public DbSet<swp_be.Models.Batch> Batches { get; set; }
-        public DbSet<swp_be.Models.Order> Orders { get; set; }
-        public DbSet<swp_be.Models.OrderDetail> OrderDetails { get; set; }
-        public DbSet<swp_be.Models.Promotion> Promotions { get; set; }
-        public DbSet<swp_be.Models.Consignment> Consignments { get; set; }
+        public DbSet<Batch> Batches { get; set; }
+        public DbSet<Consignment> Consignments { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<FosterBatch> FosterBatches { get; set; }
+        public DbSet<FosterKoi> FosterKois { get; set; }
+        public DbSet<Koi> Kois { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<Staff> Staff { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

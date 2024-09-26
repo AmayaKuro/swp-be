@@ -1,19 +1,40 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 
 namespace swp_be.Models
 {
+    public enum Role
+    {
+        Admin,
+        Staff,
+        Customer
+    }
+
     public class User
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserID { get; set; }    // Mã người dùng
-        public string Username { get; set; }  // Tài khoản
-        public string Password { get; set; }  // Mk
-        public string Name { get; set; }      // Tên người dùng
-        public string Email { get; set; }     // Email khách hàng
-        public string Phone { get; set; }     // Số điện thoại người dùng
-        public string Role { get; set; }      // Chức năng người dùng
-        public string Address { get; set; }   // Địa chỉ khách hàng
+        public int UserID { get; set; }
+
+        [Required, MaxLength(50)]
+        public string Username { get; set; }
+
+        [Required, MaxLength(50)]
+        public string Password { get; set; }
+
+        [Required, MaxLength(255)]
+        public string Name { get; set; }
+        
+        [MaxLength(255)]
+        public string? Email { get; set; }
+
+        [MaxLength(20)]
+        public string? Phone { get; set; }
+
+        public string? Address { get; set; }
+
+        [Required]
+        public Role Role { get; set; }
     }
 }

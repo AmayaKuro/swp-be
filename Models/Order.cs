@@ -5,17 +5,54 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
+
+    /// <summary>
+    /// Represents the status of an order.
+    /// </summary>
+    public enum OrderStatus
+    {
+        /// <summary>
+        /// The order is pending for payment.
+        /// </summary>
+        Pending,
+
+        /// <summary>
+        /// The order is completed.
+        /// </summary>
+        Completed,
+
+        /// <summary>
+        /// The order is cancelled.
+        /// </summary>
+        Cancelled,
+    }
+
     public class Order
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int OrderID { get; set; }       // Mã đơn hàng
-        public int CustomerID { get; set; }    // Mã khách hàng
-        public DateTime Date { get; set; }        // Ngày đặt hàng
-        public decimal TotalAmount { get; set; }  // Tổng số tiền đơn hàng
-        public string Status { get; set; }        // Trạng thái đơn hàng
-        public int StaffID { get; set; }       // Mã nhân viên
-        public Customer Customer { get; set; }    // Reference to Customer
+        public int OrderID { get; set; }
+
+        [Required]
+        public int CustomerID { get; set; }
+
+        [Required]
+        public int StaffID { get; set; }
+
+        [Required]
+        public DateTime Date { get; set; }
+
+        [Required]
+        public decimal TotalAmount { get; set; }
+
+        [Required, MaxLength(50)]
+        public OrderStatus Status { get; set; }
+
+        public int? PromotionID { get; set; }
+
         [DeleteBehavior(DeleteBehavior.Restrict)]
-        public User Staff { get; set; }
+        public Customer Customer { get; set; }  // Navigation Property
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        public Staff Staff { get; set; }  // Navigation Property
+        public Promotion Promotion { get; set; }  // Navigation Property
     }
 }

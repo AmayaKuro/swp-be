@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
-    public class Koi
+    public class FosterKoi
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int KoiID { get; set; }
+        public int FosterKoiID { get; set; }
 
         [MaxLength(255)]
         public string? Name { get; set; }
@@ -26,8 +26,6 @@ namespace swp_be.Models
         [MaxLength(50)]
         public string? DailyFeedAmount { get; set; }
 
-        public decimal? Price { get; set; }
-
         [MaxLength(255)]
         public string? Personality { get; set; }
 
@@ -40,7 +38,14 @@ namespace swp_be.Models
         [Required, MaxLength(255)]
         public string Species { get; set; }
 
-        [MaxLength(255)]
-        public string? AddOn { get; set; }
+        public decimal PricePerDay { get; set; } = 0;
+
+        [Required]
+        public int FosteringDays { get; set; }
+
+        [Required]
+        public int ConsignmentID { get; set; }
+    
+        public Consignment Consignment { get; set; }
     }
 }

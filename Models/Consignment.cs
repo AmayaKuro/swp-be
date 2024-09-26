@@ -4,17 +4,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
+    public enum ConsignmentType
+    {
+        Sell,
+        Foster,
+    }
+
     public class Consignment
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ConsignmentID { get; set; } // Mã ký gửi
-        public int CustomerID { get; set; }    // Mã khách hàng
-        public int KoiID { get; set; }         // Mã cá Koi
-        public int BatchID { get; set; }       // Mã lô cá (nếu có)
-        public string Type { get; set; }          // Loại ký gửi (online/offline)
-        public string Status { get; set; }        // Trạng thái ký gửi
-        public Customer Customer { get; set; }    // Reference to Customer
-        public Koi Koi { get; set; }              // Reference to Koi
-        public Batch Batch { get; set; }          // Reference to Batch
+        public int ConsignmentID { get; set; }
+
+        [Required]
+        public int CustomerID { get; set; }
+
+        [Required]
+        public ConsignmentType Type { get; set; }
+
+        [Required]
+        public decimal TotalPrice { get; set; }
+
+        public Customer Customer { get; set; }
     }
 }
