@@ -24,5 +24,18 @@ namespace swp_be.Data
         public DbSet<Staff> Staff { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Staff>()
+                .HasOne(staff => staff.User)
+                .WithOne()
+                .HasForeignKey<Staff>(staff => staff.UserID);
+
+            modelBuilder.Entity<Customer>()
+                .HasOne(customer => customer.User)
+                .WithOne()
+                .HasForeignKey<Customer>(customer => customer.UserID);
+        }
     }
 }

@@ -12,8 +12,8 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240926073047_transactionUpdate")]
-    partial class transactionUpdate
+    [Migration("20240926092629_fixUserRef1")]
+    partial class fixUserRef1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,20 +85,12 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.Customer", b =>
                 {
                     b.Property<int>("UserID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
 
                     b.Property<int>("LoyaltyPoints")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID1")
-                        .HasColumnType("int");
-
                     b.HasKey("UserID");
-
-                    b.HasIndex("UserID1");
 
                     b.ToTable("Customers");
                 });
@@ -110,6 +102,9 @@ namespace swp_be.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryID"));
+
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("EndDeliDay")
                         .HasColumnType("datetime2");
@@ -125,14 +120,11 @@ namespace swp_be.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("DeliveryID");
 
-                    b.HasIndex("OrderID");
+                    b.HasIndex("CustomerID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("OrderID");
 
                     b.ToTable("Deliveries");
                 });
@@ -148,6 +140,9 @@ namespace swp_be.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateFb")
                         .HasColumnType("datetime2");
 
@@ -157,14 +152,11 @@ namespace swp_be.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("FeedbackID");
 
-                    b.HasIndex("OrderID");
+                    b.HasIndex("CustomerID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("OrderID");
 
                     b.ToTable("Feedbacks");
                 });
@@ -461,17 +453,9 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.Staff", b =>
                 {
                     b.Property<int>("UserID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
-
-                    b.Property<int>("UserID1")
                         .HasColumnType("int");
 
                     b.HasKey("UserID");
-
-                    b.HasIndex("UserID1");
 
                     b.ToTable("Staff");
                 });
@@ -571,8 +555,8 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.Customer", b =>
                 {
                     b.HasOne("swp_be.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID1")
+                        .WithOne()
+                        .HasForeignKey("swp_be.Models.Customer", "UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -581,40 +565,40 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.Delivery", b =>
                 {
+                    b.HasOne("swp_be.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("swp_be.Models.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("swp_be.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Customer");
 
                     b.Navigation("Order");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("swp_be.Models.Feedback", b =>
                 {
+                    b.HasOne("swp_be.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("swp_be.Models.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("swp_be.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Customer");
 
                     b.Navigation("Order");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("swp_be.Models.FosterBatch", b =>
@@ -694,8 +678,8 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.Staff", b =>
                 {
                     b.HasOne("swp_be.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID1")
+                        .WithOne()
+                        .HasForeignKey("swp_be.Models.Staff", "UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
