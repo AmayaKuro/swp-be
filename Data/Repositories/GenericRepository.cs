@@ -10,7 +10,7 @@ namespace swp_be.data.Repositories
 {
     public class GenericRepository<T> where T : class
     {
-        private ApplicationDBContext _context;
+        private readonly ApplicationDBContext _context;
 
         public GenericRepository(ApplicationDBContext _context) => this._context = _context;
         public List<T> GetAll()

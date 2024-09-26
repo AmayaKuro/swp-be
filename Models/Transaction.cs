@@ -71,6 +71,7 @@ namespace swp_be.Models
         public TransactionType Type { get; set; }
 
         public Order Order { get; set; }
+        public Consignment FosterConsignment { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
     }
 }
