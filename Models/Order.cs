@@ -54,5 +54,7 @@ namespace swp_be.Models
         [DeleteBehavior(DeleteBehavior.Restrict)]
         public Staff Staff { get; set; }  // Navigation Property
         public Promotion Promotion { get; set; }  // Navigation Property
+
+        public ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

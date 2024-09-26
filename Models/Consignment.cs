@@ -25,5 +25,8 @@ namespace swp_be.Models
         public decimal TotalPrice { get; set; }
 
         public Customer Customer { get; set; }
+
+        public ICollection<FosterBatch> FosterBatches { get; set; }
+        public ICollection<FosterKoi> FosterKois { get; set; }
     }
 }

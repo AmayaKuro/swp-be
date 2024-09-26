@@ -1,5 +1,6 @@
-﻿using swp_be.Data.Repositories;
-using swp_be.Services;
+﻿using swp_be.data.Repositories;
+using swp_be.Data.Repositories;
+using swp_be.Models;
 
 namespace swp_be.Data
 {
@@ -7,6 +8,16 @@ namespace swp_be.Data
     {
         private ApplicationDBContext _context;
         private KoiRepository _koiRepository;
+        private GenericRepository<User> _userRepository;
+        private GenericRepository<Batch> _batchRepository;
+        private GenericRepository<Order> _orderRepository;
+        private GenericRepository<Consignment> _consignmentRepository;
+        private GenericRepository<FosterKoi> _fosterKoiRepository;
+        private GenericRepository<Staff> _staffRepository;
+        private GenericRepository<FosterBatch> _fosterBatchRepository;
+        private GenericRepository<Customer> _customerRepository;
+        private GenericRepository<PaymentMethod> _paymentMethodRepository;
+        private GenericRepository<Feedback> _feedbackRepository;
 
         private bool disposed = false;
 
@@ -14,6 +25,16 @@ namespace swp_be.Data
         {
             _context = context;
             _koiRepository = new KoiRepository(_context);
+            _userRepository = new GenericRepository<User>(_context);
+            _batchRepository = new GenericRepository<Batch>(_context);
+            _orderRepository = new GenericRepository<Order>(_context);
+            _consignmentRepository = new GenericRepository<Consignment>(_context);
+            _fosterKoiRepository = new GenericRepository<FosterKoi>(_context);
+            _staffRepository = new GenericRepository<Staff>(_context);
+            _fosterBatchRepository = new GenericRepository<FosterBatch>(_context);
+            _customerRepository = new GenericRepository<Customer>(_context);
+            _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
+            _feedbackRepository = new GenericRepository<Feedback>(_context);
         }
 
         public KoiRepository KoiRepository
@@ -23,6 +44,87 @@ namespace swp_be.Data
                 return _koiRepository;
             }
         }
+
+        public GenericRepository<User> UserRepository
+        {
+            get
+            {
+                return _userRepository;
+            }
+        }
+
+        public GenericRepository<Batch> BatchRepository
+        {
+            get
+            {
+                return _batchRepository;
+            }
+        }
+
+        public GenericRepository<Order> OrderRepository
+        {
+            get
+            {
+                return _orderRepository;
+            }
+        }
+
+        public GenericRepository<Consignment> ConsignmentRepository
+        {
+            get
+            {
+                return _consignmentRepository;
+            }
+        }
+
+        public GenericRepository<FosterKoi> FosterKoiRepository
+        {
+            get
+            {
+                return _fosterKoiRepository;
+            }
+        }
+
+        public GenericRepository<Staff> StaffRepository
+        {
+            get
+            {
+                return _staffRepository;
+            }
+        }
+
+        public GenericRepository<FosterBatch> FosterBatchRepository
+        {
+            get
+            {
+                return _fosterBatchRepository;
+            }
+        }
+
+        public GenericRepository<Customer> CustomerRepository
+        {
+            get
+            {
+                return _customerRepository;
+            }
+        }
+
+        public GenericRepository<PaymentMethod> PaymentMethodRepository
+        {
+            get
+            {
+                return _paymentMethodRepository;
+            }
+        }
+
+        public GenericRepository<Feedback> FeedbackRepository
+        {
+            get
+            {
+                return _feedbackRepository;
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();
