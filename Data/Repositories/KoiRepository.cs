@@ -13,5 +13,6 @@ namespace swp_be.Data.Repositories
         public KoiRepository(ApplicationDBContext context) : base(context)
         {
         }
+
     }
 }

@@ -61,7 +61,7 @@ namespace swp_be.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                await koiService.UpdateKoi(koi);
             }
             catch (DbUpdateConcurrencyException)
             {

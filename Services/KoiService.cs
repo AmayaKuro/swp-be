@@ -28,5 +28,12 @@ namespace swp_be.Services
             unitOfWork.Save();
             return koi;
         }
+        public async Task<Koi> UpdateKoi(Koi koi)
+        {
+            unitOfWork.KoiRepository.Update(koi);
+            unitOfWork.Save();
+
+            return koi;
+        }
     }
 }

@@ -4,10 +4,14 @@
       "type": "secrets",
       "connectionId": null
     },
-    "mssql1": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:DefaultConnection",
-      "dynamicId": null
+    
+      "ConnectionStrings": {
+        "DefaultConnection": "Server=MSI\\SQLEXPRESS;Database=SWP391;Trusted_Connection=True;TrustServerCertificate=True;"
+      },
+      "mssql1": {
+        "type": "mssql",
+        "connectionId": "ConnectionStrings:DefaultConnection",
+        "dynamicId": null
+      }
     }
-  }
 }
