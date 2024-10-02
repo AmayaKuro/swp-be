@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -98,8 +98,7 @@ namespace swp_be.Controllers
                 return NotFound();
             }
 
-            _context.Kois.Remove(koi);
-            await _context.SaveChangesAsync();
+            await koiService.DeleteKoi(koi);
 
             return NoContent();
         }

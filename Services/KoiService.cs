@@ -35,5 +35,14 @@ namespace swp_be.Services
 
             return koi;
         }
+           public async Task<Koi> DeleteKoi(Koi koi)
+        {
+            unitOfWork.KoiRepository.Remove(koi);
+            unitOfWork.Save();
+
+            return koi;
+        }
+    
+
     }
 }
