@@ -520,8 +520,8 @@ namespace swp_be.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
@@ -603,7 +603,7 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.FosterBatch", b =>
                 {
                     b.HasOne("swp_be.Models.Consignment", "Consignment")
-                        .WithMany("FosterBatches")
+                        .WithMany()
                         .HasForeignKey("ConsignmentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -614,7 +614,7 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.FosterKoi", b =>
                 {
                     b.HasOne("swp_be.Models.Consignment", "Consignment")
-                        .WithMany("FosterKois")
+                        .WithMany()
                         .HasForeignKey("ConsignmentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -662,7 +662,7 @@ namespace swp_be.Migrations
                         .IsRequired();
 
                     b.HasOne("swp_be.Models.Order", "Order")
-                        .WithMany("OrderDetails")
+                        .WithMany()
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -706,18 +706,6 @@ namespace swp_be.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("PaymentMethod");
-                });
-
-            modelBuilder.Entity("swp_be.Models.Consignment", b =>
-                {
-                    b.Navigation("FosterBatches");
-
-                    b.Navigation("FosterKois");
-                });
-
-            modelBuilder.Entity("swp_be.Models.Order", b =>
-                {
-                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

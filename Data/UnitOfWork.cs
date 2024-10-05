@@ -8,7 +8,7 @@ namespace swp_be.Data
     {
         private ApplicationDBContext _context;
         private KoiRepository _koiRepository;
-        private UserRepository _userRepository;
+        private GenericRepository<User> _userRepository;
         private GenericRepository<Batch> _batchRepository;
         private GenericRepository<Order> _orderRepository;
         private GenericRepository<Consignment> _consignmentRepository;
@@ -25,7 +25,7 @@ namespace swp_be.Data
         {
             _context = context;
             _koiRepository = new KoiRepository(_context);
-            _userRepository = new UserRepository(_context);
+            _userRepository = new GenericRepository<User>(_context);
             _batchRepository = new GenericRepository<Batch>(_context);
             _orderRepository = new GenericRepository<Order>(_context);
             _consignmentRepository = new GenericRepository<Consignment>(_context);
@@ -45,7 +45,7 @@ namespace swp_be.Data
             }
         }
 
-        public UserRepository UserRepository
+        public GenericRepository<User> UserRepository
         {
             get
             {
