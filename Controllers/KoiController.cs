@@ -102,7 +102,34 @@ namespace swp_be.Controllers
 
             return NoContent();
         }
+       
+        [HttpGet("sorted")]
+        public async Task<ActionResult<IEnumerable<Koi>>> GetSortedKois(String name)
+        {
+            var kois = await koiService.GetKois(); // Fetch the Kois
+          
+            return Ok(kois.OrderBy(k => k.Name).ToList()); // Sort by Name and return
+                                                           // ... existing code ...
+        }
+        // GET: api/Koi?search=someValue
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<Koi>>> GetKois(string? search = null)
+        {
+            var kois = await koiService.GetKois(); // Fetch the Kois
 
+            if (!string.IsNullOrEmpty(search))
+            {
+                kois = kois.Where(k =>
+                    k.Name != null && k.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.Color != null && k.Color.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.Personality != null && k.Personality.Contains(search, StringComparison.OrdinalIgnoreCase)
+                // Add more properties to search as needed
+                );
+            }
+
+            return Ok(kois.ToList()); // Return the filtered list
+                                      // ... existing code ...
+        }
         private bool KoiExists(int id)
         {
             return _context.Kois.Any(e => e.KoiID == id);
