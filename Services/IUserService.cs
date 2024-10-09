@@ -5,8 +5,9 @@ namespace swp_be.Services
 {
     public interface IUserServiceResult
     {
-        public bool Success { get; set; }
-        public string Message { get; set; }
+        public bool success { get; set; }
+        public string message { get; set; }
+        public User? userInfo { get; set; }
     }
 
     public interface IUserService

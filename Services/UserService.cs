@@ -8,8 +8,9 @@ namespace swp_be.Services
 {
     public class UserServiceResult : IUserServiceResult
     {
-        public bool Success { get; set; } = true;
-        public string Message { get; set; } = "success";
+        public bool success { get; set; } = true;
+        public string message { get; set; } = "success";
+        public User? userInfo { get; set; }
     }
 
     public class UserService : IUserService
@@ -32,23 +33,24 @@ namespace swp_be.Services
 
             if (info == null)
             {
-                result.Success = false;
-                result.Message = "User not found";
+                result.success = false;
+                result.message = "User not found";
 
                 return result;
             }
 
             if (!BC.Verify(user.Password, info.Password))
             {
-                result.Success = false;
-                result.Message = "Invalid password";
+                result.success = false;
+                result.message = "Invalid password";
 
                 return result;
             }
 
             //Login successfully
-            result.Success = true;
-            result.Message = "Login successful";
+            result.success = true;
+            result.message = "Login successful";
+            result.userInfo = info;
 
             return result;
         }
@@ -59,8 +61,8 @@ namespace swp_be.Services
 
             if (unitOfWork.UserRepository.GetUserByUsername(user.Username) != null)
             {
-                result.Success = false;
-                result.Message = "Username already exists";
+                result.success = false;
+                result.message = "Username already exists";
 
                 return result;
             }
@@ -70,15 +72,23 @@ namespace swp_be.Services
 
             if (zxcvbnResult.Score < 3)
             {
-                result.Success = false;
-                result.Message = "Weak password";
+                result.success = false;
+                result.message = "Weak password";
                 return result;
             }
 
             user.Password = BC.HashPassword(user.Password);
 
+            // Prepare user for creating
+            user.UserID = 0;
+            user.Name = user.Name ?? user.Username;
+            user.Role = Role.Customer;
+
             unitOfWork.UserRepository.Create(user);
             unitOfWork.Save();
+
+            // Add user to result
+            result.userInfo = user;
 
             return result;
         }
