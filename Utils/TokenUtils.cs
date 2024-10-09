@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using swp_be.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,31 +22,34 @@ namespace swp_be.Utils
         public string Sign(User user, TokenType type)
         {
             DateTime now = DateTime.UtcNow;
-            var payload = new
+            var claims = new List<Claim>()
             {
-                userID = user.UserID,
-                username = user.Username,
-                role = user.Role,
-                name = user.Name,
+                new Claim("userID", user.UserID.ToString()),
+                new Claim(ClaimTypes.Name, user.Name),
             };
 
-            var symmetricKey = Convert.FromBase64String(Secret);
+            if (type == TokenType.ACCESS_TOKEN)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, user.Role.ToString()));
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim("user", payload.ToString())
-                }),
+                Subject = new ClaimsIdentity(claims),
 
                 Expires = type == TokenType.REFRESH_TOKEN ? now.AddDays(7) : now.AddMinutes(30),
 
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(symmetricKey),
-                    SecurityAlgorithms.HmacSha256Signature),
+                Issuer = Configuration.GetConfiguration()["Jwt:Issuer"],
+                Audience = Configuration.GetConfiguration()["Jwt:Audience"],
 
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret)),
+                    SecurityAlgorithms.HmacSha256Signature),
             };
+
+            
 
             var stoken = tokenHandler.CreateToken(tokenDescriptor);
             var token = tokenHandler.WriteToken(stoken);
