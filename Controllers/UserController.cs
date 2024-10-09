@@ -73,5 +73,16 @@ namespace swp_be.Controllers
             return Ok(token);
         }
 
+        [HttpPost]
+        [Route("refresh")]
+        public async Task<IActionResult> Refresh(string refreshToken)
+        {
+            ITokenServiceResult result = tokenService.Refresh(refreshToken);
+
+            if (result == null) return Unauthorized();
+
+            return Ok(result);
+        }
+
     }
 }

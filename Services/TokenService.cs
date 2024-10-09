@@ -1,6 +1,7 @@
 ﻿using swp_be.Models;
 using swp_be.Data;
 using swp_be.Utils;
+using Zxcvbn;
 
 
 namespace swp_be.Services
@@ -13,6 +14,7 @@ namespace swp_be.Services
 
     public class TokenService : ITokenService
     {
+        private TokenUtils tokenUtils = new TokenUtils();
         public ApplicationDBContext _context;
         private readonly UnitOfWork unitOfWork;
 
@@ -25,7 +27,6 @@ namespace swp_be.Services
         public ITokenServiceResult CreateToken(User user)
         {
             TokenServiceResult result = new TokenServiceResult();
-            TokenUtils tokenUtils = new TokenUtils();
 
             result.accessToken = tokenUtils.Sign(user, TokenType.ACCESS_TOKEN);
             result.refreshToken = tokenUtils.Sign(user, TokenType.REFRESH_TOKEN);
@@ -38,13 +39,33 @@ namespace swp_be.Services
                 ExpireAt = DateTime.Now.AddDays(7),
             });
 
+            unitOfWork.Save();
+
             return result;
         }
 
-        //public Token RefreshToken(string userID)
-        //{
-        //    return unitOfWork.UserTokenRepository.GetByToken(userID);
-        //}
+
+
+        public ITokenServiceResult Refresh(string refreshToken)
+        {
+            Token token = unitOfWork.TokenRepository.GetByToken(refreshToken);
+
+            if (token == null)
+            {
+                return null;
+            }
+
+            TokenServiceResult result = new TokenServiceResult();
+
+            result.accessToken = tokenUtils.Sign(token.User, TokenType.ACCESS_TOKEN);
+            result.refreshToken = tokenUtils.Sign(token.User, TokenType.REFRESH_TOKEN);
+
+            token.RefreshToken = result.refreshToken;
+            token.ExpireAt = DateTime.Now.AddDays(7);
+            unitOfWork.Save();
+
+            return result;
+        }
 
     }
 }
