@@ -104,7 +104,7 @@ namespace swp_be.Controllers
         }
        
         [HttpGet("sorted")]
-        public async Task<ActionResult<IEnumerable<Koi>>> GetSortedKois(String name)
+        public async Task<ActionResult<IEnumerable<Koi>>> GetSortedKois()
         {
             var kois = await koiService.GetKois(); // Fetch the Kois
           
@@ -122,7 +122,8 @@ namespace swp_be.Controllers
                 kois = kois.Where(k =>
                     k.Name != null && k.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                     k.Color != null && k.Color.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    k.Personality != null && k.Personality.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    k.Personality != null && k.Personality.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    k.Species != null && k.Species.Contains(search, StringComparison.OrdinalIgnoreCase)
                 // Add more properties to search as needed
                 );
             }
@@ -133,6 +134,50 @@ namespace swp_be.Controllers
         private bool KoiExists(int id)
         {
             return _context.Kois.Any(e => e.KoiID == id);
+        }
+
+        [HttpGet("Filter")]
+        public async Task<ActionResult<IEnumerable<Koi>>> FilterKois(
+            [FromQuery] string? name,
+            [FromQuery] string? gender,
+            [FromQuery] int? minAge,
+            [FromQuery] int? maxAge,
+            [FromQuery] string? size,
+            [FromQuery] string? color,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? species)
+        {
+            var kois = await koiService.GetKois();
+
+            if (!string.IsNullOrEmpty(name))
+                kois = kois.Where(k => k.Name != null && k.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(gender))
+                kois = kois.Where(k => k.Gender != null && k.Gender.Equals(gender, StringComparison.OrdinalIgnoreCase));
+
+            if (minAge.HasValue)
+                kois = kois.Where(k => k.Age.HasValue && k.Age >= minAge);
+
+            if (maxAge.HasValue)
+                kois = kois.Where(k => k.Age.HasValue && k.Age <= maxAge);
+
+            if (!string.IsNullOrEmpty(size))
+                kois = kois.Where(k => k.Size != null && k.Size.Contains(size, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(color))
+                kois = kois.Where(k => k.Color != null && k.Color.Contains(color, StringComparison.OrdinalIgnoreCase));
+
+            if (minPrice.HasValue)
+                kois = kois.Where(k => k.Price.HasValue && k.Price >= minPrice);
+
+            if (maxPrice.HasValue)
+                kois = kois.Where(k => k.Price.HasValue && k.Price <= maxPrice);
+
+            if (!string.IsNullOrEmpty(species))
+                kois = kois.Where(k => k.Species.Contains(species, StringComparison.OrdinalIgnoreCase));
+
+            return Ok(kois.ToList());
         }
     }
 }
