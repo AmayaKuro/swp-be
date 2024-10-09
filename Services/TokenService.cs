@@ -44,13 +44,21 @@ namespace swp_be.Services
             return result;
         }
 
+        public bool DeleteToken(string refreshToken)
+        {
+            bool success = unitOfWork.TokenRepository.RemoveByToken(refreshToken);
 
+            unitOfWork.Save();
+
+            return success;
+        }
 
         public ITokenServiceResult Refresh(string refreshToken)
         {
             Token token = unitOfWork.TokenRepository.GetByToken(refreshToken);
 
-            if (token == null)
+            // If invalid token (expired), return null
+            if (token == null || token.ExpireAt < DateTime.Now)
             {
                 return null;
             }

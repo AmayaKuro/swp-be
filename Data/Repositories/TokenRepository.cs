@@ -17,5 +17,18 @@ namespace swp_be.Data.Repositories
                 .Include(token => token.User)
                 .SingleOrDefault();
         }
+
+        public bool RemoveByToken(string token)
+        {
+            Token info = GetByToken(token);
+
+            if (info == null)
+            {
+                return false;
+            }
+
+            Remove(info);
+            return true;
+        }
     }
 }

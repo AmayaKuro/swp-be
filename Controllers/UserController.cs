@@ -75,7 +75,7 @@ namespace swp_be.Controllers
 
         [HttpPost]
         [Route("refresh")]
-        public async Task<IActionResult> Refresh(string refreshToken)
+        public async Task<IActionResult> Refresh([FromBody] string refreshToken)
         {
             ITokenServiceResult result = tokenService.Refresh(refreshToken);
 
@@ -84,5 +84,13 @@ namespace swp_be.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("logout")]
+        public async Task<IActionResult> Logout([FromBody] string refreshToken)
+        {
+            bool success = tokenService.DeleteToken(refreshToken);
+
+            return Ok();
+        }
     }
 }
