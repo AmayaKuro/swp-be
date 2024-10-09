@@ -22,6 +22,7 @@ namespace swp_be.Data
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Staff> Staff { get; set; }
+        public DbSet<Token> Tokens { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using swp_be.Data;
 using swp_be.Data.Repositories;
@@ -18,11 +19,13 @@ namespace swp_be.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly UserService userService;
+        private readonly TokenService tokenService;
 
         public UserController(ApplicationDBContext context)
         {
             this._context = context;
             this.userService = new UserService(context);
+            this.tokenService = new TokenService(context);
         }
 
         // GET: api/login
@@ -37,14 +40,17 @@ namespace swp_be.Controllers
 
             IUserServiceResult result = userService.Login(user);
 
-            if (!result.Success)
+            if (!result.success)
             {
-                return BadRequest(new {
-                    message = result.Message
+                return BadRequest(new
+                {
+                    message = result.message
                 });
             }
 
-            return Ok();
+            ITokenServiceResult token = tokenService.CreateToken(result.userInfo);
+
+            return Ok(token);
         }
 
         // POST: api/register
@@ -54,15 +60,28 @@ namespace swp_be.Controllers
         {
             IUserServiceResult result = userService.Register(user);
 
-            if (!result.Success)
+            if (!result.success)
             {
                 return BadRequest(new
                 {
-                    message = result.Message
+                    message = result.message
                 });
             }
 
-            return Ok();
+            ITokenServiceResult token = tokenService.CreateToken(result.userInfo);
+
+            return Ok(token);
+        }
+
+        [HttpPost]
+        [Route("refresh")]
+        public async Task<IActionResult> Refresh(string refreshToken)
+        {
+            ITokenServiceResult result = tokenService.Refresh(refreshToken);
+
+            if (result == null) return Unauthorized();
+
+            return Ok(result);
         }
 
     }
