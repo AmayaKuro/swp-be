@@ -29,7 +29,7 @@ namespace swp_be.Controllers
         [HttpGet]
         public async Task<ActionResult<Koi>> Get()
         {
-            return Ok();
+            return Ok(await koiService.GetKois());
             //return await _context.Kois.Take(10).ToListAsync();
         }
 
