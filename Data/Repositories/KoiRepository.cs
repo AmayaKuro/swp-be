@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using swp_be.data.Repositories;
@@ -12,6 +12,7 @@ namespace swp_be.Data.Repositories
     {
         public KoiRepository(ApplicationDBContext context) : base(context)
         {
-        }
+        } 
+
     }
 }
