@@ -12,7 +12,7 @@ using swp_be.Services;
 
 namespace swp_be.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/koi/[controller]")]
     [ApiController]
     public class KoiController : ControllerBase
     {
@@ -27,9 +27,9 @@ namespace swp_be.Controllers
 
         // GET: api/Koi
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Koi>>> GetKois()
+        public async Task<ActionResult<Koi>> Get()
         {
-            return Ok(await koiService.GetKois());
+            return Ok();
             //return await _context.Kois.Take(10).ToListAsync();
         }
 
@@ -46,6 +46,7 @@ namespace swp_be.Controllers
 
             return koi;
         }
+
 
         // PUT: api/Koi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -179,5 +180,6 @@ namespace swp_be.Controllers
 
             return Ok(kois.ToList());
         }
+
     }
 }

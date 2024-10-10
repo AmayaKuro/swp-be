@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using swp_be.Data;
 
@@ -11,9 +12,11 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240929111521_extendPassword")]
+    partial class extendPassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -457,32 +460,6 @@ namespace swp_be.Migrations
                     b.ToTable("Staff");
                 });
 
-            modelBuilder.Entity("swp_be.Models.Token", b =>
-                {
-                    b.Property<string>("TokenID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("TokenID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Tokens");
-                });
-
             modelBuilder.Entity("swp_be.Models.Transaction", b =>
                 {
                     b.Property<int>("TransactionID")
@@ -705,17 +682,6 @@ namespace swp_be.Migrations
                     b.HasOne("swp_be.Models.User", "User")
                         .WithOne()
                         .HasForeignKey("swp_be.Models.Staff", "UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("swp_be.Models.Token", b =>
-                {
-                    b.HasOne("swp_be.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
