@@ -41,8 +41,8 @@ namespace swp_be.Utils
 
                 Expires = type == TokenType.REFRESH_TOKEN ? now.AddDays(7) : now.AddMinutes(30),
 
-                Issuer = Configuration.GetConfiguration()["Jwt:Issuer"],
-                Audience = Configuration.GetConfiguration()["Jwt:Audience"],
+                Issuer = Configuration.GetConfiguration()["BEUrl"],
+                Audience = Configuration.GetConfiguration()["FEUrl"],
 
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret)),

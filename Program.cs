@@ -7,8 +7,10 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var BEUrl = builder.Configuration.GetSection("BEUrl").Get<string>();
+var FEUrl = builder.Configuration.GetSection("FEUrl").Get<string>();
 
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -39,14 +41,22 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+
+// Allow CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "cors", policy =>
+    {
+        policy.WithOrigins(FEUrl).AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionString", System.EnvironmentVariableTarget.User));
 });
 
 //Jwt configuration starts here
-var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
 var jwtSecretKey = Environment.GetEnvironmentVariable("Swp_Secret_key", System.EnvironmentVariableTarget.User) ?? "YSBsb25nIEFzc3MgIHN0cmluZyB0aGF0J3MgbGFzc3QgNjQgY2hhcmFjdGVyPz8/";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -57,8 +67,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
+            ValidIssuer = BEUrl,
+            ValidAudience = FEUrl,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
         };
     });
@@ -76,9 +86,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
+
+// THIS ORDER OF APP IS NECCESARY
+app.UseCors("cors");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 
 app.Run();
