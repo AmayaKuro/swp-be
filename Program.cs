@@ -66,6 +66,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorizationBuilder().AddPolicy("staff", policy => policy.RequireRole("Staff"));
 builder.Services.AddAuthorizationBuilder().AddPolicy("admin", policy => policy.RequireRole("Admin"));
 builder.Services.AddAuthorizationBuilder().AddPolicy("customer", policy => policy.RequireRole("Customer"));
+builder.Services.AddAuthorizationBuilder().AddPolicy("all", policy => policy.RequireRole("Staff", "Admin", "Customer"));
 
 var app = builder.Build();
 

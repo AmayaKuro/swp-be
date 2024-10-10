@@ -14,5 +14,6 @@ namespace swp_be.Services
     {
         public IUserServiceResult Login(User user);
         public IUserServiceResult Register(User user);
+        public User GetUserProfile(int id);
     }
 }

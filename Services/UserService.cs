@@ -92,5 +92,10 @@ namespace swp_be.Services
 
             return result;
         }
+
+        public User GetUserProfile(int id)
+        {
+            return unitOfWork.UserRepository.GetById(id);
+        }
     }
 }
