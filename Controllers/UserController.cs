@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -92,5 +94,63 @@ namespace swp_be.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        [Route("profile")]
+        [Authorize("all")]
+        public async Task<IActionResult> Profile()
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            User user = userService.GetUserProfile(userID);
+
+            return Ok(user);
+        }
+
+        [HttpGet]
+        [Route("profile/{id}")]
+        [Authorize("admin")]
+        public async Task<IActionResult> ProfileByID(int id)
+        {
+            User user = userService.GetUserProfile(id);
+
+            return Ok(user);
+        }
+
+        [HttpPut]
+        [Route("edit")]
+        [Authorize("all")]
+        public async Task<IActionResult> EditProfile([FromBody] User editUser)
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            // Checkk if admin or same id
+            if (!User.IsInRole("admin") && userID != editUser.UserID)
+            {
+                return Forbid();
+            }
+
+            userService.UpdateUserProfile(editUser);
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [Authorize("all")]
+        public async Task<IActionResult> DeleteProfile(int id)
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            // Checkk if admin or same id
+            if (!User.IsInRole("admin") && userID != id)
+            {
+                return Forbid();
+            }
+            userService.DeleteUserProfile(userID);
+
+            return Ok();
+        }
+
     }
 }

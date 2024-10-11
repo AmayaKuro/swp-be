@@ -12,6 +12,7 @@ namespace swp_be.Services
     public interface ITokenService
     {
         public ITokenServiceResult CreateToken(User user);
-        //public ITokenServiceResult Refresh(string refreshToken);
+        public ITokenServiceResult Refresh(string refreshToken);
+        public bool DeleteToken(string refreshToken);
     }
 }

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Text.Json.Serialization;
 
 namespace swp_be.Models
 {
@@ -14,13 +15,13 @@ namespace swp_be.Models
 
     public class User
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), JsonIgnore]
         public int UserID { get; set; }
 
         [Required, MaxLength(50)]
         public string Username { get; set; }
 
-        [Required, MaxLength(255)]
+        [Required, MaxLength(255), JsonIgnore]
         public string Password { get; set; }
 
         [Required, MaxLength(255)]
