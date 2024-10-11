@@ -3,6 +3,7 @@ using swp_be.Models;
 using swp_be.Data;
 using Zxcvbn;
 using BC = BCrypt.Net.BCrypt;
+using swp_be.Data.Repositories;
 
 namespace swp_be.Services
 {
@@ -95,12 +96,15 @@ namespace swp_be.Services
 
         public User GetUserProfile(int id)
         {
-            return unitOfWork.UserRepository.GetById(id);
+            User info = unitOfWork.UserRepository.GetById(id);
+            info.Password = "";
+
+            return info;
         }
 
         public bool UpdateUserProfile(User user)
         {
-            unitOfWork.UserRepository.Update(user);
+            unitOfWork.UserRepository.UpdateProfile(user);
             unitOfWork.Save();
 
             return true;

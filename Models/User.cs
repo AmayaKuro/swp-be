@@ -15,13 +15,13 @@ namespace swp_be.Models
 
     public class User
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), JsonIgnore]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
 
         [Required, MaxLength(50)]
         public string Username { get; set; }
 
-        [Required, MaxLength(255), JsonIgnore]
+        [Required, MaxLength(255)]
         public string Password { get; set; }
 
         [Required, MaxLength(255)]

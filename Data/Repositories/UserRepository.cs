@@ -18,5 +18,16 @@ namespace swp_be.Data.Repositories
         {
             return _context.Users.FirstOrDefault(u => u.Username == username);
         }
+
+        public bool UpdateProfile(User user)
+        {
+            var tracker = _context.Attach(user);
+            tracker.State = EntityState.Modified;
+
+            tracker.Property(u => u.Password).IsModified = false;
+            tracker.Property(u => u.UserID).IsModified = false;
+
+            return true;
+        }
     }
 }
