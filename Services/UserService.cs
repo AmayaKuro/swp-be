@@ -97,5 +97,25 @@ namespace swp_be.Services
         {
             return unitOfWork.UserRepository.GetById(id);
         }
+
+        public bool UpdateUserProfile(User user)
+        {
+            unitOfWork.UserRepository.Update(user);
+            unitOfWork.Save();
+
+            return true;
+        }
+
+        public bool DeleteUserProfile(int id)
+        {
+            User user = unitOfWork.UserRepository.GetById(id);
+
+            if (user == null) return false;
+
+            unitOfWork.UserRepository.Remove(user);
+            unitOfWork.Save();
+
+            return true;
+        }
     }
 }

@@ -101,7 +101,7 @@ namespace swp_be.Controllers
         public async Task<IActionResult> Profile()
         {
             int userID = int.Parse(User.FindFirstValue("userID"));
-            
+
             User user = userService.GetUserProfile(userID);
 
             return Ok(user);
@@ -116,5 +116,41 @@ namespace swp_be.Controllers
 
             return Ok(user);
         }
+
+        [HttpPut]
+        [Route("edit")]
+        [Authorize("all")]
+        public async Task<IActionResult> EditProfile([FromBody] User editUser)
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            // Checkk if admin or same id
+            if (!User.IsInRole("admin") && userID != editUser.UserID)
+            {
+                return Forbid();
+            }
+
+            userService.UpdateUserProfile(editUser);
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [Authorize("all")]
+        public async Task<IActionResult> DeleteProfile(int id)
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            // Checkk if admin or same id
+            if (!User.IsInRole("admin") && userID != id)
+            {
+                return Forbid();
+            }
+            userService.DeleteUserProfile(userID);
+
+            return Ok();
+        }
+
     }
 }
