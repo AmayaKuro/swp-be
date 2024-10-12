@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using swp_be.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,7 +79,11 @@ builder.Services.AddAuthorizationBuilder().AddPolicy("admin", policy => policy.R
 builder.Services.AddAuthorizationBuilder().AddPolicy("customer", policy => policy.RequireRole("Customer"));
 builder.Services.AddAuthorizationBuilder().AddPolicy("all", policy => policy.RequireRole("Staff", "Admin", "Customer"));
 
+builder.Services.AddScoped<BatchService>();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
