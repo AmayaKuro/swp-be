@@ -52,7 +52,12 @@ namespace swp_be.Controllers
 
             ITokenServiceResult token = tokenService.CreateToken(result.userInfo);
 
-            return Ok(token);
+            return Ok(new
+            {
+                token,
+                result.userInfo.Role,
+                result.userInfo.Name,
+            });
         }
 
         // POST: api/register
@@ -72,7 +77,12 @@ namespace swp_be.Controllers
 
             ITokenServiceResult token = tokenService.CreateToken(result.userInfo);
 
-            return Ok(token);
+            return Ok(new
+            {
+                token,
+                result.userInfo.Role,
+                result.userInfo.Name,
+            });
         }
 
         [HttpPost]
