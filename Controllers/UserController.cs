@@ -118,6 +118,16 @@ namespace swp_be.Controllers
         }
 
         [HttpGet]
+        [Route("profile/all")]
+        [Authorize("admin")]
+        public async Task<IActionResult> AllProfile(int id)
+        {
+            List<User> user = userService.GetAllUserProfile();
+
+            return Ok(user);
+        }
+
+        [HttpGet]
         [Route("profile/{id}")]
         [Authorize("admin")]
         public async Task<IActionResult> ProfileByID(int id)

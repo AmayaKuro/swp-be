@@ -102,6 +102,14 @@ namespace swp_be.Services
             return info;
         }
 
+        public List<User> GetAllUserProfile()
+        {
+            List<User> info = unitOfWork.UserRepository.GetAll();
+
+            return info;
+        }
+
+
         public bool UpdateUserProfile(User user)
         {
             unitOfWork.UserRepository.UpdateProfile(user);
