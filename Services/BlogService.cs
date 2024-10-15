@@ -32,7 +32,7 @@ namespace swp_be.Services
 
             return blog;
         }
-        public async Task<Blog> DeleteKoi(Blog blog)
+        public async Task<Blog> DeleteBlog(Blog blog)
         {
             unitOfWork.BlogRepository.Remove(blog);
             unitOfWork.Save();
