@@ -1,6 +1,7 @@
 ﻿using swp_be.data.Repositories;
 using swp_be.Data.Repositories;
 using swp_be.Models;
+using YourNamespace.Models;
 
 namespace swp_be.Data
 {
@@ -19,6 +20,7 @@ namespace swp_be.Data
         private GenericRepository<Customer> _customerRepository;
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
         private GenericRepository<Feedback> _feedbackRepository;
+        private GenericRepository<Blog> _blogRepository;
 
         private bool disposed = false;
 
@@ -37,6 +39,7 @@ namespace swp_be.Data
             _customerRepository = new GenericRepository<Customer>(_context);
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new GenericRepository<Feedback>(_context);
+            _blogRepository =new GenericRepository<Blog>(_context); 
         }
 
         public KoiRepository KoiRepository
@@ -132,6 +135,13 @@ namespace swp_be.Data
             get
             {
                 return _feedbackRepository;
+            }
+        }
+        public GenericRepository<Blog> BlogRepository
+        {
+            get
+            {
+                return _blogRepository;
             }
         }
 
