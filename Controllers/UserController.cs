@@ -145,7 +145,7 @@ namespace swp_be.Controllers
             int userID = int.Parse(User.FindFirstValue("userID"));
 
             // Checkk if admin or same id
-            if (!User.IsInRole("admin") && userID != editUser.UserID)
+            if (!User.IsInRole("Admin") && userID != editUser.UserID)
             {
                 return Forbid();
             }
@@ -163,11 +163,11 @@ namespace swp_be.Controllers
             int userID = int.Parse(User.FindFirstValue("userID"));
 
             // Checkk if admin or same id
-            if (!User.IsInRole("admin") && userID != id)
+            if (!User.IsInRole("Admin") && userID != id)
             {
                 return Forbid();
             }
-            userService.DeleteUserProfile(userID);
+            userService.DeleteUserProfile(id);
 
             return Ok();
         }
