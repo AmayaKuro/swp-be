@@ -40,7 +40,7 @@ namespace swp_be.Controllers
             return blog;
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBlog(int id, Blog blog)
+        public async Task<IActionResult> UpdateBlog(int id, Blog blog)
         {
             if (id != blog.BlogId)
             {
