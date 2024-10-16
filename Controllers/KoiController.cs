@@ -27,7 +27,7 @@ namespace swp_be.Controllers
 
         // GET: api/Koi
         [HttpGet]
-        public async Task<ActionResult<Koi>> Get()
+        public async Task<ActionResult<Koi>> GetKoi()
         {
             return Ok(await koiService.GetKois());
             //return await _context.Kois.Take(10).ToListAsync();

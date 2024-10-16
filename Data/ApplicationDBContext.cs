@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using swp_be.Models;
+using YourNamespace.Models;
 
 namespace swp_be.Data
 {
@@ -25,6 +26,8 @@ namespace swp_be.Data
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Blog> Blogs { get; set; }  
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
