@@ -52,7 +52,12 @@ namespace swp_be.Controllers
 
             ITokenServiceResult token = tokenService.CreateToken(result.userInfo);
 
-            return Ok(token);
+            return Ok(new
+            {
+                token,
+                result.userInfo.Role,
+                result.userInfo.Name,
+            });
         }
 
         // POST: api/register
@@ -72,7 +77,12 @@ namespace swp_be.Controllers
 
             ITokenServiceResult token = tokenService.CreateToken(result.userInfo);
 
-            return Ok(token);
+            return Ok(new
+            {
+                token,
+                result.userInfo.Role,
+                result.userInfo.Name,
+            });
         }
 
         [HttpPost]
@@ -108,6 +118,16 @@ namespace swp_be.Controllers
         }
 
         [HttpGet]
+        [Route("profile/all")]
+        [Authorize("admin")]
+        public async Task<IActionResult> AllProfile(int id)
+        {
+            List<User> user = userService.GetAllUserProfile();
+
+            return Ok(user);
+        }
+
+        [HttpGet]
         [Route("profile/{id}")]
         [Authorize("admin")]
         public async Task<IActionResult> ProfileByID(int id)
@@ -125,7 +145,7 @@ namespace swp_be.Controllers
             int userID = int.Parse(User.FindFirstValue("userID"));
 
             // Checkk if admin or same id
-            if (!User.IsInRole("admin") && userID != editUser.UserID)
+            if (!User.IsInRole("Admin") && userID != editUser.UserID)
             {
                 return Forbid();
             }
@@ -143,11 +163,11 @@ namespace swp_be.Controllers
             int userID = int.Parse(User.FindFirstValue("userID"));
 
             // Checkk if admin or same id
-            if (!User.IsInRole("admin") && userID != id)
+            if (!User.IsInRole("Admin") && userID != id)
             {
                 return Forbid();
             }
-            userService.DeleteUserProfile(userID);
+            userService.DeleteUserProfile(id);
 
             return Ok();
         }
