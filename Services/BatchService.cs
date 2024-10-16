@@ -49,5 +49,32 @@ namespace swp_be.Services
         {
             return await unitOfWork.BatchRepository.GetByIdAsync(id);
         }
+
+        public async Task<IEnumerable<Batch>> SearchBatches(string? name, string? species, decimal? minPrice, decimal? maxPrice)
+        {
+            var batches = await GetBatches();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                batches = batches.Where(b => b.Name != null && b.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(species))
+            {
+                batches = batches.Where(b => b.Species != null && b.Species.Contains(species, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (minPrice.HasValue)
+            {
+                batches = batches.Where(b => b.Price >= minPrice);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                batches = batches.Where(b => b.Price <= maxPrice);
+            }
+
+            return batches;
+        }
     }
 }

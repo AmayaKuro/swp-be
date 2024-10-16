@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using swp_be.Data;
 using swp_be.Models;
 using swp_be.Services;
@@ -40,6 +41,7 @@ namespace swp_be.Controllers
 
         // POST: api/Promotion
         [HttpPost]
+        [Authorize("all")]
         public async Task<ActionResult<Promotion>> CreatePromotion(Promotion promotion)
         {
             await promotionService.CreatePromotion(promotion);
@@ -48,6 +50,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Promotion/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "staff,admin")]
         public async Task<IActionResult> UpdatePromotion(int id, Promotion promotion)
         {
             if (id != promotion.PromotionID)
@@ -62,6 +65,7 @@ namespace swp_be.Controllers
 
         // DELETE: api/Promotion/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "staff,admin")]
         public async Task<IActionResult> DeletePromotion(int id)
         {
             var promotions = await promotionService.GetPromotions();
