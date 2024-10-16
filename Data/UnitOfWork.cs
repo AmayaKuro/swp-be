@@ -19,6 +19,7 @@ namespace swp_be.Data
         private GenericRepository<Customer> _customerRepository;
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
         private GenericRepository<Feedback> _feedbackRepository;
+        private PromotionRepository _promotionRepository;
 
         private bool disposed = false;
 
@@ -37,6 +38,7 @@ namespace swp_be.Data
             _customerRepository = new GenericRepository<Customer>(_context);
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new GenericRepository<Feedback>(_context);
+            _promotionRepository = new PromotionRepository(_context);
         }
 
         public KoiRepository KoiRepository
@@ -68,6 +70,14 @@ namespace swp_be.Data
             get
             {
                 return _batchRepository;
+            }
+        }
+
+        public PromotionRepository PromotionRepository
+        {
+            get
+            {
+                return _promotionRepository;
             }
         }
 
