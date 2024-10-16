@@ -16,5 +16,7 @@ namespace YourNamespace.Models
 
         public DateTime UpdateAt { get; set; }
         public User User { get; set; }
+
+        public int UserID { get; set; }
     }
 }

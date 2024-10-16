@@ -16,10 +16,12 @@ namespace swp_be.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly BlogService blogService;
+        private readonly UserService userService;
         public BlogController(ApplicationDBContext context)
         {
             this._context = context;
             this.blogService = new BlogService(context);
+            this.userService = new UserService(context);
         }
         [HttpGet]
         public async Task<ActionResult<Blog>> GetBlog()
@@ -91,23 +93,13 @@ namespace swp_be.Controllers
         public async Task<ActionResult<Blog>> CreateBlog(Blog blog)
         {
             // Check if the User is null
-            if (blog.User == null)
-            {
-                return BadRequest("User information is required to create a blog.");
-            }
+            int userId = int.Parse(User.FindFirstValue("userID"));
+            User user = userService.GetUserProfile(userId);
 
-            // Extract UserId from the authenticated user's claims
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return BadRequest("User ID is not valid.");
-            }
+           
 
-            // Optionally, validate other properties of the blog here
-
-            var createdBlog = await blogService.CreateBlog(blog, userId); // Pass both blog and userId
-
-            return CreatedAtAction(nameof(GetBlog), new { id = createdBlog.BlogId }, createdBlog);
+           return blogService.CreateBlog(blog, userId);
+            
         }
         // DELETE: api/Koi/5
 

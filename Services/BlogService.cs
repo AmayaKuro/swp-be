@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using swp_be.Data;
+using swp_be.Data.Repositories;
 using swp_be.Models;
 using YourNamespace.Models;
 
@@ -11,10 +12,12 @@ namespace swp_be.Services
     {
         private ApplicationDBContext _context;
         private readonly UnitOfWork unitOfWork;
+        private readonly BlogRepository blogRepository;
         public BlogService(ApplicationDBContext context) 
         {
         this._context = context;
         this.unitOfWork=new UnitOfWork(context);
+            this.blogRepository = new BlogRepository(context);
         }
         public async Task<List<Blog>> GetBlogs()
         {
@@ -24,26 +27,28 @@ namespace swp_be.Services
         }
         public async Task<Blog> GetById(int id)
         {
-            return await _context.Blogs
-                .Include(b => b.User) // Include the User navigation property
-                .FirstOrDefaultAsync(b => b.BlogId == id); // Assuming 'Id' is the primary key
+            return blogRepository.GetById(id);
+              
         }
-       public async Task<Blog> CreateBlog(Blog blog, int userId)
-{
-    var user = await _context.Users.FindAsync(userId);
-    if (user == null)
-    {
-        throw new InvalidOperationException($"User with ID {userId} not found.");
-    }
+        public Blog CreateBlog(Blog blog, int userId)
+        {
+            // Create a new blog object
+            var newBlog = new Blog
+            {
+                Title = blog.Title,
+                CreateAt = DateTime.Now,
+                UpdateAt = DateTime.Now,
+                UserID = userId
+            };
 
-    blog.User.UserID = userId;
-    blog.User = null; // Ensure we're not trying to create a new user
-    blog.CreateAt = DateTime.UtcNow;
-    blog.UpdateAt = DateTime.UtcNow;
+            // Add the new blog to the Blogs table
+            _context.Blogs.Add(newBlog);
 
-            unitOfWork.BlogRepository.Create(blog);
-            unitOfWork.Save(); // Changed from SaveAsync to Save
-            return blog;
+            // Save changes to the database
+            _context.SaveChanges();
+
+            // Return the newly created blog
+            return newBlog;
         }
         public async Task<Blog> UpdateBlog(Blog blog)
         {   
