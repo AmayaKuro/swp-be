@@ -5,6 +5,8 @@ using swp_be.Models;
 using swp_be.Services;
 using Microsoft.EntityFrameworkCore;
 using YourNamespace.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
@@ -22,15 +24,17 @@ namespace swp_be.Controllers
         [HttpGet]
         public async Task<ActionResult<Blog>> GetBlog()
         {
-            return Ok(await blogService.GetBlogs());
-            //return await _context.Kois.Take(10).ToListAsync();
+            var blogs = await blogService.GetBlogs();
+      
+
+            return Ok(blogs);
         }
 
-       
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Blog>> GetBlog(int id)
         {
-            var blog = await _context.Blogs.FindAsync(id);
+            var blog = await blogService.GetById(id);
 
             if (blog == null)
             {
@@ -47,11 +51,26 @@ namespace swp_be.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(blog).State = EntityState.Modified;
+            var existingBlog = await _context.Blogs.FindAsync(id);
+
+            if (existingBlog == null)
+            {
+                return NotFound();
+            }
+
+            // Check if the User is null
+            if (blog.User == null)
+            {
+                return BadRequest("User information is required to update a blog.");
+            }
+
+            existingBlog.Title = blog.Title;
+           
+            // Update other fields as necessary, but not UserId or CreatedAt
 
             try
             {
-                await blogService.UpdatBlog(blog);
+                await blogService.UpdateBlog(existingBlog);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -65,17 +84,33 @@ namespace swp_be.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(blog);
         }
+       
         [HttpPost]
-        public async Task<ActionResult<Blog>> CreateBlog (Blog blog)
+        public async Task<ActionResult<Blog>> CreateBlog(Blog blog)
         {
-            await blogService.CreatBlog(blog);
+            // Check if the User is null
+            if (blog.User == null)
+            {
+                return BadRequest("User information is required to create a blog.");
+            }
 
-            return CreatedAtAction("GetKoi", new { id =blog.BlogId }, blog);
+            // Extract UserId from the authenticated user's claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return BadRequest("User ID is not valid.");
+            }
+
+            // Optionally, validate other properties of the blog here
+
+            var createdBlog = await blogService.CreateBlog(blog, userId); // Pass both blog and userId
+
+            return CreatedAtAction(nameof(GetBlog), new { id = createdBlog.BlogId }, createdBlog);
         }
-
         // DELETE: api/Koi/5
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBlog(int id)
         {
