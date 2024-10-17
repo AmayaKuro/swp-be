@@ -38,7 +38,7 @@ namespace swp_be.Models
         /// <summary>
         /// The transaction is for Consignment for fostering.
         /// </summary>
-        FosterConsignment,
+        Consignment,
 
         /// <summary>
         /// The transaction is for Shopping.
@@ -53,13 +53,21 @@ namespace swp_be.Models
 
         public int? OrderID { get; set; }
 
-        public int? FosterConsignmentID { get; set; }
+        public int? ConsignmentID { get; set; }
+
+        // Token from payment gateway (VNPay,...)
+        public string? Token { get; set; }
+
+        [Required]
+        public TransactionType Type { get; set; }
 
         [Required]
         public int PaymentMethodID { get; set; }
 
         [Required]
-        public DateTime TransactionDate { get; set; }
+        public DateTime CreateAt { get; set; }
+
+        public DateTime? EndAt{ get; set; }
 
         [Required]
         public decimal Amount { get; set; }
@@ -67,11 +75,8 @@ namespace swp_be.Models
         [Required, MaxLength(50)]
         public TransactionStatus Status { get; set; }
 
-        [Required]
-        public TransactionType Type { get; set; }
-
         public Order Order { get; set; }
-        public Consignment FosterConsignment { get; set; }
+        public Consignment Consignment { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
     }
 }

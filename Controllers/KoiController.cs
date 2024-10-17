@@ -170,10 +170,10 @@ namespace swp_be.Controllers
                 kois = kois.Where(k => k.Color != null && k.Color.Contains(color, StringComparison.OrdinalIgnoreCase));
 
             if (minPrice.HasValue)
-                kois = kois.Where(k => k.Price.HasValue && k.Price >= minPrice);
+                kois = kois.Where(k => k.Price >= minPrice);
 
             if (maxPrice.HasValue)
-                kois = kois.Where(k => k.Price.HasValue && k.Price <= maxPrice);
+                kois = kois.Where(k => k.Price <= maxPrice);
 
             if (!string.IsNullOrEmpty(species))
                 kois = kois.Where(k => k.Species.Contains(species, StringComparison.OrdinalIgnoreCase));

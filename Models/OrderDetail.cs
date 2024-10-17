@@ -15,11 +15,11 @@ namespace swp_be.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderDetailID { get; set; }
 
-        public int KoiID { get; set; }
+        public int? KoiID { get; set; }
 
-        public int BatchID { get; set; }
+        public int? BatchID { get; set; }
 
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         [Required, MaxLength(50)]
         public OrderDetailType Type { get; set; }
@@ -30,8 +30,8 @@ namespace swp_be.Models
         [Required]
         public int OrderID { get; set; }
 
-        public Koi Koi { get; set; }
-        public Batch Batch { get; set; }
+        public Koi? Koi { get; set; }
+        public Batch? Batch { get; set; }
         public Order Order { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using swp_be.Data;
 
@@ -11,9 +12,11 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241017031149_updateTransactionAndOrder")]
+    partial class updateTransactionAndOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,10 +406,10 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailID"));
 
-                    b.Property<int?>("BatchID")
+                    b.Property<int>("BatchID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("KoiID")
+                    b.Property<int>("KoiID")
                         .HasColumnType("int");
 
                     b.Property<int>("OrderID")
@@ -415,7 +418,7 @@ namespace swp_be.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
@@ -731,11 +734,15 @@ namespace swp_be.Migrations
                 {
                     b.HasOne("swp_be.Models.Batch", "Batch")
                         .WithMany()
-                        .HasForeignKey("BatchID");
+                        .HasForeignKey("BatchID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("swp_be.Models.Koi", "Koi")
                         .WithMany()
-                        .HasForeignKey("KoiID");
+                        .HasForeignKey("KoiID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("swp_be.Models.Order", "Order")
                         .WithMany("OrderDetails")
