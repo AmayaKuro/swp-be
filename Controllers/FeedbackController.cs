@@ -45,8 +45,18 @@ namespace swp_be.Controllers
         [Authorize("all")]
         public async Task<ActionResult<Feedback>> CreateFeedback(Feedback feedback)
         {
+/*            var createdFeedback = await _feedbackService.CreateFeedback(feedback);
+            return CreatedAtAction(nameof(GetFeedback), new { id = createdFeedback.FeedbackID }, createdFeedback);*/
+
             var createdFeedback = await _feedbackService.CreateFeedback(feedback);
+
+            if (createdFeedback == null)
+            {
+                return BadRequest("Order does not exist or has not been completed yet.");
+            }
+
             return CreatedAtAction(nameof(GetFeedback), new { id = createdFeedback.FeedbackID }, createdFeedback);
+
         }
 
         // PUT: api/Feedback/5
