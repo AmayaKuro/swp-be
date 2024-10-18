@@ -4,6 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
+    public enum KoiType
+    {
+        // Koi consigned for re-sale
+        ReSell,
+        // Store own the Koi
+        Owned,
+    }
+
     public class Koi
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -26,7 +34,8 @@ namespace swp_be.Models
         [MaxLength(50)]
         public string? DailyFeedAmount { get; set; }
 
-        public decimal? Price { get; set; }
+        [Required]
+        public decimal Price { get; set; }
 
         [MaxLength(255)]
         public string? Personality { get; set; }
@@ -39,6 +48,9 @@ namespace swp_be.Models
 
         [Required, MaxLength(255)]
         public string Species { get; set; }
+
+        [Required]
+        public KoiType Type { get; set; }
 
         [MaxLength(255)]
         public string? AddOn { get; set; }

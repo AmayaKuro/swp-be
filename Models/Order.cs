@@ -27,6 +27,13 @@ namespace swp_be.Models
         Cancelled,
     }
 
+    public enum OrderType
+    {
+        Online,
+        // Đặt cọc 50% giá trị đơn hàng, sau đó thanh toán phần còn lại bằng tiền mặt khi nhận hàng
+        Offline,
+    }
+
     public class Order
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -39,10 +46,15 @@ namespace swp_be.Models
         public int StaffID { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime CreateAt { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
 
         [Required]
         public decimal TotalAmount { get; set; }
+
+        [Required]
+        public OrderType Type { get; set; }
 
         [Required, MaxLength(50)]
         public OrderStatus Status { get; set; }
@@ -53,8 +65,16 @@ namespace swp_be.Models
         public Customer Customer { get; set; }  // Navigation Property
         [DeleteBehavior(DeleteBehavior.Restrict)]
         public Staff Staff { get; set; }  // Navigation Property
-        public Promotion Promotion { get; set; }  // Navigation Property
+        public Promotion? Promotion { get; set; }  // Navigation Property
 
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        // Order will have 1 transactions if online or 2 transactions if offline (deposit and final payment)
+        public ICollection<Transaction> Transactions { get; set; }
+
+        public Order()
+        {
+            OrderDetails = new List<OrderDetail>();
+            Transactions = new List<Transaction>();
+        }
     }
 }
