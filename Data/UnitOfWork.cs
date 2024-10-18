@@ -166,7 +166,8 @@ namespace swp_be.Data
             get
             {
                 return _deliveryRepository;
-
+            }
+        }
         public GenericRepository<Blog> BlogRepository
         {
             get
