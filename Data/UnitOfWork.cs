@@ -1,6 +1,7 @@
 ﻿using swp_be.data.Repositories;
 using swp_be.Data.Repositories;
 using swp_be.Models;
+using YourNamespace.Models;
 
 namespace swp_be.Data
 {
@@ -19,7 +20,15 @@ namespace swp_be.Data
         private GenericRepository<Customer> _customerRepository;
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
         private GenericRepository<Feedback> _feedbackRepository;
+
         private GenericRepository<Delivery> _deliveryRepository;
+
+
+        private GenericRepository<Blog> _blogRepository;
+
+        private PromotionRepository _promotionRepository;
+
+
         private bool disposed = false;
 
         public UnitOfWork(ApplicationDBContext context)
@@ -37,7 +46,15 @@ namespace swp_be.Data
             _customerRepository = new GenericRepository<Customer>(_context);
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new GenericRepository<Feedback>(_context);
+
             _deliveryRepository = new GenericRepository<Delivery>(_context); 
+
+
+            _blogRepository =new GenericRepository<Blog>(_context); 
+
+            _promotionRepository = new PromotionRepository(_context);
+
+
         }
 
         public KoiRepository KoiRepository
@@ -69,6 +86,14 @@ namespace swp_be.Data
             get
             {
                 return _batchRepository;
+            }
+        }
+
+        public PromotionRepository PromotionRepository
+        {
+            get
+            {
+                return _promotionRepository;
             }
         }
 
@@ -135,11 +160,19 @@ namespace swp_be.Data
                 return _feedbackRepository;
             }
         }
+
         public GenericRepository<Delivery> DeliverRepository
         {
             get
             {
                 return _deliveryRepository;
+
+        public GenericRepository<Blog> BlogRepository
+        {
+            get
+            {
+                return _blogRepository;
+
             }
         }
 

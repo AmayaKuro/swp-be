@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using swp_be.Models;
 using swp_be.Services;
 
 namespace swp_be.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class BatchController : ControllerBase
@@ -40,6 +42,7 @@ namespace swp_be.Controllers
 
         // POST: api/Batch
         [HttpPost]
+        [Authorize("all")]
         public async Task<ActionResult<Batch>> PostBatch(Batch batch)
         {
             var createdBatch = await batchService.CreateBatch(batch);
@@ -48,6 +51,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Batch/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "staff,admin")]
         public async Task<IActionResult> PutBatch(int id, Batch batch)
         {
             if (id != batch.BatchID)
@@ -69,6 +73,7 @@ namespace swp_be.Controllers
 
         // DELETE: api/Batch/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "staff,admin")]
         public async Task<IActionResult> DeleteBatch(int id)
         {
             var success = await batchService.DeleteBatch(id);
@@ -79,5 +84,38 @@ namespace swp_be.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<Batch>>> SearchBatches(
+            [FromQuery] string? name,
+            [FromQuery] string? species,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice)
+        {
+            var batches = await batchService.GetBatches();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                batches = batches.Where(b => b.Name != null && b.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(species))
+            {
+                batches = batches.Where(b => b.Species != null && b.Species.Contains(species, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (minPrice.HasValue)
+            {
+                batches = batches.Where(b => b.Price >= minPrice);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                batches = batches.Where(b => b.Price <= maxPrice);
+            }
+
+            return Ok(batches.ToList());
+        }
+
     }
 }
