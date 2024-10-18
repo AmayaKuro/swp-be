@@ -1,6 +1,7 @@
 ﻿using swp_be.Controllers;
 using swp_be.data.Repositories;
 using swp_be.Data;
+using swp_be.Data.Repositories;
 using swp_be.Models;
 using swp_be.Utils;
 
@@ -9,13 +10,12 @@ namespace swp_be.Services
     public class TransactionService
     {
         private readonly ApplicationDBContext _context;
-        private GenericRepository<Transaction> transactionRepository;
+        private TransactionRepository transactionRepository;
 
         public TransactionService(ApplicationDBContext context)
         {
             _context = context;
-            transactionRepository = new GenericRepository<Transaction>(context);
-
+            transactionRepository = new TransactionRepository(context);
         }
 
         /// <summary>
@@ -80,8 +80,46 @@ namespace swp_be.Services
             //Billing
             string url = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
 
-            Console.WriteLine(url);
             return url;
+        }
+
+        public Transaction GetTransactionByID(int id)
+        {
+            return transactionRepository.GetById(id);
+        }
+
+        public void UpdateTransactionStatus(Transaction transaction)
+        {
+            transactionRepository.Update(transaction);
+            transactionRepository.Save();
+        }
+
+        public void UpdateStatus(int id, TransactionStatus transactionStatus, string? token)
+        {
+            Transaction transaction = transactionRepository.GetTransactionByID(id);
+
+            transaction.Status = transactionStatus;
+            transaction.EndAt = DateTime.Now;
+
+            transaction.Token = token;
+
+            Order order = transaction.Order;
+
+            // Full payment for online order
+            // Deposit payment for offline order
+            if (transactionStatus == TransactionStatus.Completed && order.Type == OrderType.Online)
+            {
+                order.Status = OrderStatus.Completed;
+            }
+            else if (transactionStatus == TransactionStatus.Completed
+                && transaction.PaymentMethod.MethodName == "Cash"
+                && order.Type == OrderType.Offline)
+            {
+                order.Status = OrderStatus.Completed;
+            }
+
+            transactionRepository.Update(transaction);
+            transactionRepository.Save();
         }
     }
 }

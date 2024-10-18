@@ -98,7 +98,6 @@ namespace swp_be.Controllers
 
         // POST: api/Orders/Create
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // TODO: Finish  this
         [HttpPost]
         [Authorize("all")]
         [Route("create")]

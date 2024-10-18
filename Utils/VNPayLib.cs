@@ -67,9 +67,6 @@ namespace swp_be.Utils
             string vnp_SecureHash = Utils.HmacSHA512(vnp_HashSecret, signData);
             baseUrl += "vnp_SecureHash=" + vnp_SecureHash;
 
-            Console.WriteLine(vnp_HashSecret);
-            Console.WriteLine(signData);
-
             return baseUrl;
         }
 
