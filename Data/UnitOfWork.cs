@@ -21,6 +21,9 @@ namespace swp_be.Data
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
         private GenericRepository<Feedback> _feedbackRepository;
 
+        private GenericRepository<Delivery> _deliveryRepository;
+
+
         private GenericRepository<Blog> _blogRepository;
 
         private PromotionRepository _promotionRepository;
@@ -44,9 +47,13 @@ namespace swp_be.Data
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new GenericRepository<Feedback>(_context);
 
+            _deliveryRepository = new GenericRepository<Delivery>(_context); 
+
+
             _blogRepository =new GenericRepository<Blog>(_context); 
 
             _promotionRepository = new PromotionRepository(_context);
+
 
         }
 
@@ -153,11 +160,19 @@ namespace swp_be.Data
                 return _feedbackRepository;
             }
         }
+
+        public GenericRepository<Delivery> DeliverRepository
+        {
+            get
+            {
+                return _deliveryRepository;
+
         public GenericRepository<Blog> BlogRepository
         {
             get
             {
                 return _blogRepository;
+
             }
         }
 
