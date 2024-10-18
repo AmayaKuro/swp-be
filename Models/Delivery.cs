@@ -25,6 +25,10 @@ namespace swp_be.Models
         public DateTime? EndDeliDay { get; set; }
 
         public Order Order { get; set; }  // Navigation Property
+
+     
         public Customer Customer { get; set; }  // Navigation Property
+
+
     }
 }

@@ -19,7 +19,7 @@ namespace swp_be.Data
         private GenericRepository<Customer> _customerRepository;
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
         private GenericRepository<Feedback> _feedbackRepository;
-
+        private GenericRepository<Delivery> _deliveryRepository;
         private bool disposed = false;
 
         public UnitOfWork(ApplicationDBContext context)
@@ -37,6 +37,7 @@ namespace swp_be.Data
             _customerRepository = new GenericRepository<Customer>(_context);
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new GenericRepository<Feedback>(_context);
+            _deliveryRepository = new GenericRepository<Delivery>(_context); 
         }
 
         public KoiRepository KoiRepository
@@ -132,6 +133,13 @@ namespace swp_be.Data
             get
             {
                 return _feedbackRepository;
+            }
+        }
+        public GenericRepository<Delivery> DeliverRepository
+        {
+            get
+            {
+                return _deliveryRepository;
             }
         }
 
