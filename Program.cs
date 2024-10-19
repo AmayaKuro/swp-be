@@ -80,6 +80,7 @@ builder.Services.AddAuthorizationBuilder().AddPolicy("customer", policy => polic
 builder.Services.AddAuthorizationBuilder().AddPolicy("all", policy => policy.RequireRole("Staff", "Admin", "Customer"));
 
 builder.Services.AddScoped<BatchService>();
+builder.Services.AddScoped<FeedbackService>();
 
 var app = builder.Build();
 
