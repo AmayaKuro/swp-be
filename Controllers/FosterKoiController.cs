@@ -41,13 +41,47 @@ namespace swp_be.Controllers
 
             return fosterKoi;
         }
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<FosterKoi>>> Search(
+            string? name = null,
+            string? color = null,
+            string? size = null,
+            string? gender = null
+            )
 
+        {
+            var query = _context.FosterKois.AsQueryable();
 
-        // PUT: api/Koi/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut]
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(koi => koi.Name.Contains(name));
+            }
+
+            if (!string.IsNullOrEmpty(color))
+            {
+                query = query.Where(koi => koi.Color.Contains(color));
+            }
+
+            if (!string.IsNullOrEmpty(size))
+            {
+                query = query.Where(koi => koi.Size.Contains(size));
+            }
+
+            if (!string.IsNullOrEmpty(gender))
+            {
+                query = query.Where(koi => koi.Gender.Contains(gender));
+            }
+
+            var results = await query.ToListAsync();
+            return Ok(results);
+        }
+    
+
+    // PUT: api/Koi/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut]
         public async Task<IActionResult> UpdateFosterKoi(
-    [FromQuery] int? id,
+    [FromQuery] int id,
     [FromQuery] string? name,
     [FromQuery] string? gender,
     [FromQuery] int? age,
@@ -57,21 +91,11 @@ namespace swp_be.Controllers
     [FromQuery] string? personality,
     [FromQuery] string? origin,
     [FromQuery] string? selectionRate,
-    [FromQuery] string species,
-    [FromQuery] decimal pricePerDay,
-    [FromQuery] int fosteringDays,
-    [FromQuery] int consignmentId)
+    [FromQuery] string? species,
+    [FromQuery] decimal? pricePerDay,
+    [FromQuery] int? fosteringDays,
+    [FromQuery] int? consignmentId)
         {
-            if (string.IsNullOrWhiteSpace(species) || species.Length > 255)
-            {
-                return BadRequest("Invalid species.");
-            }
-
-            if (fosteringDays <= 0) 
-            {
-                return BadRequest("Fostering days must be greater than zero.");
-            }
-
             // Find the foster koi, ensuring you await the result
             var fosterKoi = await _context.FosterKois.FindAsync(id);
 
@@ -81,20 +105,32 @@ namespace swp_be.Controllers
                 return NotFound();
             }
 
-            // Update foster koi properties
-            fosterKoi.Name = name;
-            fosterKoi.Gender = gender;
-            fosterKoi.Age = age;
-            fosterKoi.Size = size;
-            fosterKoi.Color = color;
-            fosterKoi.DailyFeedAmount = dailyFeedAmount;
-            fosterKoi.Personality = personality;
-            fosterKoi.Origin = origin;
-            fosterKoi.SelectionRate = selectionRate;
-            fosterKoi.Species = species;
-            fosterKoi.PricePerDay = pricePerDay;
-            fosterKoi.FosteringDays = fosteringDays;
-            fosterKoi.ConsignmentID = consignmentId;
+            // Validate species if provided
+            if (!string.IsNullOrWhiteSpace(species) && species.Length > 255)
+            {
+                return BadRequest("Invalid species.");
+            }
+
+            // Validate fostering days if provided
+            if (fosteringDays.HasValue && fosteringDays <= 0)
+            {
+                return BadRequest("Fostering days must be greater than zero.");
+            }
+
+            // Update foster koi properties only if they are provided
+            if (name != null) fosterKoi.Name = name;
+            if (gender != null) fosterKoi.Gender = gender;
+            if (age.HasValue) fosterKoi.Age = age.Value;
+            if (size != null) fosterKoi.Size = size;
+            if (color != null) fosterKoi.Color = color;
+            if (dailyFeedAmount != null) fosterKoi.DailyFeedAmount = dailyFeedAmount;
+            if (personality != null) fosterKoi.Personality = personality;
+            if (origin != null) fosterKoi.Origin = origin;
+            if (selectionRate != null) fosterKoi.SelectionRate = selectionRate;
+            if (species != null) fosterKoi.Species = species;
+            if (pricePerDay.HasValue) fosterKoi.PricePerDay = pricePerDay.Value;
+            if (fosteringDays.HasValue) fosterKoi.FosteringDays = fosteringDays.Value;
+            if (consignmentId.HasValue) fosterKoi.ConsignmentID = consignmentId.Value;
 
             // Save the changes to the database
             await _context.SaveChangesAsync();
