@@ -51,7 +51,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Batch/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "staff,admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> PutBatch(int id, Batch batch)
         {
             if (id != batch.BatchID)
@@ -73,7 +73,7 @@ namespace swp_be.Controllers
 
         // DELETE: api/Batch/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "staff,admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteBatch(int id)
         {
             var success = await batchService.DeleteBatch(id);

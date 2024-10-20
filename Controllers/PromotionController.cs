@@ -50,7 +50,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Promotion/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "staff,admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdatePromotion(int id, Promotion promotion)
         {
             if (id != promotion.PromotionID)
@@ -65,7 +65,7 @@ namespace swp_be.Controllers
 
         // DELETE: api/Promotion/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "staff,admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeletePromotion(int id)
         {
             var promotions = await promotionService.GetPromotions();

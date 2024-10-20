@@ -81,7 +81,7 @@ namespace swp_be.Controllers
 
         // DELETE: api/Feedback/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "staff,admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
             var deleted = await _feedbackService.DeleteFeedback(id);
