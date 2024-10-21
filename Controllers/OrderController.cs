@@ -125,7 +125,7 @@ namespace swp_be.Controllers
 
             Console.WriteLine("VNPAY URL: {0}", paymentUrl);
 
-            return Redirect(paymentUrl);
+            return Ok(new { paymentUrl });
         }
 
         // DELETE: api/Orders/5
