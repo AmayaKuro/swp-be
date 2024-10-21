@@ -12,6 +12,11 @@ namespace YourNamespace.Models
         [Required]
         public string Title { get; set; }
         [Required]
+        public String BlogSlug { get; set; }
+        public String Description { get; set; }
+
+        public String Content {  get; set; }
+
         public DateTime CreateAt { get; set; }
 
         public DateTime UpdateAt { get; set; }
