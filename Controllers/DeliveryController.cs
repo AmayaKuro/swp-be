@@ -13,14 +13,8 @@ using swp_be.Services;
 
 namespace swp_be.Controllers
 {
-    [Route("api/[controller]")]
-    public class DeliveryRequest()
-    {
-      
-
-
-    }
-
+    [Route("api/koi/[controller]")]
+    [ApiController]
     public class DeliveryController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
