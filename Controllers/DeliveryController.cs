@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using swp_be.Services;
 
 namespace swp_be.Controllers
 {
+    [Route("api/[controller]")]
     public class DeliveryRequest()
     {
       
@@ -32,7 +34,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi
-        [Route("/api/Delivery/GetDelivery")]
+        
         [HttpGet]
         public async Task<ActionResult<Delivery>> GetDevliver()
         {
@@ -41,6 +43,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi/5
+        [Authorize("admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Delivery>> GetDelivery(int id)
         {
@@ -53,6 +56,7 @@ namespace swp_be.Controllers
 
             return delivery;
         }
+        [Authorize("admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDeliver(int id, Delivery delivery)
         {
@@ -84,7 +88,7 @@ namespace swp_be.Controllers
 
         // POST: api/Koi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Route("/api/Delivery/CreateDelivery")]
+        [Authorize("admin")]
         [HttpPost]
         public async Task<IActionResult> CreateDelivery(
         [FromQuery] int orderId,
@@ -122,6 +126,7 @@ namespace swp_be.Controllers
         }
 
         // DELETE: api/Koi/5
+        [Authorize("admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKoi(int id)
         {

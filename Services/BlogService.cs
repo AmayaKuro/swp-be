@@ -21,35 +21,15 @@ namespace swp_be.Services
         }
         public async Task<List<Blog>> GetBlogs()
         {
-            return await _context.Blogs
-                .Include(b => b.User) // Include the User navigation property
-                .ToListAsync();
+            return await _context.Blogs.ToListAsync();
+                
         }
         public async Task<Blog> GetById(int id)
         {
             return blogRepository.GetById(id);
               
         }
-        public Blog CreateBlog(Blog blog, int userId)
-        {
-            // Create a new blog object
-            var newBlog = new Blog
-            {
-                Title = blog.Title,
-                CreateAt = DateTime.Now,
-                UpdateAt = DateTime.Now,
-                UserID = userId
-            };
-
-            // Add the new blog to the Blogs table
-            _context.Blogs.Add(newBlog);
-
-            // Save changes to the database
-            _context.SaveChanges();
-
-            // Return the newly created blog
-            return newBlog;
-        }
+        
         public async Task<Blog> UpdateBlog(Blog blog)
         {   
             var existingBlog = await _context.Blogs.FindAsync(blog.BlogId); // Find the existing blog by ID

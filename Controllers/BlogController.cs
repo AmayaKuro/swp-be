@@ -90,17 +90,57 @@ namespace swp_be.Controllers
         }
        
         [HttpPost]
-        public async Task<ActionResult<Blog>> CreateBlog(Blog blog)
+        public async Task<IActionResult> CreateBlog(
+    [FromQuery] string title,
+    [FromQuery] int userId,
+    [FromQuery] DateTime? createdAt = null,
+    [FromQuery] DateTime? updatedAt = null)
         {
-            // Check if the User is null
-            int userId = int.Parse(User.FindFirstValue("userID"));
-            User user = userService.GetUserProfile(userId);
+            // Validate title
+            if (string.IsNullOrWhiteSpace(title) || title.Length > 255)
+            {
+                return BadRequest("Invalid title. It must be non-empty and less than 255 characters.");
+            }
 
-           
+            // Validate user ID
+            if (userId <= 0)
+            {
+                return BadRequest("Invalid User ID.");
+            }
 
-           return blogService.CreateBlog(blog, userId);
-            
+            // If createdAt is not provided, set it to current time
+            var createDate = createdAt ?? DateTime.UtcNow;
+
+            // If updatedAt is not provided, set it to current time
+            var updateDate = updatedAt ?? DateTime.UtcNow;
+
+            // Create a new blog object
+            var blog = new Blog
+            {
+                Title = title,
+                CreateAt = createDate,
+                UpdateAt = updateDate,
+                UserID = userId
+            };
+
+            // Add the new blog to the context
+            _context.Blogs.Add(blog);
+
+            try
+            {
+                // Save changes asynchronously
+                await _context.SaveChangesAsync();
+
+                // Return 201 Created with the new blog's ID
+                return CreatedAtAction(nameof(CreateBlog), new { id = blog.BlogId }, blog);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions that might occur
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
         // DELETE: api/Koi/5
 
         [HttpDelete("{id}")]
