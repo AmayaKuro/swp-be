@@ -16,7 +16,7 @@ namespace swp_be.Data
         public DbSet<Delivery> Deliveries { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<FosterBatch> FosterBatches { get; set; }
-        public DbSet<FosterKoi> FosterKois { get; set; }
+        public DbSet<ConsignmentKoi> FosterKois { get; set; }
         public DbSet<Koi> Kois { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }

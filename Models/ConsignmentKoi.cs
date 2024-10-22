@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
-    public class FosterKoi
+    public class ConsignmentKoi
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FosterKoiID { get; set; }
@@ -37,15 +37,18 @@ namespace swp_be.Models
 
         [Required, MaxLength(255)]
         public string Species { get; set; }
+        //Khac koi tu day
 
-        public decimal PricePerDay { get; set; } = 0;
+        public decimal Price { get; set; } = 0;
 
         [Required]
         public int FosteringDays { get; set; }
 
         [Required]
         public int ConsignmentID { get; set; }
-    
+
+        public string? AddOn { get; set; }
+
         public Consignment Consignment { get; set; }
     }
 }
