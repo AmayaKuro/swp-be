@@ -20,6 +20,21 @@ namespace swp_be.Services
 
         public async Task<Promotion> CreatePromotion(Promotion promotion)
         {
+
+            var existingPromotions = await unitOfWork.PromotionRepository
+            .GetPromotionsByDateAsync(promotion.StartDate, promotion.EndDate);
+
+            if (existingPromotions.Any())
+            {
+                foreach (var existingPromotion in existingPromotions)
+                {
+                    if (existingPromotion.DiscountRate == promotion.DiscountRate)
+                    {
+                        throw new InvalidOperationException("Promotion with the same date and discount rate already exists.");
+                    }
+                }
+            }
+
             unitOfWork.PromotionRepository.Create(promotion);
             unitOfWork.Save();
             return promotion;

@@ -44,8 +44,15 @@ namespace swp_be.Controllers
         [Authorize("all")]
         public async Task<ActionResult<Promotion>> CreatePromotion(Promotion promotion)
         {
-            await promotionService.CreatePromotion(promotion);
-            return CreatedAtAction(nameof(GetPromotion), new { id = promotion.PromotionID }, promotion);
+            try
+            {
+                await promotionService.CreatePromotion(promotion);
+                return CreatedAtAction(nameof(GetPromotion), new { id = promotion.PromotionID }, promotion);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message); 
+            }
         }
 
         // PUT: api/Promotion/5

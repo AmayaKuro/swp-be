@@ -1,6 +1,7 @@
 ﻿using swp_be.Models;
 using swp_be.Data;
 using swp_be.data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace swp_be.Data.Repositories
 {
@@ -10,6 +11,13 @@ namespace swp_be.Data.Repositories
         {
         }
 
-        
+        public async Task<IEnumerable<Promotion>> GetPromotionsByDateAsync(DateTime startDate, DateTime? endDate)
+        {
+            return await _context.Promotions
+                .Where(p => (p.StartDate <= endDate && (p.EndDate >= startDate || p.EndDate == null)))
+                .ToListAsync();
+        }
+
+
     }
 }
