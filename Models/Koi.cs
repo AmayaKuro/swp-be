@@ -48,10 +48,7 @@ namespace swp_be.Models
 
         [Required, MaxLength(255)]
         public string Species { get; set; }
-
-        [Required]
-        public KoiType Type { get; set; }
-
+        //Khac FosterKoi tu day
         [MaxLength(255)]
         public string? AddOn { get; set; }
     }

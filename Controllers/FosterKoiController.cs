@@ -30,7 +30,7 @@ namespace swp_be.Controllers
 
         // GET: api/Koi/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<FosterKoi>> GetFosterKoi(int id)
+        public async Task<ActionResult<ConsignmentKoi>> GetFosterKoi(int id)
         {
             var fosterKoi = await _context.FosterKois.FindAsync(id);
 
@@ -42,7 +42,7 @@ namespace swp_be.Controllers
             return fosterKoi;
         }
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<FosterKoi>>> Search(
+        public async Task<ActionResult<IEnumerable<ConsignmentKoi>>> Search(
             string? name = null,
             string? color = null,
             string? size = null,
@@ -92,7 +92,7 @@ namespace swp_be.Controllers
     [FromQuery] string? origin,
     [FromQuery] string? selectionRate,
     [FromQuery] string? species,
-    [FromQuery] decimal? pricePerDay,
+    [FromQuery] decimal? price,
     [FromQuery] int? fosteringDays,
     [FromQuery] int? consignmentId)
         {
@@ -128,7 +128,7 @@ namespace swp_be.Controllers
             if (origin != null) fosterKoi.Origin = origin;
             if (selectionRate != null) fosterKoi.SelectionRate = selectionRate;
             if (species != null) fosterKoi.Species = species;
-            if (pricePerDay.HasValue) fosterKoi.PricePerDay = pricePerDay.Value;
+            if (price.HasValue) fosterKoi.Price = price.Value;
             if (fosteringDays.HasValue) fosterKoi.FosteringDays = fosteringDays.Value;
             if (consignmentId.HasValue) fosterKoi.ConsignmentID = consignmentId.Value;
 
@@ -168,7 +168,7 @@ namespace swp_be.Controllers
                 return BadRequest("Fostering days must be greater than zero.");
             }
 
-            var fosterKoi = new FosterKoi
+            var fosterKoi = new ConsignmentKoi
             {
                 Name = name,
                 Gender = gender,
@@ -180,7 +180,7 @@ namespace swp_be.Controllers
                 Origin = origin,
                 SelectionRate = selectionRate,
                 Species = species,
-                PricePerDay = pricePerDay,
+                Price = pricePerDay,
                 FosteringDays = fosteringDays,
                 ConsignmentID = consignmentId
             };
