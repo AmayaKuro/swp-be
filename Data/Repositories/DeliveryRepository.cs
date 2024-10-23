@@ -14,6 +14,19 @@ namespace swp_be.Data.Repositories
         {
 
         }
+        public async Task<IEnumerable<Delivery>> GetDeliveries()
+        {
+            return _context.Deliveries
+                    .Include(d => d.Order)
+                    .Include(d => d.Customer);
 
+        }
+        public Delivery GetDeliveryById(int deliveryId)
+        {
+            return _context.Deliveries
+                       .Include(d => d.Order)    // Eager loading the Order entity
+                       .Include(d => d.Customer) // Eager loading the Customer entity
+                       .FirstOrDefault(d => d.DeliveryID == deliveryId); // Fetch delivery by ID
+        }
     }
 }
