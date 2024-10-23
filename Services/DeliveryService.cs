@@ -28,7 +28,7 @@ namespace swp_be.Services
         public Delivery GetDeliveryById(int deliveryId)
         {
 
-            return _repository.GetById(deliveryId);       
+            return _repository.GetDeliveryById(deliveryId);       
         }
 
         public async Task<Delivery> UpdateDelivery(Delivery delivery)

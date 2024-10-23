@@ -160,7 +160,6 @@ namespace swp_be.Controllers
     [FromQuery] string? origin,
     [FromQuery] string? selectionRate,
     [FromQuery] string species,
-    [FromQuery] decimal pricePerDay,
     [FromQuery] int fosteringDays)
         {
             // Retrieve the customer ID from the user's claims
@@ -171,7 +170,6 @@ namespace swp_be.Controllers
             {
                 CustomerID = customerID,
                 Type = type,
-                FosterPrice = fosteringDays*pricePerDay ,
                 Status = ConsigmentStatus.pending // Ensure this is correctly spelled
             };
 
@@ -188,7 +186,7 @@ namespace swp_be.Controllers
                 Origin = origin,
                 SelectionRate = selectionRate,
                 Species = species,
-                Price = pricePerDay,
+                
                 FosteringDays = fosteringDays,
                 ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
             };
