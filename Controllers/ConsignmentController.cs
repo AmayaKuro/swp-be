@@ -16,11 +16,12 @@ namespace swp_be.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly ConsignmentService consignmentService;
-        private readonly ConsignmentKoiService consignmentKoiService;  
+        private readonly TransactionService transactionService;
         public ConsignmentController(ApplicationDBContext context)
         {
             this._context = context;
             this.consignmentService= new ConsignmentService(context);
+            transactionService = new TransactionService(context);
         }
         [HttpGet]
         public async Task<ActionResult<Consignment>> GetConsignment()
@@ -61,7 +62,10 @@ namespace swp_be.Controllers
             consignment.Type = type;
             consignment.FosterPrice = fosterPrice;
             consignment.Status = status;
-
+            if (consignment.Status != ConsigmentStatus.pending)
+            {
+                string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            }
             // Save changes
             try
             {
@@ -140,8 +144,8 @@ namespace swp_be.Controllers
                 // Log the exception for debugging purposes if needed
                 return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
-
-            return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
+            string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment,HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            return Ok(new { paymentUrl });
         }
         [HttpPost("Pending")]
         public async Task<IActionResult> PendingConsignment(
@@ -209,8 +213,8 @@ namespace swp_be.Controllers
                 // Log the exception for debugging purposes if needed
                 return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
-
             return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
+
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConsignment(int id)
