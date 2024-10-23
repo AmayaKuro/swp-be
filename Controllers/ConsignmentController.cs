@@ -5,6 +5,8 @@ using swp_be.Services;
 using swp_be.Models;
 using Microsoft.EntityFrameworkCore;
 using YourNamespace.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
@@ -71,6 +73,7 @@ namespace swp_be.Controllers
 
             return Ok(new { message = "Consignment updated successfully" });
         }
+        [Authorize("Staff")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateConsignment(
            [FromQuery] int customerID,
@@ -85,6 +88,37 @@ namespace swp_be.Controllers
                 Type = type,
                 FosterPrice = fosterPrice,
                 Status = status
+            };
+
+            // Add the new consignment to the database
+            _context.Consignments.Add(newConsignment);
+
+            // Save changes to the database
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, new { message = "Error creating consignment" });
+            }
+
+            return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
+        }
+        [HttpPost("Pending")]
+        public async Task<IActionResult> PendingConsignment(
+          
+          [FromQuery] ConsignmentType type,
+          [FromQuery] decimal fosterPrice)
+     
+        {
+            int customerID = int.Parse(User.FindFirstValue("userID")); // Create a new consignment object
+            var newConsignment = new Consignment
+            {
+                CustomerID = customerID,
+                Type = type,
+                FosterPrice = fosterPrice,
+                Status = ConsigmentStatus.penidng //Dang trong chang thai cho xac nhan
             };
 
             // Add the new consignment to the database
