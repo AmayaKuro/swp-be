@@ -3,12 +3,12 @@ using swp_be.Models;
 
 namespace swp_be.Services
 {
-    public class FosterKoiService
+    public class ConsignmentKoiService
     {
         private ApplicationDBContext _context;
         private readonly UnitOfWork unitOfWork;
 
-        public FosterKoiService(ApplicationDBContext _context)
+        public ConsignmentKoiService(ApplicationDBContext _context)
         {
             this._context = _context;
             this.unitOfWork = new UnitOfWork(_context);

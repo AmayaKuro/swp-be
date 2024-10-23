@@ -13,12 +13,12 @@ namespace swp_be.Controllers
     public class FosterKoiController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        private readonly FosterKoiService fosterKoiService;
+        private readonly ConsignmentKoiService fosterKoiService;
 
         public FosterKoiController(ApplicationDBContext context)
         {
             this._context = context;
-            this.fosterKoiService = new FosterKoiService(context);
+            this.fosterKoiService = new ConsignmentKoiService(context);
         }
 
         // GET: api/Koi

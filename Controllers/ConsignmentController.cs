@@ -16,6 +16,7 @@ namespace swp_be.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly ConsignmentService consignmentService;
+        private readonly ConsignmentKoiService consignmentKoiService;  
         public ConsignmentController(ApplicationDBContext context)
         {
             this._context = context;
@@ -76,18 +77,47 @@ namespace swp_be.Controllers
         [Authorize("Staff")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateConsignment(
-           [FromQuery] int customerID,
-           [FromQuery] ConsignmentType type,
-           [FromQuery] decimal fosterPrice,
-           [FromQuery] ConsigmentStatus status)
+            [FromQuery] int customerID,
+            [FromQuery] ConsignmentType type,
+            [FromQuery] ConsigmentStatus status,
+            [FromQuery] string? name,
+            [FromQuery] string? gender,
+            [FromQuery] int? age,
+            [FromQuery] string? size,
+            [FromQuery] string? color,
+            [FromQuery] string? dailyFeedAmount,
+            [FromQuery] string? personality,
+            [FromQuery] string? origin,
+            [FromQuery] string? selectionRate,
+            [FromQuery] string species,
+            [FromQuery] decimal pricePerDay,
+            [FromQuery] int fosteringDays
+            )
         {
             // Create a new consignment object
             var newConsignment = new Consignment
             {
                 CustomerID = customerID,
                 Type = type,
-                FosterPrice = fosterPrice,
-                Status = status
+                FosterPrice = fosteringDays * pricePerDay,
+                Status = ConsigmentStatus.pending // Ensure this is correctly spelled
+            };
+            // Create a new ConsignmentKoi object
+            var fosterKoi = new ConsignmentKoi
+            {
+                Name = name,
+                Gender = gender,
+                Age = age,
+                Size = size,
+                Color = color,
+                DailyFeedAmount = dailyFeedAmount,
+                Personality = personality,
+                Origin = origin,
+                SelectionRate = selectionRate,
+                Species = species,
+                Price = pricePerDay,
+                FosteringDays = fosteringDays,
+                ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
             };
 
             // Add the new consignment to the database
@@ -97,28 +127,66 @@ namespace swp_be.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                // Set the ConsignmentID after saving to the database
+                fosterKoi.ConsignmentID = newConsignment.ConsignmentID;
+
+                // Add the Koi after the consignment is saved
+                _context.FosterKois.Add(fosterKoi);
+                await _context.SaveChangesAsync(); // Save the Koi as well
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                return StatusCode(500, new { message = "Error creating consignment" });
+                // Log the exception for debugging purposes if needed
+                return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
 
             return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
         }
         [HttpPost("Pending")]
         public async Task<IActionResult> PendingConsignment(
-          
-          [FromQuery] ConsignmentType type,
-          [FromQuery] decimal fosterPrice)
-     
+    [FromQuery] ConsignmentType type,
+    [FromQuery] string? name,
+    [FromQuery] string? gender,
+    [FromQuery] int? age,
+    [FromQuery] string? size,
+    [FromQuery] string? color,
+    [FromQuery] string? dailyFeedAmount,
+    [FromQuery] string? personality,
+    [FromQuery] string? origin,
+    [FromQuery] string? selectionRate,
+    [FromQuery] string species,
+    [FromQuery] decimal pricePerDay,
+    [FromQuery] int fosteringDays)
         {
-            int customerID = int.Parse(User.FindFirstValue("userID")); // Create a new consignment object
+            // Retrieve the customer ID from the user's claims
+            int customerID = int.Parse(User.FindFirstValue("userID"));
+
+            // Create a new consignment object
             var newConsignment = new Consignment
             {
                 CustomerID = customerID,
                 Type = type,
-                FosterPrice = fosterPrice,
-                Status = ConsigmentStatus.penidng //Dang trong chang thai cho xac nhan
+                FosterPrice = fosteringDays*pricePerDay ,
+                Status = ConsigmentStatus.pending // Ensure this is correctly spelled
+            };
+
+            // Create a new ConsignmentKoi object
+            var fosterKoi = new ConsignmentKoi
+            {
+                Name = name,
+                Gender = gender,
+                Age = age,
+                Size = size,
+                Color = color,
+                DailyFeedAmount = dailyFeedAmount,
+                Personality = personality,
+                Origin = origin,
+                SelectionRate = selectionRate,
+                Species = species,
+                Price = pricePerDay,
+                FosteringDays = fosteringDays,
+                ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
             };
 
             // Add the new consignment to the database
@@ -128,10 +196,18 @@ namespace swp_be.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                // Set the ConsignmentID after saving to the database
+                fosterKoi.ConsignmentID = newConsignment.ConsignmentID;
+
+                // Add the Koi after the consignment is saved
+                _context.FosterKois.Add(fosterKoi);
+                await _context.SaveChangesAsync(); // Save the Koi as well
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                return StatusCode(500, new { message = "Error creating consignment" });
+                // Log the exception for debugging purposes if needed
+                return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
 
             return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
