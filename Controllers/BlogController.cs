@@ -88,14 +88,17 @@ namespace swp_be.Controllers
 
             return Ok(blog);
         }
-       
+        
         [HttpPost]
         public async Task<IActionResult> CreateBlog(
     [FromQuery] string title,
-    [FromQuery] int userId,
+    [FromQuery] string BlogSlug,
+    [FromQuery] string Description,
+    [FromQuery] string Content,
     [FromQuery] DateTime? createdAt = null,
     [FromQuery] DateTime? updatedAt = null)
         {
+            int userID = int.Parse(User.FindFirstValue("userID"));
             // Validate title
             if (string.IsNullOrWhiteSpace(title) || title.Length > 255)
             {
@@ -103,7 +106,7 @@ namespace swp_be.Controllers
             }
 
             // Validate user ID
-            if (userId <= 0)
+            if (userID <= 0)
             {
                 return BadRequest("Invalid User ID.");
             }
@@ -118,9 +121,12 @@ namespace swp_be.Controllers
             var blog = new Blog
             {
                 Title = title,
+                BlogSlug = BlogSlug,
+                Description = Description,
+                Content = Content,
                 CreateAt = createDate,
                 UpdateAt = updateDate,
-                UserID = userId
+                UserID = userID
             };
 
             // Add the new blog to the context
