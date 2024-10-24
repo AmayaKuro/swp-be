@@ -23,5 +23,17 @@ namespace swp_be.Data.Repositories
                 .FirstOrDefault(o => o.OrderID == id);
         }
 
+        public List<Order> GetOrdersByUserID(int userID)
+        {
+            return _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Staff)
+                .Include(o => o.Promotion)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Koi)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.ConsignmentKoi).ThenInclude(ck => ck.Consignment)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Batch)
+                .Where(o => o.CustomerID == userID)
+                .ToList();
+        }
     }
 }

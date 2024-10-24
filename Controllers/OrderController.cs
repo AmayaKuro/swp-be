@@ -47,9 +47,20 @@ namespace swp_be.Controllers
 
         // GET: api/Orders
         [HttpGet]
+        [Authorize("admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             return await _context.Orders.ToListAsync();
+        }
+
+        [HttpGet]
+        [Authorize("customer")]
+        [Route("list")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomer()
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            return orderService.GetByUserID(userID);
         }
 
         // GET: api/Orders/5

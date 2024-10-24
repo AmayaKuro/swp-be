@@ -36,6 +36,18 @@ namespace swp_be.Services
             orderRepository = new OrderRepository(_context);
         }
 
+        public Order GetByID(int id)
+        {
+            return orderRepository.GetById(id);
+        }
+
+        public List<Order> GetByUserID(int id)
+        {
+            return orderRepository.GetOrdersByUserID(id);
+        }
+
+
+
         // Go to upper comment to understand flow 
         // Create standalone CreateOrder if you like
         public Order CreateOrder(int customerID, OrderType orderType, int promotionID = 0)
@@ -143,16 +155,6 @@ namespace swp_be.Services
             return promotion != null;
         }
 
-        public Order GetByID(int id)
-        {
-            return orderRepository.GetById(id);
-        }
-
-        public List<Order> GetAll()
-        {
-            return orderRepository.GetAll();
-        }
-
         public void FinishOrder(int id)
         {
             Order order = orderRepository.GetOrderByID(id);
@@ -180,7 +182,7 @@ namespace swp_be.Services
                 else if (detail.Type == OrderDetailType.ConsignmentKoi)
                 {
                     ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
-                    
+
                     consignmentKoi.Consignment.Status = ConsignmentStatus.finished;
 
                     consignmentKoiRepository.Update(consignmentKoi);
