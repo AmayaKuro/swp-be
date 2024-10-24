@@ -35,7 +35,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi/5
-        [Authorize("admin")]
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<Koi>> GetKoi(int id)
         {
@@ -52,7 +52,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Koi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutKoi(int id, Koi koi)
         {
@@ -84,7 +84,7 @@ namespace swp_be.Controllers
 
         // POST: api/Koi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpPost]
         public async Task<ActionResult<Koi>> PostKoi(Koi koi)
         {
@@ -94,7 +94,7 @@ namespace swp_be.Controllers
         }
 
         // DELETE: api/Koi/5
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKoi(int id)
         {
@@ -108,7 +108,7 @@ namespace swp_be.Controllers
 
             return NoContent();
         }
-       
+        
         [HttpGet("sorted")]
         public async Task<ActionResult<IEnumerable<Koi>>> GetSortedKois()
         {

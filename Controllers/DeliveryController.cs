@@ -37,7 +37,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi/5
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Delivery>> GetDelivery(int id)
         {
@@ -50,7 +50,7 @@ namespace swp_be.Controllers
 
             return delivery;
         }
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDeliver(int id, Delivery delivery)
         {
@@ -82,31 +82,26 @@ namespace swp_be.Controllers
 
         // POST: api/Koi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpPost]
         public async Task<IActionResult> CreateDelivery(
         [FromQuery] int orderId,
         [FromQuery] int customerId,
-        [FromQuery] string status,
         [FromQuery] DateTime startDeliDay,
         [FromQuery] DateTime? endDeliDay = null)
         {
-            if (string.IsNullOrWhiteSpace(status) || status.Length > 50)
-            {
-                return BadRequest("Invalid status.");
-            }
+        
 
             var delivery = new Delivery
             {
                 OrderID = orderId,
                 CustomerID = customerId,
-                Status = status,
+                Status = "Pending",
                 StartDeliDay = startDeliDay,
                 EndDeliDay = endDeliDay
             };
 
             _context.Deliveries.Add(delivery);
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -120,7 +115,7 @@ namespace swp_be.Controllers
         }
 
         // DELETE: api/Koi/5
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKoi(int id)
         {

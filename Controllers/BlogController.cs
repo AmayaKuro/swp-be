@@ -32,7 +32,7 @@ namespace swp_be.Controllers
             return Ok(blogs);
         }
 
-
+        [Authorize("staff, admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Blog>> GetBlog(int id)
         {
@@ -45,6 +45,7 @@ namespace swp_be.Controllers
 
             return blog;
         }
+        [Authorize("staff, admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBlog(int id, Blog blog)
         {
@@ -88,7 +89,7 @@ namespace swp_be.Controllers
 
             return Ok(blog);
         }
-
+        [Authorize("staff, admin")]
         [HttpPost]
         public async Task<IActionResult> CreateBlog(
     [FromQuery] string title,
@@ -148,7 +149,7 @@ namespace swp_be.Controllers
         }
 
         // DELETE: api/Koi/5
-
+        [Authorize("staff, admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBlog(int id)
         {
