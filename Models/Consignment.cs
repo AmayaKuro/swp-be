@@ -32,6 +32,6 @@ namespace swp_be.Models
         public ConsigmentStatus Status { get; set; }
         public Customer Customer { get; set; }
         public ICollection<FosterBatch> FosterBatches { get; set; }
-        public ICollection<ConsignmentKoi> FosterKois { get; set; }
+        public ICollection<ConsignmentKoi> ConsignmentKois { get; set; }
     }
 }

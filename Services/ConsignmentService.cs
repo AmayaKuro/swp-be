@@ -2,6 +2,8 @@
 using swp_be.Data;
 using Microsoft.EntityFrameworkCore;
 using swp_be.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace swp_be.Services
 {
@@ -18,40 +20,18 @@ namespace swp_be.Services
         }
         public async Task<List<Consignment>> GetConsignment()
         {
-            return await _context.Consignments
-                         .Include(c => c.Customer)          // Include the Customer entity
-                         .ThenInclude(c => c.User)          // Include the User entity from the Customer
-                         .ToListAsync();
+            return await consignmentRepository.GetConsignment();
             ;
-
         }
         public async Task<Consignment> GetById(int id)
         {
-            return await _context.Consignments
-                .Include(c => c.Customer)      // Include related Customer
-                .ThenInclude(c => c.User)      // Include related User from Customer
-                .FirstOrDefaultAsync(c => c.ConsignmentID == id);  // Query by ID
+            return await consignmentRepository.GetById(id);  // Query by ID
         }
-
-        public async Task<Consignment> UpdateBlog(Consignment  consignment)
+        public async Task<bool> DeleteConsignment(Consignment consignment)
         {
-            var existingConsigntment = await _context.Consignments.FindAsync(consignment.ConsignmentID); // Find the existing blog by ID
-            if (existingConsigntment == null)
-            {
-                return null; // Return null if the blog does not exist
-            }
-
+            return await consignmentRepository.DeleteConsignment(consignment);
+        }
       
-       
-            return existingConsigntment;
-        }
-        public async Task<Consignment> DeleteConsignment(Consignment consignment)
-        {
-            unitOfWork.ConsignmentRepository.Remove(consignment);
-            unitOfWork.Save();
-
-            return consignment;
-        }
         public async Task<List<Consignment>> SearchConsignments(
            int? customerID = null,
            ConsignmentType? type = null,

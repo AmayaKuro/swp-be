@@ -62,10 +62,10 @@ namespace swp_be.Controllers
             consignment.Type = type;
             consignment.FosterPrice = fosterPrice;
             consignment.Status = status;
-            if (consignment.Status != ConsigmentStatus.pending)
-            {
-                string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
-            }
+            //if (consignment.Status != ConsigmentStatus.pending)
+            //{
+            //    string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            //}
             // Save changes
             try
             {
@@ -217,15 +217,18 @@ namespace swp_be.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConsignment(int id)
         {
-            var consignment = await _context.Consignments.FindAsync(id);
+            var consignment = await consignmentService.GetById(id);
             if (consignment == null)
             {
                 return NotFound();
             }
 
-            await consignmentService.DeleteConsignment(consignment);
-
-            return NoContent();
+            var success = await consignmentService.DeleteConsignment(consignment);
+            if (success)
+            {
+                return Ok(consignment);
+            }
+            return BadRequest("Failed to delete the consignment.");
         }
         [HttpGet("search")]
         public async Task<IActionResult> SearchConsignments(
