@@ -153,7 +153,7 @@ namespace swp_be.Controllers
                 return BadRequest(ex.Message);
             }
 
-            return BadRequest("Something in the end not found! :<");
+            return BadRequest();
             //HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var ip);
             /*string paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
 

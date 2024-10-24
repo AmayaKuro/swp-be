@@ -82,6 +82,7 @@ builder.Services.AddAuthorizationBuilder().AddPolicy("staff", policy => policy.R
 builder.Services.AddAuthorizationBuilder().AddPolicy("admin", policy => policy.RequireRole("Admin"));
 builder.Services.AddAuthorizationBuilder().AddPolicy("customer", policy => policy.RequireRole("Customer"));
 builder.Services.AddAuthorizationBuilder().AddPolicy("all", policy => policy.RequireRole("Staff", "Admin", "Customer"));
+builder.Services.AddAuthorizationBuilder().AddPolicy("staff, admin", policy => policy.RequireRole("Staff", "Admin"));
 
 builder.Services.AddScoped<BatchService>();
 builder.Services.AddScoped<FeedbackService>();
