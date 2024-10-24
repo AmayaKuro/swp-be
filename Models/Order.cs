@@ -51,7 +51,7 @@ namespace swp_be.Models
         public DateTime? UpdateAt { get; set; }
 
         [Required]
-        public decimal TotalAmount { get; set; }
+        public long TotalAmount { get; set; }
 
         [Required]
         public OrderType Type { get; set; }

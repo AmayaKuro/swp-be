@@ -8,7 +8,7 @@ namespace swp_be.Models
     {
         Koi,
         Batch,
-        Food,
+        ConsignmentKoi,
     }
     public class OrderDetail
     {
@@ -16,6 +16,8 @@ namespace swp_be.Models
         public int OrderDetailID { get; set; }
 
         public int? KoiID { get; set; }
+
+        public int? ConsignmentKoiID { get; set; }
 
         public int? BatchID { get; set; }
 
@@ -25,12 +27,13 @@ namespace swp_be.Models
         public OrderDetailType Type { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public long Price { get; set; }
 
         [Required]
         public int OrderID { get; set; }
 
         public Koi? Koi { get; set; }
+        public ConsignmentKoi? ConsignmentKoi { get; set; }
         public Batch? Batch { get; set; }
         public Order Order { get; set; }
     }

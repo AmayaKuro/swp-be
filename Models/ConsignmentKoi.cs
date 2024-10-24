@@ -7,7 +7,7 @@ namespace swp_be.Models
     public class ConsignmentKoi
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int FosterKoiID { get; set; }
+        public int ConsignmentKoiID { get; set; }
 
         [MaxLength(255)]
         public string? Name { get; set; }
@@ -39,13 +39,16 @@ namespace swp_be.Models
         public string Species { get; set; }
         //Khac koi tu day
 
-        public decimal Price { get; set; } = 0;
+        public long Price { get; set; } = 0;
 
         [Required]
         public int FosteringDays { get; set; }
 
         [Required]
         public int ConsignmentID { get; set; }
+
+        // Image URL
+        public string? Image { get; set; }
 
         public string? AddOn { get; set; }
 

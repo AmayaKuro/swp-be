@@ -13,33 +13,33 @@ namespace swp_be.Controllers
     public class ConsignmentKoiController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        private readonly ConsignmentKoiService fosterKoiService;
+        private readonly ConsignmentKoiService ConsignmentKoiservice;
 
         public ConsignmentKoiController(ApplicationDBContext context)
         {
             this._context = context;
-            this.fosterKoiService = new ConsignmentKoiService(context);
+            this.ConsignmentKoiservice = new ConsignmentKoiService(context);
         }
 
         // GET: api/Koi
         [HttpGet]
         public async Task<ActionResult<Koi>> GetFosterKoi()
         {
-            return Ok(await fosterKoiService.GetFosterKois());
+            return Ok(await ConsignmentKoiservice.GetConsignmentKois());
         }
 
         // GET: api/Koi/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ConsignmentKoi>> GetFosterKoi(int id)
         {
-            var fosterKoi = await _context.FosterKois.FindAsync(id);
+            var consignmentKoi = await _context.ConsignmentKois.FindAsync(id);
 
-            if (fosterKoi == null)
+            if (consignmentKoi == null)
             {
                 return NotFound();
             }
 
-            return fosterKoi;
+            return consignmentKoi;
         }
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<ConsignmentKoi>>> Search(
@@ -50,7 +50,7 @@ namespace swp_be.Controllers
             )
 
         {
-            var query = _context.FosterKois.AsQueryable();
+            var query = _context.ConsignmentKois.AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -75,32 +75,32 @@ namespace swp_be.Controllers
             var results = await query.ToListAsync();
             return Ok(results);
         }
-    
 
-    // PUT: api/Koi/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut]
+
+        // PUT: api/Koi/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut]
         public async Task<IActionResult> UpdateFosterKoi(
-    [FromQuery] int id,
-    [FromQuery] string? name,
-    [FromQuery] string? gender,
-    [FromQuery] int? age,
-    [FromQuery] string? size,
-    [FromQuery] string? color,
-    [FromQuery] string? dailyFeedAmount,
-    [FromQuery] string? personality,
-    [FromQuery] string? origin,
-    [FromQuery] string? selectionRate,
-    [FromQuery] string? species,
-    [FromQuery] decimal? price,
-    [FromQuery] int? fosteringDays,
-    [FromQuery] int? consignmentId)
+        [FromQuery] int id,
+        [FromQuery] string? name,
+        [FromQuery] string? gender,
+        [FromQuery] int? age,
+        [FromQuery] string? size,
+        [FromQuery] string? color,
+        [FromQuery] string? dailyFeedAmount,
+        [FromQuery] string? personality,
+        [FromQuery] string? origin,
+        [FromQuery] string? selectionRate,
+        [FromQuery] string? species,
+        [FromQuery] long? price,
+        [FromQuery] int? fosteringDays,
+        [FromQuery] int? consignmentId)
         {
             // Find the foster koi, ensuring you await the result
-            var fosterKoi = await _context.FosterKois.FindAsync(id);
+            var consignmentKoi = await _context.ConsignmentKois.FindAsync(id);
 
             // Check if foster koi exists
-            if (fosterKoi == null)
+            if (consignmentKoi == null)
             {
                 return NotFound();
             }
@@ -118,24 +118,24 @@ namespace swp_be.Controllers
             }
 
             // Update foster koi properties only if they are provided
-            if (name != null) fosterKoi.Name = name;
-            if (gender != null) fosterKoi.Gender = gender;
-            if (age.HasValue) fosterKoi.Age = age.Value;
-            if (size != null) fosterKoi.Size = size;
-            if (color != null) fosterKoi.Color = color;
-            if (dailyFeedAmount != null) fosterKoi.DailyFeedAmount = dailyFeedAmount;
-            if (personality != null) fosterKoi.Personality = personality;
-            if (origin != null) fosterKoi.Origin = origin;
-            if (selectionRate != null) fosterKoi.SelectionRate = selectionRate;
-            if (species != null) fosterKoi.Species = species;
-            if (price.HasValue) fosterKoi.Price = price.Value;
-            if (fosteringDays.HasValue) fosterKoi.FosteringDays = fosteringDays.Value;
-            if (consignmentId.HasValue) fosterKoi.ConsignmentID = consignmentId.Value;
+            if (name != null) consignmentKoi.Name = name;
+            if (gender != null) consignmentKoi.Gender = gender;
+            if (age.HasValue) consignmentKoi.Age = age.Value;
+            if (size != null) consignmentKoi.Size = size;
+            if (color != null) consignmentKoi.Color = color;
+            if (dailyFeedAmount != null) consignmentKoi.DailyFeedAmount = dailyFeedAmount;
+            if (personality != null) consignmentKoi.Personality = personality;
+            if (origin != null) consignmentKoi.Origin = origin;
+            if (selectionRate != null) consignmentKoi.SelectionRate = selectionRate;
+            if (species != null) consignmentKoi.Species = species;
+            if (price.HasValue) consignmentKoi.Price = price.Value;
+            if (fosteringDays.HasValue) consignmentKoi.FosteringDays = fosteringDays.Value;
+            if (consignmentId.HasValue) consignmentKoi.ConsignmentID = consignmentId.Value;
 
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
-            return Ok(fosterKoi);
+            return Ok(consignmentKoi);
         }
 
 
@@ -154,7 +154,7 @@ namespace swp_be.Controllers
           [FromQuery] string? origin,
           [FromQuery] string? selectionRate,
           [FromQuery] string species,
-          [FromQuery] decimal pricePerDay,
+          [FromQuery] long pricePerDay,
           [FromQuery] int fosteringDays,
           [FromQuery] int consignmentId)
         {
@@ -168,7 +168,7 @@ namespace swp_be.Controllers
                 return BadRequest("Fostering days must be greater than zero.");
             }
 
-            var fosterKoi = new ConsignmentKoi
+            var consignmentKoi = new ConsignmentKoi
             {
                 Name = name,
                 Gender = gender,
@@ -185,12 +185,12 @@ namespace swp_be.Controllers
                 ConsignmentID = consignmentId
             };
 
-            _context.FosterKois.Add(fosterKoi);
+            _context.ConsignmentKois.Add(consignmentKoi);
 
             try
             {
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(CreateFosterKoi), new { id = fosterKoi.FosterKoiID }, fosterKoi);
+                return CreatedAtAction(nameof(CreateFosterKoi), new { id = consignmentKoi.ConsignmentKoiID }, consignmentKoi);
             }
             catch (Exception ex)
             {
@@ -203,20 +203,20 @@ namespace swp_be.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKoi(int id)
         {
-            var koi = await _context.FosterKois.FindAsync(id);
+            var koi = await _context.ConsignmentKois.FindAsync(id);
             if (koi == null)
             {
                 return NotFound();
             }
 
-            await fosterKoiService.DeleteKoi(koi);
+            await ConsignmentKoiservice.DeleteKoi(koi);
 
             return NoContent();
         }
 
         private bool KoiExists(int id)
         {
-            return _context.FosterKois.Any(e => e.FosterKoiID == id);
+            return _context.ConsignmentKois.Any(e => e.ConsignmentKoiID == id);
         }
     }
 }

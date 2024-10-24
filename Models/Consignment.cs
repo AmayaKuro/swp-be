@@ -9,7 +9,7 @@ namespace swp_be.Models
         Sell, //0
         Foster,//1
     }
-    public enum ConsigmentStatus
+    public enum ConsignmentStatus
     {
         available,//Ca van con ban 
         finished,//Da ban hoac het han nuoi ca
@@ -29,8 +29,8 @@ namespace swp_be.Models
         [Required]
         public ConsignmentType Type { get; set; }
         [Required]
-        public decimal FosterPrice { get; set; }
-        public ConsigmentStatus Status { get; set; }
+        public long FosterPrice { get; set; }
+        public ConsignmentStatus Status { get; set; }
         public Customer Customer { get; set; }
         public ICollection<FosterBatch> FosterBatches { get; set; }
         public ICollection<ConsignmentKoi> ConsignmentKois { get; set; }

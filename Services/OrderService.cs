@@ -14,7 +14,7 @@ namespace swp_be.Services
      */
     public class OrderService
     {
-        public decimal TotalAmount { get; private set; }
+        public long TotalAmount { get; private set; }
         public Promotion promotion { get; set; }
         public List<OrderDetail> orderDetails { get; set; } = new List<OrderDetail>();
 
@@ -22,6 +22,7 @@ namespace swp_be.Services
         private readonly ApplicationDBContext _context;
         private BatchRepository batchRepository;
         private KoiRepository koiRepository;
+        private ConsigmentKoiRepository consignmentKoiRepository;
         private GenericRepository<Promotion> promotionRepository;
         private GenericRepository<Order> orderRepository;
 
@@ -30,13 +31,14 @@ namespace swp_be.Services
             _context = context;
             batchRepository = new BatchRepository(_context);
             koiRepository = new KoiRepository(_context);
+            consignmentKoiRepository = new ConsigmentKoiRepository(_context);
             promotionRepository = new GenericRepository<Promotion>(_context);
             orderRepository = new GenericRepository<Order>(_context);
         }
 
         // Go to upper comment to understand flow 
         // Create standalone CreateOrder if you like
-        public Order CreateOrder(int customerID, int promotionID = 0)
+        public Order CreateOrder(int customerID, OrderType orderType, int promotionID = 0)
         {
             // If promotionID present and not exist in db, cancel create
             if (promotionID > 0 && promotionRepository.GetById(promotionID) == null)
@@ -48,6 +50,7 @@ namespace swp_be.Services
 
             order.CreateAt = DateTime.Now;
             order.Status = OrderStatus.Pending;
+            order.Type = orderType;
             order.TotalAmount = TotalAmount;
             order.CustomerID = customerID;
             order.StaffID = 7; // This is for testing purpose
@@ -64,7 +67,8 @@ namespace swp_be.Services
         // Add order details from a list of:
         // - batchs (syntax:[ [batchID, quantity] ])
         // - kois (id[])
-        public List<OrderDetail> AddOrderDetails(List<int[]> batchs, int[] kois)
+        // - consignmentKois (id[])
+        public List<OrderDetail> AddOrderDetails(List<int[]> batchs, int[] kois, int[] consignmentKois)
         {
             foreach (var item in batchs)
             {
@@ -109,13 +113,94 @@ namespace swp_be.Services
                 orderDetails.Add(detail);
             }
 
+            foreach (var consignmentKoiID in kois)
+            {
+                ConsignmentKoi consignmentKoiInfo = consignmentKoiRepository.GetById(consignmentKoiID);
+
+                if (consignmentKoiInfo == null)
+                {
+                    return null;
+                }
+
+                OrderDetail detail = new OrderDetail();
+
+                detail.ConsignmentKoi = consignmentKoiInfo;
+                detail.Type = OrderDetailType.Koi;
+                detail.Price = consignmentKoiInfo.Price;
+
+                // Add money to total
+                TotalAmount += detail.Price;
+
+                orderDetails.Add(detail);
+            }
+
             return orderDetails;
         }
 
         public bool ApplyPromotion(int promotionID)
         {
-            promotion= promotionRepository.GetById(promotionID);
+            promotion = promotionRepository.GetById(promotionID);
             return promotion != null;
+        }
+
+        public Order GetByID(int id)
+        {
+            return orderRepository.GetById(id);
+        }
+
+        public List<Order> GetAll()
+        {
+            return orderRepository.GetAll();
+        }
+
+        public void FinishOrder(Order order)
+        {
+            if (order == null)
+            {
+                return;
+            }
+
+            order.Status = OrderStatus.Completed;
+            order.UpdateAt = DateTime.Now;
+
+            foreach (var detail in order.OrderDetails)
+            {
+                if (detail.Type == OrderDetailType.Batch)
+                {
+                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
+
+                    batch.Quantity -= detail.Quantity.Value;
+
+                    batchRepository.Update(batch);
+                }
+                else if (detail.Type == OrderDetailType.ConsignmentKoi)
+                {
+                    ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
+                    
+                    consignmentKoi.Consignment.Status = ConsignmentStatus.finished;
+
+                    consignmentKoiRepository.Update(consignmentKoi);
+                }
+            }
+
+            orderRepository.Update(order);
+            orderRepository.Save();
+        }
+
+        public void CancelOrder(int id)
+        {
+            Order order = orderRepository.GetById(id);
+
+            if (order == null)
+            {
+                return;
+            }
+
+            order.Status = OrderStatus.Cancelled;
+            order.UpdateAt = DateTime.Now;
+
+            orderRepository.Update(order);
+            orderRepository.Save();
         }
     }
 }
