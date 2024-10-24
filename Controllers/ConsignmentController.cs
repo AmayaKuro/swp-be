@@ -29,6 +29,7 @@ namespace swp_be.Controllers
             var consignments = await consignmentService.GetConsignment();
             return Ok(consignments);
         }
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<Consignment>> GetConsignment(int id)
         {
@@ -41,6 +42,7 @@ namespace swp_be.Controllers
 
             return consignment;
         }
+        [Authorize("staff, admin")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateConsignment(
               [FromQuery] int consignmentID,
@@ -78,7 +80,7 @@ namespace swp_be.Controllers
 
             return Ok(new { message = "Consignment updated successfully" });
         }
-        [Authorize("Staff")]
+        [Authorize("staff, admin")]
         [Route("create")]
         [HttpPost]
         public async Task<IActionResult> CreateConsignment(
@@ -148,6 +150,7 @@ namespace swp_be.Controllers
             string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment,HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             return Ok(new { paymentUrl });
         }
+       
         [Route("pending")]
         [HttpPost]
         public async Task<IActionResult> NegotiatingConsignment(
@@ -216,6 +219,7 @@ namespace swp_be.Controllers
             return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
 
         }
+        [Authorize("staff, admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConsignment(int id)
         {

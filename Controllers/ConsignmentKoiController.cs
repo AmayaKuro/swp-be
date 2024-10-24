@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using swp_be.Data;
@@ -29,6 +30,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi/5
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<ConsignmentKoi>> GetFosterKoi(int id)
         {
@@ -79,6 +81,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Koi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("staff, admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateFosterKoi(
         [FromQuery] int id,
@@ -142,6 +145,7 @@ namespace swp_be.Controllers
 
         // POST: api/Koi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("staff, admin")]
         [HttpPost("CreateFosterKoi")]
         public async Task<IActionResult> CreateFosterKoi(
           [FromQuery] string? name,
@@ -200,6 +204,7 @@ namespace swp_be.Controllers
         }
 
         // DELETE: api/Koi/5
+        [Authorize("staff, admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKoi(int id)
         {
