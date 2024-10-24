@@ -86,22 +86,16 @@ namespace swp_be.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize("staff, admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateDelivery(
-        [FromQuery] int orderId,
-        [FromQuery] int customerId,
-        [FromQuery] DateTime startDeliDay,
-        [FromQuery] DateTime? endDeliDay = null)
+        public async Task<IActionResult> CreateDelivery(DeliveryRequest deliveryRequest)
         {
-        
+            Delivery delivery = new Delivery();
+            
 
-            var delivery = new Delivery
-            {
-                OrderID = orderId,
-                CustomerID = customerId,
-                Status = "Pending",
-                StartDeliDay = startDeliDay,
-                EndDeliDay = endDeliDay
-            };
+            delivery.StartDeliDay = deliveryRequest.StartDeliDay ?? delivery.StartDeliDay;
+            delivery.EndDeliDay = deliveryRequest.EndDeliDay ?? delivery.EndDeliDay;
+            delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
+            delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
+            delivery.Status = deliveryRequest.Status ?? delivery.Status;
 
             _context.Deliveries.Add(delivery);
             try
