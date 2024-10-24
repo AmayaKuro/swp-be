@@ -30,21 +30,6 @@ namespace swp_be.Data.Repositories
                 .Include(c => c.ConsignmentKois)               // Include related ConsignmentKois
                 .FirstOrDefaultAsync(c => c.ConsignmentID == id);  // Query by ID
         }
-        public async Task<bool> DeleteConsignment(Consignment consignment)
-        {
-            var transactions = await _context.Transactions
-                                .Where(t => t.ConsignmentID == consignment.ConsignmentID)
-                                .ToListAsync();
-
-            foreach (var transaction in transactions)
-            {
-                transactionRepository.Remove(transaction);
-            }
-
-            unitOfWork.ConsignmentRepository.Remove(consignment);
-            unitOfWork.Save();
-
-            return true; // Return a boolean indicating success
-        }
+       
     }
 }

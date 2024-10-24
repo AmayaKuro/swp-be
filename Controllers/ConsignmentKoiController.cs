@@ -10,12 +10,12 @@ namespace swp_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FosterKoiController : ControllerBase
+    public class ConsignmentKoiController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
         private readonly ConsignmentKoiService fosterKoiService;
 
-        public FosterKoiController(ApplicationDBContext context)
+        public ConsignmentKoiController(ApplicationDBContext context)
         {
             this._context = context;
             this.fosterKoiService = new ConsignmentKoiService(context);

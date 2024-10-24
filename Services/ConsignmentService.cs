@@ -29,9 +29,11 @@ namespace swp_be.Services
         }
         public async Task<bool> DeleteConsignment(Consignment consignment)
         {
-            return await consignmentRepository.DeleteConsignment(consignment);
+            _context.Consignments.Remove(consignment);
+            _context.SaveChanges();
+            return true; // Return a boolean indicating success
         }
-      
+
         public async Task<List<Consignment>> SearchConsignments(
            int? customerID = null,
            ConsignmentType? type = null,

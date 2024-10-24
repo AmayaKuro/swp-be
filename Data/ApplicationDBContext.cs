@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using swp_be.Models;
+using System.Xml.Linq;
 using YourNamespace.Models;
 
 namespace swp_be.Data
@@ -40,6 +41,15 @@ namespace swp_be.Data
                 .HasOne(customer => customer.User)
                 .WithOne()
                 .HasForeignKey<Customer>(customer => customer.UserID);
+            modelBuilder.Entity<Transaction>()
+                .HasOne(transaction => transaction.Order)
+                .WithMany(order => order.Transactions)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOne(transaction => transaction.Consignment)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

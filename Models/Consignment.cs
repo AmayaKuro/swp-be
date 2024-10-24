@@ -14,7 +14,8 @@ namespace swp_be.Models
         available,//Ca van con ban 
         finished,//Da ban hoac het han nuoi ca
         raising,//Ca dang nuoi
-        pending,//Dang cho xac nhan
+        pending,//Dang cho thanh toan
+        negotiate//Da cho thuong luong
     }
 
     public class Consignment

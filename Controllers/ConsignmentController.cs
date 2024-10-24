@@ -79,7 +79,8 @@ namespace swp_be.Controllers
             return Ok(new { message = "Consignment updated successfully" });
         }
         [Authorize("Staff")]
-        [HttpPost("create")]
+        [Route("create")]
+        [HttpPost]
         public async Task<IActionResult> CreateConsignment(
             [FromQuery] int customerID,
             [FromQuery] ConsignmentType type,
@@ -90,21 +91,21 @@ namespace swp_be.Controllers
             [FromQuery] string? size,
             [FromQuery] string? color,
             [FromQuery] string? dailyFeedAmount,
-            [FromQuery] string? personality,
-            [FromQuery] string? origin,
-            [FromQuery] string? selectionRate,
-            [FromQuery] string species,
-            [FromQuery] decimal pricePerDay,
-            [FromQuery] int fosteringDays
-            )
-        {
-            // Create a new consignment object
-            var newConsignment = new Consignment
+                [FromQuery] string? personality,
+                [FromQuery] string? origin,
+                [FromQuery] string? selectionRate,
+                [FromQuery] string species,
+                [FromQuery] decimal pricePerDay,
+                [FromQuery] int fosteringDays
+                )
             {
-                CustomerID = customerID,
+                // Create a new consignment object
+                var newConsignment = new Consignment
+                {
+                    CustomerID = customerID,
                 Type = type,
                 FosterPrice = fosteringDays * pricePerDay,
-                Status = ConsigmentStatus.pending // Ensure this is correctly spelled
+                Status = status // Ensure this is correctly spelled
             };
             // Create a new ConsignmentKoi object
             var fosterKoi = new ConsignmentKoi
@@ -147,20 +148,21 @@ namespace swp_be.Controllers
             string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment,HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             return Ok(new { paymentUrl });
         }
-        [HttpPost("Pending")]
-        public async Task<IActionResult> PendingConsignment(
-    [FromQuery] ConsignmentType type,
-    [FromQuery] string? name,
-    [FromQuery] string? gender,
-    [FromQuery] int? age,
-    [FromQuery] string? size,
-    [FromQuery] string? color,
-    [FromQuery] string? dailyFeedAmount,
-    [FromQuery] string? personality,
-    [FromQuery] string? origin,
-    [FromQuery] string? selectionRate,
-    [FromQuery] string species,
-    [FromQuery] int fosteringDays)
+        [Route("pending")]
+        [HttpPost]
+        public async Task<IActionResult> NegotiatingConsignment(
+        [FromQuery] ConsignmentType type,
+        [FromQuery] string? name,
+        [FromQuery] string? gender,
+        [FromQuery] int? age,
+        [FromQuery] string? size,
+        [FromQuery] string? color,
+        [FromQuery] string? dailyFeedAmount,
+        [FromQuery] string? personality,
+        [FromQuery] string? origin,
+        [FromQuery] string? selectionRate,
+        [FromQuery] string species,
+        [FromQuery] int fosteringDays)
         {
             // Retrieve the customer ID from the user's claims
             int customerID = int.Parse(User.FindFirstValue("userID"));
@@ -170,7 +172,7 @@ namespace swp_be.Controllers
             {
                 CustomerID = customerID,
                 Type = type,
-                Status = ConsigmentStatus.pending // Ensure this is correctly spelled
+                Status = ConsigmentStatus.negotiate // Ensure this is correctly spelled
             };
 
             // Create a new ConsignmentKoi object
@@ -186,7 +188,7 @@ namespace swp_be.Controllers
                 Origin = origin,
                 SelectionRate = selectionRate,
                 Species = species,
-                
+                //Price=null
                 FosteringDays = fosteringDays,
                 ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
             };
