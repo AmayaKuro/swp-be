@@ -35,7 +35,7 @@ namespace swp_be.Models
         public string? DailyFeedAmount { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public long Price { get; set; }
 
         [MaxLength(255)]
         public string? Personality { get; set; }
@@ -48,7 +48,10 @@ namespace swp_be.Models
 
         [Required, MaxLength(255)]
         public string Species { get; set; }
-        //Khac FosterKoi tu day
+        
+        // Image URL
+        public string? Image { get; set; }
+
         [MaxLength(255)]
         public string? AddOn { get; set; }
     }

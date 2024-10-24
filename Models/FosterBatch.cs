@@ -20,7 +20,7 @@ namespace swp_be.Models
 
         public string? Species { get; set; }
 
-        public decimal PricePerDay { get; set; } = 0;
+        public long PricePerDay { get; set; } = 0;
 
         [Required]
         public int FosteringDays { get; set; } // Amount of days the batch is fostered

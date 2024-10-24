@@ -14,7 +14,7 @@ namespace swp_be.Services
             this.unitOfWork = new UnitOfWork(_context);
         }
 
-        public async Task<IEnumerable<ConsignmentKoi>> GetFosterKois()
+        public async Task<IEnumerable<ConsignmentKoi>> GetConsignmentKois()
         {
             return await unitOfWork.FosterKoiRepository.GetAllAsync();
         }

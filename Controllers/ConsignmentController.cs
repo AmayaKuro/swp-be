@@ -48,8 +48,8 @@ namespace swp_be.Controllers
               [FromQuery] int consignmentID,
               [FromQuery] int customerID,
               [FromQuery] ConsignmentType type,
-              [FromQuery] decimal fosterPrice,
-              [FromQuery] ConsigmentStatus status)
+              [FromQuery] long fosterPrice,
+              [FromQuery] ConsignmentStatus status)
         {
             // Find the consignment by ID
             var consignment = await _context.Consignments.FindAsync(consignmentID);
@@ -64,7 +64,7 @@ namespace swp_be.Controllers
             consignment.Type = type;
             consignment.FosterPrice = fosterPrice;
             consignment.Status = status;
-            //if (consignment.Status != ConsigmentStatus.pending)
+            //if (consignment.Status != ConsignmentStatus.pending)
             //{
             //    string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             //}
@@ -86,7 +86,7 @@ namespace swp_be.Controllers
         public async Task<IActionResult> CreateConsignment(
             [FromQuery] int customerID,
             [FromQuery] ConsignmentType type,
-            [FromQuery] ConsigmentStatus status,
+            [FromQuery] ConsignmentStatus status,
             [FromQuery] string? name,
             [FromQuery] string? gender,
             [FromQuery] int? age,
@@ -97,7 +97,7 @@ namespace swp_be.Controllers
                 [FromQuery] string? origin,
                 [FromQuery] string? selectionRate,
                 [FromQuery] string species,
-                [FromQuery] decimal pricePerDay,
+                [FromQuery] long pricePerDay,
                 [FromQuery] int fosteringDays
                 )
             {
@@ -139,7 +139,7 @@ namespace swp_be.Controllers
                 fosterKoi.ConsignmentID = newConsignment.ConsignmentID;
 
                 // Add the Koi after the consignment is saved
-                _context.FosterKois.Add(fosterKoi);
+                _context.ConsignmentKois.Add(fosterKoi);
                 await _context.SaveChangesAsync(); // Save the Koi as well
             }
             catch (DbUpdateException ex)
@@ -175,7 +175,7 @@ namespace swp_be.Controllers
             {
                 CustomerID = customerID,
                 Type = type,
-                Status = ConsigmentStatus.negotiate // Ensure this is correctly spelled
+                Status = ConsignmentStatus.negotiate // Ensure this is correctly spelled
             };
 
             // Create a new ConsignmentKoi object
@@ -208,7 +208,7 @@ namespace swp_be.Controllers
                 fosterKoi.ConsignmentID = newConsignment.ConsignmentID;
 
                 // Add the Koi after the consignment is saved
-                _context.FosterKois.Add(fosterKoi);
+                _context.ConsignmentKois.Add(fosterKoi);
                 await _context.SaveChangesAsync(); // Save the Koi as well
             }
             catch (DbUpdateException ex)
@@ -240,7 +240,7 @@ namespace swp_be.Controllers
         public async Task<IActionResult> SearchConsignments(
            [FromQuery] int? customerID = null,
            [FromQuery] ConsignmentType? type = null,
-           [FromQuery] ConsigmentStatus? status = null,
+           [FromQuery] ConsignmentStatus? status = null,
            [FromQuery] decimal? minFosterPrice = null,
            [FromQuery] decimal? maxFosterPrice = null)
         {

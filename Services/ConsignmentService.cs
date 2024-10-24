@@ -37,7 +37,7 @@ namespace swp_be.Services
         public async Task<List<Consignment>> SearchConsignments(
            int? customerID = null,
            ConsignmentType? type = null,
-           ConsigmentStatus? status = null,
+           ConsignmentStatus? status = null,
            decimal? minFosterPrice = null,
            decimal? maxFosterPrice = null)
         {

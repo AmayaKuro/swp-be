@@ -11,11 +11,15 @@ namespace swp_be.Services
     {
         private readonly ApplicationDBContext _context;
         private TransactionRepository transactionRepository;
+        private DeliveryService deliveryService;
+        private OrderService orderService;
 
         public TransactionService(ApplicationDBContext context)
         {
             _context = context;
             transactionRepository = new TransactionRepository(context);
+            deliveryService = new DeliveryService(context);
+            orderService = new OrderService(context);
         }
 
         /// <summary>
@@ -51,7 +55,7 @@ namespace swp_be.Services
             // Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự
             // tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần
             // nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
-            vnpay.AddRequestData("vnp_Amount", ((int)(order.TotalAmount * 100)).ToString());
+            vnpay.AddRequestData("vnp_Amount", ((long)(order.TotalAmount * 100)).ToString());
             // Mã ngân hàng thanh toán. Ví dụ: VNPAYQR, VNBANK, INTCARD
             //if (bankcode_Vnpayqr.Checked == true)
             //{
@@ -83,7 +87,7 @@ namespace swp_be.Services
             return url;
         }
 
-        public string CreateVNPayTransaction(Order order, string clientIPAddr, decimal depositAmount)
+        public string CreateVNPayTransaction(Order order, string clientIPAddr, long depositAmount)
         {
 
             Transaction transaction = new Transaction
@@ -133,7 +137,7 @@ namespace swp_be.Services
         {
             Transaction transaction = new Transaction();
 
-            transaction.ConsignmentID  = consignment.ConsignmentID;
+            transaction.ConsignmentID = consignment.ConsignmentID;
             transaction.Amount = consignment.FosterPrice;
             transaction.CreateAt = DateTime.Now;
             transaction.Type = TransactionType.Consignment;
@@ -159,7 +163,7 @@ namespace swp_be.Services
             // Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự
             // tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần
             // nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
-            vnpay.AddRequestData("vnp_Amount", ((int)(consignment.FosterPrice * 100)).ToString());
+            vnpay.AddRequestData("vnp_Amount", ((long)(consignment.FosterPrice * 100)).ToString());
             // Mã ngân hàng thanh toán. Ví dụ: VNPAYQR, VNBANK, INTCARD
             //if (bankcode_Vnpayqr.Checked == true)
             //{
@@ -190,6 +194,7 @@ namespace swp_be.Services
 
             return url;
         }
+
         public Transaction GetTransactionByID(int id)
         {
             return transactionRepository.GetById(id);
@@ -210,19 +215,46 @@ namespace swp_be.Services
 
             transaction.Token = token;
 
-            Order order = transaction.Order;
+            // Update order status
 
-            // Full payment for online order
-            // Deposit payment for offline order
-            if (transactionStatus == TransactionStatus.Completed && order.Type == OrderType.Online)
+            // If success
+            if (transactionStatus == TransactionStatus.Completed)
             {
-                order.Status = OrderStatus.Completed;
+                // Update order status
+                if (transaction.Type == TransactionType.Shopping)
+                {
+                    Order order = transaction.Order;
+
+                    // Final payment for Online order, auto create delivery
+                    if (order.Type == OrderType.Online)
+                    {
+                        deliveryService.CreateDeliveryFromOrder(order);
+                    }
+                    // Final payment for offline order (cash), order is completed. Optional delivery will be created by staff (CRUD Delivery site)
+                    else if (transaction.PaymentMethod.MethodName == "Cash"
+                        && order.Type == OrderType.Offline)
+                    {
+                        orderService.FinishOrder(order.OrderID);
+                    }
+                }
+
+                // Update consignment status
+                else if (transaction.Type == TransactionType.Consignment)
+                {
+                    Consignment consignment = transaction.Consignment;
+
+                    // If consignment foster fee is paid, set status to available for sell or raising for foster
+                    if (transactionStatus == TransactionStatus.Completed && consignment.Status == ConsignmentStatus.pending)
+                    {
+                        consignment.Status = (consignment.Type == ConsignmentType.Sell)
+                            ? ConsignmentStatus.available
+                            : ConsignmentStatus.raising;
+                    }
+                }
             }
-            else if (transactionStatus == TransactionStatus.Completed
-                && transaction.PaymentMethod.MethodName == "Cash"
-                && order.Type == OrderType.Offline)
+            else if (transactionStatus == TransactionStatus.Cancelled)
             {
-                order.Status = OrderStatus.Completed;
+                transaction.Order.Status = OrderStatus.Cancelled;
             }
 
             transactionRepository.Update(transaction);

@@ -70,7 +70,7 @@ namespace swp_be.Models
         public DateTime? EndAt{ get; set; }
 
         [Required]
-        public decimal Amount { get; set; }
+        public long Amount { get; set; }
 
         [Required, MaxLength(50)]
         public TransactionStatus Status { get; set; }

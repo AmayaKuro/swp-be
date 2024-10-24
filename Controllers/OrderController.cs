@@ -21,6 +21,7 @@ namespace swp_be.Controllers
     public class OrderRequest
     {
         public int[] kois { get; set; } = [];
+        public int[] consignmentKois { get; set; } = [];
         // Syntax: [ [batchID, quantity] ]
         public List<int[]> batchs { get; set; } = [];
         public int promotionID { get; set; } = 0;
@@ -106,14 +107,14 @@ namespace swp_be.Controllers
 
             int userID = int.Parse(User.FindFirstValue("userID"));
 
-            List<OrderDetail> orderDetails = orderService.AddOrderDetails(orderRequest.batchs, orderRequest.kois);
+            List<OrderDetail> orderDetails = orderService.AddOrderDetails(orderRequest.batchs, orderRequest.kois, orderRequest.consignmentKois);
 
             if (orderDetails == null || orderDetails.Count == 0)
             {
                 return BadRequest("orderDetails not found!");
             }
 
-            var order = orderService.CreateOrder(userID, orderRequest.promotionID);
+            var order = orderService.CreateOrder(userID, orderRequest.paymentMethod, orderRequest.promotionID);
 
             // order == null mean data was not complete or wrongly input 
             if (order == null)
@@ -129,7 +130,7 @@ namespace swp_be.Controllers
 
                 if (orderRequest.paymentMethod == OrderType.Offline)
                 {
-                    decimal depositAmount = order.TotalAmount * 0.50M;
+                    long depositAmount = order.TotalAmount / 2;
 
                     paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(), depositAmount);
 
