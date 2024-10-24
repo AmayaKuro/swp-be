@@ -11,12 +11,14 @@ namespace swp_be.Services
         private ApplicationDBContext _context;
         private readonly UnitOfWork unitOfWork;
         private readonly DeliveryRepository _repository;
+        private readonly OrderService orderService;
 
         public DeliveryService(ApplicationDBContext _context)
         {
             this._context = _context;
             this.unitOfWork = new UnitOfWork(_context);
             _repository = new DeliveryRepository(_context);
+            orderService = new OrderService(_context);
         }
 
         public async Task<IEnumerable<Delivery>> GetDeliveries()
@@ -28,11 +30,17 @@ namespace swp_be.Services
         public Delivery GetDeliveryById(int deliveryId)
         {
 
-            return _repository.GetDeliveryById(deliveryId);       
+            return _repository.GetDeliveryById(deliveryId);
         }
 
         public async Task<Delivery> UpdateDelivery(Delivery delivery)
-        {       
+        {
+            if (delivery.Status == "delivered")
+            {
+                // Finish the order when the delivery is completed
+                orderService.FinishOrder(delivery.OrderID);
+            }
+
             unitOfWork.DeliverRepository.Update(delivery);
             unitOfWork.Save();
             return delivery;
@@ -44,6 +52,20 @@ namespace swp_be.Services
             return delivery;
         }
 
-        
+        public Delivery CreateDeliveryFromOrder(Order order)
+        {
+            Delivery delivery = new Delivery
+            {
+                OrderID = order.OrderID,
+                CustomerID = order.CustomerID,
+                Status = "Pending",
+                StartDeliDay = DateTime.Now
+            };
+
+            unitOfWork.DeliverRepository.Create(delivery);
+            unitOfWork.Save();
+            return delivery;
+        }
+
     }
 }

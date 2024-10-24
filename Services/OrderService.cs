@@ -24,7 +24,7 @@ namespace swp_be.Services
         private KoiRepository koiRepository;
         private ConsigmentKoiRepository consignmentKoiRepository;
         private GenericRepository<Promotion> promotionRepository;
-        private GenericRepository<Order> orderRepository;
+        private OrderRepository orderRepository;
 
         public OrderService(ApplicationDBContext context)
         {
@@ -33,7 +33,7 @@ namespace swp_be.Services
             koiRepository = new KoiRepository(_context);
             consignmentKoiRepository = new ConsigmentKoiRepository(_context);
             promotionRepository = new GenericRepository<Promotion>(_context);
-            orderRepository = new GenericRepository<Order>(_context);
+            orderRepository = new OrderRepository(_context);
         }
 
         // Go to upper comment to understand flow 
@@ -153,8 +153,10 @@ namespace swp_be.Services
             return orderRepository.GetAll();
         }
 
-        public void FinishOrder(Order order)
+        public void FinishOrder(int id)
         {
+            Order order = orderRepository.GetOrderByID(id);
+
             if (order == null)
             {
                 return;
@@ -162,6 +164,8 @@ namespace swp_be.Services
 
             order.Status = OrderStatus.Completed;
             order.UpdateAt = DateTime.Now;
+
+
 
             foreach (var detail in order.OrderDetails)
             {

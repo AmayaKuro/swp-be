@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +15,16 @@ using swp_be.Services;
 
 namespace swp_be.Controllers
 {
+    public class DeliveryRequest
+    {
+        public int DeliveryID { get; set; } = 0;
+        public int? OrderID { get; set; }
+        public int? CustomerID { get; set; }
+        public string? Status { get; set; }
+        public DateTime? StartDeliDay { get; set; }
+        public DateTime? EndDeliDay { get; set; }
+    }
+
     [Route("api/koi/[controller]")]
     [ApiController]
     public class DeliveryController : ControllerBase
@@ -52,31 +64,21 @@ namespace swp_be.Controllers
         }
         [Authorize("admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDeliver(int id, Delivery delivery)
+        public async Task<IActionResult> PutDeliver(DeliveryRequest deliveryRequest)
         {
-            if (id != delivery.DeliveryID)
+            Delivery delivery = deliveryService.GetDeliveryById(deliveryRequest.DeliveryID);
+            if (delivery == null)
             {
                 return BadRequest();
             }
 
-            _context.Entry(delivery).State = EntityState.Modified;
+            delivery.StartDeliDay = deliveryRequest.StartDeliDay ?? delivery.StartDeliDay;
+            delivery.EndDeliDay = deliveryRequest.EndDeliDay ?? delivery.EndDeliDay;
+            delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
+            delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
+            delivery.Status = deliveryRequest.Status ?? delivery.Status;
 
-            try
-            {
-                await deliveryService.UpdateDelivery(delivery);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeliverExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await deliveryService.UpdateDelivery(delivery);
             return NoContent();
         }
 

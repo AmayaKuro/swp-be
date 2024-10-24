@@ -220,24 +220,22 @@ namespace swp_be.Services
             // If success
             if (transactionStatus == TransactionStatus.Completed)
             {
+                // Update order status
                 if (transaction.Type == TransactionType.Shopping)
                 {
                     Order order = transaction.Order;
 
-                    // Final payemnt for Online order, auto create delivery
+                    // Final payment for Online order, auto create delivery
                     if (order.Type == OrderType.Online)
                     {
-                        // TODO: Create delivery (also auto update order status to completed when delivery finished in deliveryService)
-                        //deliveryService.CreateDelivery(order);
-
+                        deliveryService.CreateDeliveryFromOrder(order);
                     }
                     // Final payment for offline order (cash), order is completed. Optional delivery will be created by staff (CRUD Delivery site)
                     else if (transaction.PaymentMethod.MethodName == "Cash"
                         && order.Type == OrderType.Offline)
                     {
-                        orderService.FinishOrder(order);
+                        orderService.FinishOrder(order.OrderID);
                     }
-
                 }
 
                 // Update consignment status
@@ -253,6 +251,10 @@ namespace swp_be.Services
                             : ConsignmentStatus.raising;
                     }
                 }
+            }
+            else if (transactionStatus == TransactionStatus.Cancelled)
+            {
+                transaction.Order.Status = OrderStatus.Cancelled;
             }
 
             transactionRepository.Update(transaction);
