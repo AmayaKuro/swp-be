@@ -82,6 +82,53 @@ namespace swp_be.Services
 
             return url;
         }
+
+        public string CreateVNPayTransaction(Order order, string clientIPAddr, decimal depositAmount)
+        {
+
+            Transaction transaction = new Transaction
+            {
+                OrderID = order.OrderID,
+                Amount = depositAmount,
+                CreateAt = DateTime.Now,
+                Type = TransactionType.Shopping,
+                Status = TransactionStatus.Pending,
+                PaymentMethodID = 1
+            };
+
+            transactionRepository.Create(transaction);
+            transactionRepository.Save();
+
+
+            string vnp_Returnurl = Configuration.GetConfiguration()["VNPay:vnp_Returnurl"];
+            string vnp_Url = Configuration.GetConfiguration()["VNPay:vnp_Url"];
+            string vnp_TmnCode = Configuration.GetConfiguration()["VNPay:vnp_TmnCode"];
+            string vnp_HashSecret = Configuration.GetConfiguration()["VNPay:vnp_HashSecret"];
+
+            VnPayLibrary vnpay = new VnPayLibrary();
+
+            vnpay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
+            vnpay.AddRequestData("vnp_Command", "pay");
+            vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
+            vnpay.AddRequestData("vnp_Amount", ((int)(depositAmount * 100)).ToString()); // Số tiền thanh toán
+            vnpay.AddRequestData("vnp_BankCode", "VNBANK");
+
+            vnpay.AddRequestData("vnp_CreateDate", transaction.CreateAt.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CurrCode", "VND");
+            vnpay.AddRequestData("vnp_IpAddr", clientIPAddr);
+
+            vnpay.AddRequestData("vnp_Locale", "vn");
+            vnpay.AddRequestData("vnp_OrderInfo", "Dat coc don hang: " + order.OrderID);
+            vnpay.AddRequestData("vnp_OrderType", "other");
+            vnpay.AddRequestData("vnp_ReturnUrl", vnp_Returnurl);
+            vnpay.AddRequestData("vnp_ExpireDate", DateTime.Now.AddDays(1).ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_TxnRef", transaction.TransactionID.ToString());
+
+            string url = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
+
+            return url;
+        }
+
         public string CreateVNPayTransaction(Consignment consignment, string clientIPAddr)
         {
             Transaction transaction = new Transaction();

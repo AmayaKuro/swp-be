@@ -103,13 +103,14 @@ namespace swp_be.Controllers
         [Route("create")]
         public async Task<ActionResult> CreateOrder(OrderRequest orderRequest)
         {
+
             int userID = int.Parse(User.FindFirstValue("userID"));
 
             List<OrderDetail> orderDetails = orderService.AddOrderDetails(orderRequest.batchs, orderRequest.kois);
 
             if (orderDetails == null || orderDetails.Count == 0)
             {
-                return BadRequest("Item not found!");
+                return BadRequest("orderDetails not found!");
             }
 
             var order = orderService.CreateOrder(userID, orderRequest.promotionID);
@@ -117,15 +118,48 @@ namespace swp_be.Controllers
             // order == null mean data was not complete or wrongly input 
             if (order == null)
             {
-                return BadRequest();
+                return BadRequest("order not found!");
             }
 
+            string paymentUrl;
+
+
+            try
+            {
+
+                if (orderRequest.paymentMethod == OrderType.Offline)
+                {
+                    decimal depositAmount = order.TotalAmount * 0.50M;
+
+                    paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(), depositAmount);
+
+                    Console.WriteLine("VNPAY URL: {0}", paymentUrl);
+
+                    return Ok(new { paymentUrl });
+                }
+                else if (orderRequest.paymentMethod == OrderType.Online)
+                {
+                    paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+
+                    Console.WriteLine("VNPAY URL: {0}", paymentUrl);
+
+                    return Ok(new { paymentUrl });
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return BadRequest("Something in the end not found! :<");
             //HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var ip);
-            string paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            /*string paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
 
             Console.WriteLine("VNPAY URL: {0}", paymentUrl);
 
-            return Ok(new { paymentUrl });
+            return Ok(new { paymentUrl });*/
         }
 
         // DELETE: api/Orders/5
