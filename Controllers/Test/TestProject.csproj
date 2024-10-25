@@ -1,1 +1,7 @@
- 
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- existing content -->
+  <Target Name="RunAllureReport" AfterTargets="Build">
+    <Exec Command="npx allure generate ./allure-results --clean -o ./allure-report" />
+  </Target>
+  <!-- existing content -->
+</Project>

@@ -1,1 +1,7 @@
- 
+{
+  "resultsDir": "./allure-results",
+  "reportDir": "./allure-report",
+  "environmentInfo": {
+    "Environment": "Test"
+  }
+}

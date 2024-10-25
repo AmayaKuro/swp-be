@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "allure-codeceptjs": "^3.0.5",
+    "allure-commandline": "^2.31.0",
     "codeceptjs": "^3.6.7"
   }
 }
