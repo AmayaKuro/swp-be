@@ -1,5 +1,11 @@
 exports.config = {
   tests: './Controllers/Test/*_test.js',
+  plugins: {
+    allure: {
+      enabled: true,
+      require: "allure-codeceptjs",
+    },
+  },
   output: './output',
   helpers: {
     REST: {
