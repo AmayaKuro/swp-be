@@ -86,6 +86,7 @@ namespace swp_be.Services
             user.Role = Role.Customer;
 
             unitOfWork.UserRepository.Create(user);
+            unitOfWork.CustomerRepository.Create(new Customer { User = user });
             unitOfWork.Save();
 
             // Add user to result
@@ -112,7 +113,21 @@ namespace swp_be.Services
 
         public bool UpdateUserProfile(User user)
         {
+            if (user.Role == Role.Staff)
+            {
+                unitOfWork.StaffRepository.Create(new Staff() { User = user });
+            }
             unitOfWork.UserRepository.UpdateProfile(user);
+            unitOfWork.Save();
+
+            return true;
+        }
+
+        public bool UpdatePassWord(User user)
+        {
+            user.Password = BC.HashPassword(user.Password);
+
+            unitOfWork.UserRepository.UpdatePassword(user);
             unitOfWork.Save();
 
             return true;
@@ -129,5 +144,6 @@ namespace swp_be.Services
 
             return true;
         }
+
     }
 }

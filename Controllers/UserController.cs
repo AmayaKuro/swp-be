@@ -120,7 +120,7 @@ namespace swp_be.Controllers
         [HttpGet]
         [Route("profile/all")]
         [Authorize("staff, admin")]
-        public async Task<IActionResult> AllProfile(int id)
+        public async Task<IActionResult> AllProfile()
         {
             List<User> user = userService.GetAllUserProfile();
 
@@ -151,6 +151,24 @@ namespace swp_be.Controllers
             }
 
             userService.UpdateUserProfile(editUser);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("resetpassword")]
+        [Authorize("all")]
+        public async Task<IActionResult> ResetPassword([FromBody] User editUser)
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            // Checkk if admin or same id
+            if (!User.IsInRole("Admin") && userID != editUser.UserID)
+            {
+                return Forbid();
+            }
+
+            userService.UpdatePassWord(editUser);
 
             return Ok();
         }

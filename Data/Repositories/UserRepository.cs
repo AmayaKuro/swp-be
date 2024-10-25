@@ -29,5 +29,14 @@ namespace swp_be.Data.Repositories
 
             return true;
         }
+
+        public bool UpdatePassword (User user)
+        {
+            var tracker = _context.Attach(user);
+
+            tracker.Property(u => u.Password).IsModified = true;
+
+            return true;
+        }
     }
 }
