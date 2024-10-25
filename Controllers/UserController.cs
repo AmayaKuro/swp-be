@@ -119,7 +119,7 @@ namespace swp_be.Controllers
 
         [HttpGet]
         [Route("profile/all")]
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         public async Task<IActionResult> AllProfile(int id)
         {
             List<User> user = userService.GetAllUserProfile();
@@ -129,7 +129,7 @@ namespace swp_be.Controllers
 
         [HttpGet]
         [Route("profile/{id}")]
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         public async Task<IActionResult> ProfileByID(int id)
         {
             User user = userService.GetUserProfile(id);

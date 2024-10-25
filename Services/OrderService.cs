@@ -84,6 +84,8 @@ namespace swp_be.Services
         {
             foreach (var item in batchs)
             {
+                if (item[0] < 1) break;
+
                 Batch batchInfo = batchRepository.GetById(item[0]);
 
                 if (batchInfo == null)
@@ -106,6 +108,8 @@ namespace swp_be.Services
 
             foreach (var koiID in kois)
             {
+                if (koiID < 1) break;
+
                 Koi koiInfo = koiRepository.GetById(koiID);
 
                 if (koiInfo == null)
@@ -125,8 +129,10 @@ namespace swp_be.Services
                 orderDetails.Add(detail);
             }
 
-            foreach (var consignmentKoiID in kois)
+            foreach (var consignmentKoiID in consignmentKois)
             {
+                Console.WriteLine("Conssingggment " + consignmentKoiID);
+                if (consignmentKoiID < 1) break;
                 ConsignmentKoi consignmentKoiInfo = consignmentKoiRepository.GetById(consignmentKoiID);
 
                 if (consignmentKoiInfo == null)
