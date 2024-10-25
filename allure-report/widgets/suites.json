@@ -1,0 +1,1 @@
+{"total":2,"items":[{"uid":"dd02ef8ab1f58dadf2f3010f6afb66d3","name":"Koi API","statistic":{"failed":0,"broken":5,"skipped":0,"passed":0,"unknown":0,"total":5}},{"uid":"83632f2c2d5593e3bd0e527efc53147c","name":"swp_be.Tests.KoiControllerTests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":8,"unknown":0,"total":8}}]}
