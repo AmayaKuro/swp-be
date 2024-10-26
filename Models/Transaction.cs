@@ -44,6 +44,8 @@ namespace swp_be.Models
         /// The transaction is for Shopping.
         /// </summary>
         Shopping,
+
+        Offline,
     }
 
     public class Transaction

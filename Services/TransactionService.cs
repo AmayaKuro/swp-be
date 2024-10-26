@@ -195,6 +195,37 @@ namespace swp_be.Services
             return url;
         }
 
+        public async Task<Transaction?> CreateOffTransaction(int orderID)
+        {
+            Transaction transaction = new Transaction();
+
+
+            var order = orderService.GetByID(orderID);
+
+            if (order == null)
+            {
+                return null;
+            }
+
+            long depositAmount = order.TotalAmount / 2;
+
+            // Tạo Transaction mới
+            transaction.OrderID = orderID;
+            transaction.CreateAt = DateTime.Now;
+            transaction.Status = TransactionStatus.Pending;
+            transaction.Type = TransactionType.Offline;
+            transaction.Amount = depositAmount;
+            transaction.CreateAt = DateTime.Now;
+            transaction.EndAt = transaction.CreateAt.AddDays(1);
+            transaction.PaymentMethodID = 1;
+
+
+            // Lưu Transaction vào repository
+            await transactionRepository.CreateAsync(transaction);
+
+            return transaction;
+        }
+
         public Transaction GetTransactionByID(int id)
         {
             return transactionRepository.GetTransactionByID(id);

@@ -96,6 +96,23 @@ namespace swp_be.Controllers
             return CreatedAtAction("GetTransaction", new { id = transaction.TransactionID }, transaction);
         }
 
+        [HttpPost]
+        [Route("createOffTransaction")]
+        [Authorize("staff, admin")]
+        public async Task<ActionResult<Transaction>> CreateOffTransaction(int orderID)
+        {
+            var order = await transactionService.CreateOffTransaction(orderID);
+
+            // Kiểm tra kết quả từ service
+            if (order == null)
+            {
+                return NotFound("Order not found");
+            }
+
+            // Trả về transaction đã tạo
+            return CreatedAtAction("GetTransaction", new { id = order.TransactionID }, order);
+        }
+
         // DELETE: api/Transactions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTransaction(int id)
