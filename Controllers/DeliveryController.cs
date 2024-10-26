@@ -20,7 +20,7 @@ namespace swp_be.Controllers
         public int DeliveryID { get; set; } = 0;
         public int? OrderID { get; set; }
         public int? CustomerID { get; set; }
-        public string? Status { get; set; }
+        public DeliveryStatus? Status { get; set; }
         public DateTime? StartDeliDay { get; set; }
         public DateTime? EndDeliDay { get; set; }
     }

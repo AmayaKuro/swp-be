@@ -4,13 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
-    public enum KoiType
-    {
-        // Koi consigned for re-sale
-        ReSell,
-        // Store own the Koi
-        Owned,
-    }
 
     public class Koi
     {
@@ -52,7 +45,6 @@ namespace swp_be.Models
         // Image URL
         public string? Image { get; set; }
 
-        [MaxLength(255)]
-        public string? AddOn { get; set; }
+        public AddOn AddOn { get; set; }
     }
 }

@@ -50,8 +50,8 @@ namespace swp_be.Models
         // Image URL
         public string? Image { get; set; }
 
-        public string? AddOn { get; set; }
-
         public Consignment Consignment { get; set; }
+
+        public AddOn AddOn { get; set; }
     }
 }

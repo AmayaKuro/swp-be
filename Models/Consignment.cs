@@ -11,6 +11,7 @@ namespace swp_be.Models
     }
     public enum ConsignmentStatus
     {
+        awaitingPayment, //Đợi người ký gửi thanh toán 
         available,//Ca van con ban 
         finished,//Da ban hoac het han nuoi ca
         raising,//Ca dang nuoi
@@ -31,8 +32,14 @@ namespace swp_be.Models
         [Required]
         public long FosterPrice { get; set; }
         public ConsignmentStatus Status { get; set; }
+
+        public DateTime CreateAt { get; set; }
+
+        public DateTime StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
         public Customer Customer { get; set; }
-        public ICollection<FosterBatch> FosterBatches { get; set; }
         public ICollection<ConsignmentKoi> ConsignmentKois { get; set; }
     }
 }

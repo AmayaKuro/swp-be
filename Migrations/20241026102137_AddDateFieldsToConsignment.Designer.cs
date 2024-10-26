@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using swp_be.Data;
 
@@ -11,9 +12,11 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241026102137_AddDateFieldsToConsignment")]
+    partial class AddDateFieldsToConsignment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,42 +65,6 @@ namespace swp_be.Migrations
                     b.ToTable("Blogs");
                 });
 
-            modelBuilder.Entity("swp_be.Models.AddOn", b =>
-                {
-                    b.Property<int>("AddOnID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AddOnID"));
-
-                    b.Property<int?>("ConsignmentKoiID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HealthCertificate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("KoiID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OriginCertificate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnershipCertificate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AddOnID");
-
-                    b.HasIndex("ConsignmentKoiID")
-                        .IsUnique()
-                        .HasFilter("[ConsignmentKoiID] IS NOT NULL");
-
-                    b.HasIndex("KoiID")
-                        .IsUnique()
-                        .HasFilter("[KoiID] IS NOT NULL");
-
-                    b.ToTable("AddOn");
-                });
-
             modelBuilder.Entity("swp_be.Models.Batch", b =>
                 {
                     b.Property<int>("BatchID")
@@ -114,10 +81,10 @@ namespace swp_be.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<long>("PricePerBatch")
+                    b.Property<long>("Price")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("QuantityPerBatch")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<int>("RemainBatch")
@@ -174,6 +141,9 @@ namespace swp_be.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConsignmentKoiID"));
+
+                    b.Property<string>("AddOn")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Age")
                         .HasColumnType("int");
@@ -255,9 +225,6 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryID"));
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
@@ -270,8 +237,10 @@ namespace swp_be.Migrations
                     b.Property<DateTime>("StartDeliDay")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("DeliveryID");
 
@@ -321,6 +290,10 @@ namespace swp_be.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KoiID"));
+
+                    b.Property<string>("AddOn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int?>("Age")
                         .HasColumnType("int");
@@ -647,21 +620,6 @@ namespace swp_be.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("swp_be.Models.AddOn", b =>
-                {
-                    b.HasOne("swp_be.Models.ConsignmentKoi", "ConsignmentKoi")
-                        .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "ConsignmentKoiID");
-
-                    b.HasOne("swp_be.Models.Koi", "Koi")
-                        .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "KoiID");
-
-                    b.Navigation("ConsignmentKoi");
-
-                    b.Navigation("Koi");
-                });
-
             modelBuilder.Entity("swp_be.Models.Consignment", b =>
                 {
                     b.HasOne("swp_be.Models.Customer", "Customer")
@@ -837,18 +795,6 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.Consignment", b =>
                 {
                     b.Navigation("ConsignmentKois");
-                });
-
-            modelBuilder.Entity("swp_be.Models.ConsignmentKoi", b =>
-                {
-                    b.Navigation("AddOn")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("swp_be.Models.Koi", b =>
-                {
-                    b.Navigation("AddOn")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("swp_be.Models.Order", b =>

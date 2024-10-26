@@ -13,16 +13,17 @@ namespace swp_be.Models
         public string Name { get; set; }
 
         [Required]
-        public long Price { get; set; }
+        public long PricePerBatch { get; set; }
 
         public string? Description { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public int QuantityPerBatch { get; set; }
 
         [Required]
         public int RemainBatch { get; set; }
 
         public string? Species { get; set; }
+
     }
 }

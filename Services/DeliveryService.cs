@@ -35,7 +35,7 @@ namespace swp_be.Services
 
         public async Task<Delivery> UpdateDelivery(Delivery delivery)
         {
-            if (delivery.Status == "delivered")
+            if (delivery.Status == DeliveryStatus.Delivered)
             {
                 // Finish the order when the delivery is completed
                 orderService.FinishOrder(delivery.OrderID);
@@ -58,7 +58,7 @@ namespace swp_be.Services
             {
                 OrderID = order.OrderID,
                 CustomerID = order.CustomerID,
-                Status = "Pending",
+                Status = DeliveryStatus.Delivering,
                 StartDeliDay = DateTime.Now
             };
 

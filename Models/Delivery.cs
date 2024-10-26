@@ -5,6 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
+    public enum DeliveryStatus
+    {
+        Delivering,    
+        Delivered,     // Đã giao hàng thành công
+        Failed,        // Giao hàng thất bại
+        Cancelled      // Đơn hàng bị hủy
+    }
+
     public class Delivery
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,8 +24,9 @@ namespace swp_be.Models
         [Required]
         public int CustomerID { get; set; }
 
-        [Required, MaxLength(50)]
-        public string Status { get; set; }
+        public string? Address { get; set; }
+
+        public DeliveryStatus Status { get; set; }
 
         [Required]
         public DateTime StartDeliDay { get; set; }

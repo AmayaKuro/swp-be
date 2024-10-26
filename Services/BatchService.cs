@@ -66,12 +66,12 @@ namespace swp_be.Services
 
             if (minPrice.HasValue)
             {
-                batches = batches.Where(b => b.Price >= minPrice);
+                batches = batches.Where(b => b.PricePerBatch >= minPrice);
             }
 
             if (maxPrice.HasValue)
             {
-                batches = batches.Where(b => b.Price <= maxPrice);
+                batches = batches.Where(b => b.PricePerBatch <= maxPrice);
             }
 
             return batches;

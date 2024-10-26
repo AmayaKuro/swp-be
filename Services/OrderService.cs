@@ -98,7 +98,7 @@ namespace swp_be.Services
                 detail.Batch = batchInfo;
                 detail.Quantity = item[1];
                 detail.Type = OrderDetailType.Batch;
-                detail.Price = batchInfo.Price * item[1];
+                detail.Price = batchInfo.PricePerBatch * item[1];
 
                 // Add money to total
                 TotalAmount += detail.Price;
@@ -181,7 +181,7 @@ namespace swp_be.Services
                 {
                     Batch batch = batchRepository.GetById(detail.BatchID.Value);
 
-                    batch.Quantity -= detail.Quantity.Value;
+                    batch.QuantityPerBatch -= detail.Quantity.Value;
 
                     batchRepository.Update(batch);
                 }
