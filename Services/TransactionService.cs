@@ -197,7 +197,7 @@ namespace swp_be.Services
 
         public Transaction GetTransactionByID(int id)
         {
-            return transactionRepository.GetById(id);
+            return transactionRepository.GetTransactionByID(id);
         }
 
         public void UpdateTransactionStatus(Transaction transaction)
@@ -206,10 +206,8 @@ namespace swp_be.Services
             transactionRepository.Save();
         }
 
-        public void UpdateStatus(int id, TransactionStatus transactionStatus, string? token)
+        public void UpdateStatus(Transaction transaction, TransactionStatus transactionStatus, string? token)
         {
-            Transaction transaction = transactionRepository.GetTransactionByID(id);
-
             transaction.Status = transactionStatus;
             transaction.EndAt = DateTime.Now;
 

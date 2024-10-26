@@ -165,10 +165,12 @@ namespace swp_be.Controllers
                 bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
                 if (checkSignature)
                 {
+                    Transaction transaction = transactionService.GetTransactionByID(transactionID);
+
                     if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
                     {
                         //Thanh toan thanh cong
-                        transactionService.UpdateStatus(transactionID, TransactionStatus.Completed, vnpayTranId.ToString());
+                        transactionService.UpdateStatus(transaction, TransactionStatus.Completed, vnpayTranId.ToString());
 
                         feRedirectQuery.Add("status_text", "Giao dịch được thực hiện thành công. Cảm ơn quý khách đã sử dụng dịch vụ");
                         Console.WriteLine("Thanh toan thanh cong, TransactionID={0}, VNPAY TranId={1}", transactionID, vnpayTranId);
@@ -177,7 +179,7 @@ namespace swp_be.Controllers
                     else if (vnp_ResponseCode == "24")
                     {
                         //Thanh toan khong thanh cong. Ma loi: vnp_ResponseCode
-                        transactionService.UpdateStatus(transactionID, TransactionStatus.Cancelled, vnpayTranId.ToString());
+                        transactionService.UpdateStatus(transaction, TransactionStatus.Cancelled, vnpayTranId.ToString());
 
                         feRedirectQuery.Add("status_text", "Giao dịch bị hủy bởi người dùng");
                         Console.WriteLine("Thanh toan khong thanh cong, nguoi dung huy Transaction, TransactionID={0}, VNPAY TranId={1},ResponseCode={2}", transactionID, vnpayTranId, vnp_ResponseCode);
@@ -185,7 +187,7 @@ namespace swp_be.Controllers
                     else
                     {
                         //Thanh toan khong thanh cong. Ma loi: vnp_ResponseCode
-                        transactionService.UpdateStatus(transactionID, TransactionStatus.Failed, vnpayTranId.ToString());
+                        transactionService.UpdateStatus(transaction, TransactionStatus.Failed, vnpayTranId.ToString());
 
                         feRedirectQuery.Add("status_text", "Có lỗi xảy ra trong quá trình xử lý.Mã lỗi: " + vnp_ResponseCode);
                         Console.WriteLine("Thanh toan loi, TransactionID={0}, VNPAY TranId={1},ResponseCode={2}", transactionID, vnpayTranId, vnp_ResponseCode);
