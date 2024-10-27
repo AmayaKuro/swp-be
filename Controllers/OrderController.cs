@@ -143,7 +143,7 @@ namespace swp_be.Controllers
                 {
                     long depositAmount = order.TotalAmount / 2;
 
-                    paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(), depositAmount);
+                    paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
 
                     Console.WriteLine("VNPAY URL: {0}", paymentUrl);
 

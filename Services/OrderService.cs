@@ -50,7 +50,7 @@ namespace swp_be.Services
 
         // Go to upper comment to understand flow 
         // Create standalone CreateOrder if you like
-        public Order CreateOrder(int customerID, OrderType orderType, int promotionID = 0)
+        public Order CreateOrder(int customerID, OrderType orderType, int promotionID)
         {
             // If promotionID present and not exist in db, cancel create
             if (promotionID > 0 && promotionRepository.GetById(promotionID) == null)
@@ -66,7 +66,11 @@ namespace swp_be.Services
             order.TotalAmount = TotalAmount;
             order.CustomerID = customerID;
             order.StaffID = 7; // This is for testing purpose
-            order.PromotionID = null; //promotionID;
+            if (promotionRepository.GetById(promotionID) != null)
+            {
+                order.PromotionID = promotionID; //promotionID;
+            }
+            
 
             order.OrderDetails = orderDetails;
 
