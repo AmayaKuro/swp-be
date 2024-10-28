@@ -29,9 +29,9 @@ namespace swp_be.Controllers
             return Ok(await ConsignmentKoiservice.GetConsignmentKois());
         }
 
-        // GET: api/Koi/5
-        
+        // GET: api/Koi/5        
         [HttpGet("{id}")]
+        [Authorize("all")]
         public async Task<ActionResult<ConsignmentKoi>> GetFosterKoi(int id)
         {
             var consignmentKoi = await _context.ConsignmentKois.FindAsync(id);
@@ -44,6 +44,7 @@ namespace swp_be.Controllers
             return consignmentKoi;
         }
         [HttpGet("search")]
+        [Authorize("all")]
         public async Task<ActionResult<IEnumerable<ConsignmentKoi>>> Search(
             string? name = null,
             string? color = null,

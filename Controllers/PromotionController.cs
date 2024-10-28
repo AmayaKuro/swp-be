@@ -88,6 +88,7 @@ namespace swp_be.Controllers
 
         // GET: api/Promotion/Search
         [HttpGet("Search")]
+        [Authorize("all")]
         public async Task<ActionResult<IEnumerable<Promotion>>> SearchPromotions([FromQuery] string? code, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             return Ok(await promotionService.SearchPromotions(code, startDate, endDate));

@@ -80,6 +80,7 @@ namespace swp_be.Controllers
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize("staff, admin")]
         public async Task<IActionResult> PutOrder(int id, Order order)
         {
             if (id != order.OrderID)

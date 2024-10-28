@@ -236,7 +236,9 @@ namespace swp_be.Controllers
             }
             return BadRequest("Failed to delete the consignment.");
         }
+
         [HttpGet("search")]
+        [Authorize("all")]
         public async Task<IActionResult> SearchConsignments(
            [FromQuery] int? customerID = null,
            [FromQuery] ConsignmentType? type = null,
