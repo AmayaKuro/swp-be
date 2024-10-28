@@ -57,7 +57,7 @@ namespace swp_be.Services
             Delivery delivery = new Delivery
             {
                 OrderID = order.OrderID,
-                CustomerID = order.CustomerID,
+                CustomerID = order.CustomerID.Value,
                 Status = DeliveryStatus.Delivering,
                 StartDeliDay = DateTime.Now
             };

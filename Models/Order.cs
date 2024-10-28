@@ -39,11 +39,9 @@ namespace swp_be.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderID { get; set; }
 
-        [Required]
-        public int CustomerID { get; set; }
+        public int? CustomerID { get; set; }
 
-        [Required]
-        public int StaffID { get; set; }
+        public int? StaffID { get; set; }
 
         [Required]
         public DateTime CreateAt { get; set; }
@@ -61,11 +59,13 @@ namespace swp_be.Models
 
         public int? PromotionID { get; set; }
 
-        [DeleteBehavior(DeleteBehavior.Restrict)]
-        public Customer Customer { get; set; }  // Navigation Property
-        [DeleteBehavior(DeleteBehavior.Restrict)]
-        public Staff Staff { get; set; }  // Navigation Property
+        [DeleteBehavior(DeleteBehavior.SetNull)]
+        public Customer? Customer { get; set; }  // Navigation Property
+
         public Promotion? Promotion { get; set; }  // Navigation Property
+
+        [DeleteBehavior(DeleteBehavior.ClientSetNull)]
+        public Staff? Staff { get; set; }  // Navigation Property
 
         public ICollection<OrderDetail> OrderDetails { get; set; }
         // Order will have 1 transactions if online or 2 transactions if offline (deposit and final payment)

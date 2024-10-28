@@ -139,6 +139,26 @@ namespace swp_be.Services
 
             if (user == null) return false;
 
+            // Set staff of order to default staff if order is pending
+            // else set staff to null
+            if (user.Role == Role.Staff)
+            {
+                unitOfWork.OrderRepository.GetOrdersByStaffID(id).ForEach(order =>
+                {
+                    if (order.Status == OrderStatus.Pending)
+                    {
+                        // Hard code default staff ID
+                        order.StaffID = 7;
+                        unitOfWork.OrderRepository.Update(order);
+                    }
+                    else
+                    {
+                        order.StaffID = null;
+                        unitOfWork.OrderRepository.Update(order);
+                    }
+                });
+            }
+
             unitOfWork.UserRepository.Remove(user);
             unitOfWork.Save();
 
