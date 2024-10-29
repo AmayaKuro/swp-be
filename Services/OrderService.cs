@@ -104,6 +104,13 @@ namespace swp_be.Services
                 detail.Type = OrderDetailType.Batch;
                 detail.Price = batchInfo.PricePerBatch * item[1];
 
+                if (batchInfo.RemainBatch < item[1])
+                {
+                    return null; 
+                }
+                batchInfo.RemainBatch -= item[1];
+                batchRepository.Update(batchInfo);
+
                 // Add money to total
                 TotalAmount += detail.Price;
 

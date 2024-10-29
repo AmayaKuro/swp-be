@@ -49,6 +49,14 @@ namespace swp_be.Controllers
             return koi;
         }
 
+        // GET: api/koi/available
+        [HttpGet("available")]
+        public async Task<ActionResult<IEnumerable<Koi>>> GetAvailableKois()
+        {
+            var availableKois = await koiService.GetAvailableKoisAsync();
+            return Ok(availableKois);
+        }
+
 
         // PUT: api/Koi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

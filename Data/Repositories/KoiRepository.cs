@@ -12,7 +12,15 @@ namespace swp_be.Data.Repositories
     {
         public KoiRepository(ApplicationDBContext context) : base(context)
         {
-        } 
+        }
+
+        public async Task<List<Koi>> GetAvailableKoisAsync()
+        {
+            return await _context.Kois
+                .Where(k => !_context.OrderDetails
+                    .Any(od => od.KoiID == k.KoiID && od.Type == OrderDetailType.Koi))
+                .ToListAsync();
+        }
 
     }
 }

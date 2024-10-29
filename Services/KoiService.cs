@@ -22,6 +22,12 @@ namespace swp_be.Services
             return await unitOfWork.KoiRepository.GetAllAsync();
         }
 
+        public async Task<List<Koi>> GetAvailableKoisAsync()
+        {
+            return await unitOfWork.KoiRepository.GetAvailableKoisAsync();
+        }
+
+
         public async Task<Koi> CreateKoi(Koi koi)
         {
             unitOfWork.KoiRepository.Create(koi);
