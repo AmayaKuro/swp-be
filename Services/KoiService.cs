@@ -22,7 +22,7 @@ namespace swp_be.Services
             return await unitOfWork.KoiRepository.GetAllAsync();
         }
 
-        public async Task<List<Koi>> GetAvailableKoisAsync()
+        public async Task<List<object>> GetAvailableKoisAsync()
         {
             return await unitOfWork.KoiRepository.GetAvailableKoisAsync();
         }

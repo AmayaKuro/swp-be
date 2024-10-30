@@ -51,7 +51,7 @@ namespace swp_be.Controllers
 
         // GET: api/koi/available
         [HttpGet("available")]
-        public async Task<ActionResult<IEnumerable<Koi>>> GetAvailableKois()
+        public async Task<ActionResult<IEnumerable<object>>> GetAvailableKois()
         {
             var availableKois = await koiService.GetAvailableKoisAsync();
             return Ok(availableKois);

@@ -4,6 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace swp_be.Models
 {
+    public enum KoiStatus
+    {
+        Available,
+        InOrder,
+        Sold
+    }
 
     public class Koi
     {
@@ -41,7 +47,9 @@ namespace swp_be.Models
 
         [Required, MaxLength(255)]
         public string Species { get; set; }
-        
+
+        public KoiStatus Status { get; set; }
+
         // Image URL
         public string? Image { get; set; }
 
