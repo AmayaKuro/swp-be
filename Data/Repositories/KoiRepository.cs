@@ -8,11 +8,29 @@ using swp_be.Models;
 
 namespace swp_be.Data.Repositories
 {
-    public class KoiRepository: GenericRepository<Koi> 
+    public class KoiRepository : GenericRepository<Koi>
     {
         public KoiRepository(ApplicationDBContext context) : base(context)
         {
-        } 
+        }
+
+        public async Task<List<object>> GetAvailableKoisAsync()
+        {
+            var availableKois = await _context.Kois
+                .Where(k => k.Status == KoiStatus.Available)
+                .ToListAsync();
+
+            var availableConsignmentKois = await _context.ConsignmentKois
+                .Include(ck => ck.Consignment)
+                .Where(ck => ck.Consignment.Type == ConsignmentType.Sell && ck.Consignment.Status == ConsignmentStatus.available)
+                .ToListAsync();
+
+            var result = new List<object>();
+            result.AddRange(availableKois);
+            result.AddRange(availableConsignmentKois);
+
+            return result;
+        }
 
     }
 }

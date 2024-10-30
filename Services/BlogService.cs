@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using swp_be.Data;
 using swp_be.Data.Repositories;
 using swp_be.Models;
-using YourNamespace.Models;
 
 namespace swp_be.Services
 {

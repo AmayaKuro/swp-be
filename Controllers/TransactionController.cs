@@ -13,7 +13,6 @@ using swp_be.Data;
 using swp_be.Models;
 using swp_be.Services;
 using swp_be.Utils;
-using YourNamespace.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace swp_be.Controllers
@@ -35,6 +34,7 @@ namespace swp_be.Controllers
 
         // GET: api/Transactions
         [HttpGet]
+        [Authorize("all")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
         {
             return await _context.Transactions.ToListAsync();
@@ -42,6 +42,7 @@ namespace swp_be.Controllers
 
         // GET: api/Transactions/5
         [HttpGet("{id}")]
+        [Authorize("all")]
         public async Task<ActionResult<Transaction>> GetTransaction(int id)
         {
             var transaction = await _context.Transactions.FindAsync(id);
@@ -57,6 +58,7 @@ namespace swp_be.Controllers
         // PUT: api/Transactions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize("all")]
         public async Task<IActionResult> PutTransaction(int id, Transaction transaction)
         {
             if (id != transaction.TransactionID)
@@ -88,6 +90,7 @@ namespace swp_be.Controllers
         // POST: api/Transactions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize("all")]
         public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
         {
             _context.Transactions.Add(transaction);

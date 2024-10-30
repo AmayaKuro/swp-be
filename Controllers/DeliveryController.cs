@@ -42,6 +42,7 @@ namespace swp_be.Controllers
         // GET: api/Koi
         
         [HttpGet]
+        [Authorize("all")]
         public async Task<ActionResult<Delivery>> GetDevliver()
         {
             return Ok(await deliveryService.GetDeliveries());

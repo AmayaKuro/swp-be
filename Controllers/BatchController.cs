@@ -29,6 +29,7 @@ namespace swp_be.Controllers
 
         // GET: api/Batch/5
         [HttpGet("{id}")]
+        [Authorize("staff, admin")]
         public async Task<ActionResult<Batch>> GetBatch(int id)
         {
             var batch = await batchService.GetBatchById(id);

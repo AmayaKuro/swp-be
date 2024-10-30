@@ -76,7 +76,7 @@ namespace swp_be.Services
             // Execute the query asynchronously and return the results
             return await query.ToListAsync();
         }
-    
+       
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using swp_be.Models;
 using System.Xml.Linq;
-using YourNamespace.Models;
+
 
 namespace swp_be.Data
 {

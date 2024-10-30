@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using swp_be.Data;
 using swp_be.Models;
 using swp_be.Services;
+using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
@@ -10,10 +12,14 @@ namespace swp_be.Controllers
     public class FeedbackController : ControllerBase
     {
         private readonly FeedbackService _feedbackService;
+        private readonly UserService userService;
+
+        public ApplicationDBContext Context { get; }
 
         public FeedbackController(FeedbackService feedbackService)
         {
             _feedbackService = feedbackService;
+            this.userService = new UserService(Context);
         }
 
         // GET: api/Feedback
@@ -81,10 +87,28 @@ namespace swp_be.Controllers
 
         // DELETE: api/Feedback/5
         [HttpDelete("{id}")]
-        [Authorize("staff, admin")]
+        [Authorize("all")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
-            var deleted = await _feedbackService.DeleteFeedback(id);
+            int userID = int.Parse(User.FindFirstValue("userID"));
+
+            var checkRole = userService.GetUserProfile(userID);
+
+            var feedback = await _feedbackService.GetFeedbackById(id);
+
+            bool deleted = false;
+
+            if (checkRole.Role == Role.Customer)
+            {
+                if(feedback.CustomerID == userID)
+                {
+                    deleted = await _feedbackService.DeleteFeedback(id);
+                }
+            }
+            else
+            {
+                deleted = await _feedbackService.DeleteFeedback(id);
+            }
 
             if (!deleted)
             {
