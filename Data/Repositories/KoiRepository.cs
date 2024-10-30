@@ -32,5 +32,18 @@ namespace swp_be.Data.Repositories
             return result;
         }
 
+        public async Task<Koi> GetByIdAsync(int id)
+        {
+            return await _context.Kois
+                .Include(k => k.AddOn)
+                .FirstOrDefaultAsync(k => k.KoiID == id);
+        }
+
+        public async Task<Koi[]> GetAllAsync()
+        {
+            return await _context.Kois
+                .Include(k => k.AddOn)
+                .ToArrayAsync();
+        }
     }
 }

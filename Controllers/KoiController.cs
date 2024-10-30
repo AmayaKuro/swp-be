@@ -42,6 +42,7 @@ namespace swp_be.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly KoiService koiService;
+        private FirebaseUtils fbUtils = new FirebaseUtils();
 
         public KoiController(ApplicationDBContext context)
         {
@@ -62,7 +63,7 @@ namespace swp_be.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Koi>> GetKoi(int id)
         {
-            var koi = await _context.Kois.FindAsync(id);
+            var koi = await koiService.GetKoi(id);
 
             if (koi == null)
             {
@@ -85,30 +86,34 @@ namespace swp_be.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize("staff, admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutKoi(int id, Koi koi)
+        public async Task<IActionResult> PutKoi(int id, [FromForm] KoiRequest koi)
         {
-            if (id != koi.KoiID)
+            Koi info = await koiService.GetKoi(id);
+
+            if (info == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(koi).State = EntityState.Modified;
+            info.Name = koi.Name ?? info.Name;
+            info.Gender = koi.Gender ?? info.Gender;
+            info.Age = koi.Age ?? info.Age;
+            info.Size = koi.Size ?? info.Size;
+            info.Color = koi.Color ?? info.Color;
+            info.DailyFeedAmount = koi.DailyFeedAmount ?? info.DailyFeedAmount;
+            info.Price = koi.Price != 0 ? koi.Price : info.Price;
+            info.Personality = koi.Personality ?? info.Personality;
+            info.Origin = koi.Origin ?? info.Origin;
+            info.SelectionRate = koi.SelectionRate ?? info.SelectionRate;
+            info.Species = koi.Species != "" ? koi.Species : info.Species;
 
-            try
-            {
-                await koiService.UpdateKoi(koi);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!KoiExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // Add image base on input
+            info.Image = await fbUtils.UploadImage(koi.Image?.OpenReadStream(), info.KoiID.ToString(), "koiImage") ?? info.Image;
+            info.AddOn.OriginCertificate = await fbUtils.UploadImage(koi.OriginCertificate?.OpenReadStream(), info.KoiID.ToString(), "originCertificate") ?? info.AddOn.OriginCertificate;
+            info.AddOn.HealthCertificate = await fbUtils.UploadImage(koi.HealthCertificate?.OpenReadStream(), info.KoiID.ToString(), "healthCertificate") ?? info.AddOn.HealthCertificate;
+            info.AddOn.OwnershipCertificate = await fbUtils.UploadImage(koi.OwnershipCertificate?.OpenReadStream(), info.KoiID.ToString(), "ownershipCertificate") ?? info.AddOn.OwnershipCertificate;
+
+            koiService.UpdateKoi(info);
 
             return NoContent();
         }
@@ -120,10 +125,8 @@ namespace swp_be.Controllers
         // TODO: Set this to FromBody later
         public async Task<ActionResult<Koi>> PostKoi([FromForm] KoiRequest koiRequest)
         {
-            var fbUtils = new FirebaseUtils();
-
             // Prepare image URL
-            IFormFile koiImage = null, originCertificate = null, healthCertificate = null, ownershipCertificate = null;
+            //IFormFile koiImage = null, originCertificate = null, healthCertificate = null, ownershipCertificate = null;
 
             // THIS IS ROLL BACK CODE
             //// Categorize image from image list by name

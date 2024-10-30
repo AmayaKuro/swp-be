@@ -19,7 +19,11 @@ namespace swp_be.Services
             return await unitOfWork.FosterKoiRepository.GetAllAsync();
         }
 
-        
+        public async Task<ConsignmentKoi> GetConsignmentKoi(int id)
+        {
+            return await unitOfWork.FosterKoiRepository.GetByIdAsync(id);
+        }
+
         public async Task<ConsignmentKoi> DeleteKoi(ConsignmentKoi koi)
         {
             unitOfWork.FosterKoiRepository.Remove(koi);
