@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,9 +12,30 @@ using swp_be.Data;
 using swp_be.Data.Repositories;
 using swp_be.Models;
 using swp_be.Services;
+using swp_be.Utils;
 
 namespace swp_be.Controllers
 {
+    public class KoiRequest
+    {
+        public int? KoiID { get; set; }
+        public string? Name { get; set; }
+        public string? Gender { get; set; }
+        public int? Age { get; set; }
+        public string? Size { get; set; }
+        public string? Color { get; set; }
+        public string? DailyFeedAmount { get; set; }
+        public long Price { get; set; }
+        public string? Personality { get; set; }
+        public string? Origin { get; set; }
+        public string? SelectionRate { get; set; }
+        public string Species { get; set; }
+        public IFormFile? Image { get; set; }
+        public IFormFile? OriginCertificate { get; set; }  // Gi?y ngu?n g?c xu?t x?
+        public IFormFile? HealthCertificate { get; set; }  // Gi?y ki?m tra s?c kh?e
+        public IFormFile? OwnershipCertificate { get; set; }  // Gi?y ch?ng nh?n cá Koi
+    }
+
     [Route("api/koi/[controller]")]
     [ApiController]
     public class KoiController : ControllerBase
@@ -35,7 +58,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi/5
-       
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Koi>> GetKoi(int id)
         {
@@ -86,9 +109,71 @@ namespace swp_be.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize("staff, admin")]
         [HttpPost]
-        public async Task<ActionResult<Koi>> PostKoi(Koi koi)
+        // TODO: Set this to FromBody later
+        public async Task<ActionResult<Koi>> PostKoi([FromForm] KoiRequest koiRequest)
         {
+            var fbUtils = new FirebaseUtils();
+
+            // Prepare image URL
+            IFormFile koiImage = null, originCertificate = null, healthCertificate = null, ownershipCertificate = null;
+
+            // THIS IS ROLL BACK CODE
+            //// Categorize image from image list by name
+            //foreach (var img in koiRequest.Image)
+            //{
+            //    if (img.ContentType.ToLower().StartsWith("image/"))
+            //    {
+            //        Console.WriteLine("Namee " + img.Name);
+            //        Console.WriteLine("File Namee " + img.FileName);
+            //        switch (img.FileName.Split(".")[0])
+            //        {
+            //            case "koiImage":
+            //                koiImage = img;
+            //                break;
+            //            case "originCertificate":
+            //                originCertificate = img;
+            //                break;
+            //            case "healthCertificate":
+            //                healthCertificate = img;
+            //                break;
+            //            case "ownershipCertificate":
+            //                ownershipCertificate = img;
+            //                break;
+            //        }
+            //    }
+            //}
+
+            var koi = new Koi
+            {
+                Name = koiRequest.Name,
+                Gender = koiRequest.Gender,
+                Age = koiRequest.Age,
+                Size = koiRequest.Size,
+                Color = koiRequest.Color,
+                DailyFeedAmount = koiRequest.DailyFeedAmount,
+                Price = koiRequest.Price,
+                Personality = koiRequest.Personality,
+                SelectionRate = koiRequest.SelectionRate,
+                Species = koiRequest.Species,
+                Origin = koiRequest.Origin,
+                //Image = imageUrl,
+                AddOn = new AddOn(),
+                //{
+                //    OriginCertificate = originCertificateUrl,
+                //    HealthCertificate = healthCertificateUrl,
+                //    OwnershipCertificate = ownershipCertificateUrl
+                //},
+            };
             await koiService.CreateKoi(koi);
+
+            // Add image base on input
+            koi.Image = await fbUtils.UploadImage(koiRequest.Image?.OpenReadStream(), koi.KoiID.ToString(), "koiImage");
+            koi.AddOn.OriginCertificate = await fbUtils.UploadImage(koiRequest.OriginCertificate?.OpenReadStream(), koi.KoiID.ToString(), "originCertificate");
+            koi.AddOn.HealthCertificate = await fbUtils.UploadImage(koiRequest.HealthCertificate?.OpenReadStream(), koi.KoiID.ToString(), "healthCertificate");
+            koi.AddOn.OwnershipCertificate = await fbUtils.UploadImage(koiRequest.OwnershipCertificate?.OpenReadStream(), koi.KoiID.ToString(), "ownershipCertificate");
+
+            // Update to add the rest  of imagee into Koi
+            koiService.UpdateKoi(koi);
 
             return CreatedAtAction("GetKoi", new { id = koi.KoiID }, koi);
         }
@@ -108,12 +193,12 @@ namespace swp_be.Controllers
 
             return NoContent();
         }
-        
+
         [HttpGet("sorted")]
         public async Task<ActionResult<IEnumerable<Koi>>> GetSortedKois()
         {
             var kois = await koiService.GetKois(); // Fetch the Kois
-          
+
             return Ok(kois.OrderBy(k => k.Name).ToList()); // Sort by Name and return
                                                            // ... existing code ...
         }
