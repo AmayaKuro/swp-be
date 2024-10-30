@@ -4,12 +4,20 @@ using swp_be.Data;
 using swp_be.Models;
 using swp_be.Services;
 using Microsoft.EntityFrameworkCore;
-using YourNamespace.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
+    public class BlogRequest
+    {
+        public string Title { get; set; }
+        public string BlogSlug { get; set; }
+        public string Description { get; set; }
+        public string Content { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class BlogController : ControllerBase
@@ -91,17 +99,11 @@ namespace swp_be.Controllers
         }
         [Authorize("staff, admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateBlog(
-    [FromQuery] string title,
-    [FromQuery] string BlogSlug,
-    [FromQuery] string Description,
-    [FromQuery] string Content,
-    [FromQuery] DateTime? createdAt = null,
-    [FromQuery] DateTime? updatedAt = null)
+        public async Task<IActionResult> CreateBlog(BlogRequest blogRequest)
         {
             int userID = int.Parse(User.FindFirstValue("userID"));
             // Validate title
-            if (string.IsNullOrWhiteSpace(title) || title.Length > 255)
+            if (string.IsNullOrWhiteSpace(blogRequest.Title) || blogRequest.Title.Length > 255)
             {
                 return BadRequest("Invalid title. It must be non-empty and less than 255 characters.");
             }
@@ -113,18 +115,18 @@ namespace swp_be.Controllers
             }
 
             // If createdAt is not provided, set it to current time
-            var createDate = createdAt ?? DateTime.UtcNow;
+            var createDate = blogRequest.CreatedAt ?? DateTime.UtcNow;
 
             // If updatedAt is not provided, set it to current time
-            var updateDate = updatedAt ?? DateTime.UtcNow;
+            var updateDate = blogRequest.UpdatedAt ?? DateTime.UtcNow;
 
             // Create a new blog object
             var blog = new Blog
             {
-                Title = title,
-                BlogSlug = BlogSlug,
-                Description = Description,
-                Content = Content,
+                Title = blogRequest.Title,
+                BlogSlug = blogRequest.BlogSlug,
+                Description = blogRequest.Description,
+                Content = blogRequest.Content,
                 CreateAt = createDate,
                 UpdateAt = updateDate,
                 UserID = userID

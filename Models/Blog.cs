@@ -1,9 +1,9 @@
-using swp_be.Models;
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace YourNamespace.Models
+namespace swp_be.Models
 {
     public class Blog
     {

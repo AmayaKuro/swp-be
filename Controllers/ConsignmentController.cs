@@ -4,12 +4,39 @@ using swp_be.Data;
 using swp_be.Services;
 using swp_be.Models;
 using Microsoft.EntityFrameworkCore;
-using YourNamespace.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
+    public class ConsignmentRequest
+    {
+        public int ConsignmentID { get; set; }
+        public int CustomerID { get; set; }
+        public ConsignmentType Type { get; set; }
+        public long FosterPrice { get; set; }
+        public ConsignmentStatus Status { get; set; }
+    }
+    public class ConsignKoiRequest
+    {
+        public int CustomerID { get; set; }
+        public ConsignmentType Type { get; set; }
+        public ConsignmentStatus Status { get; set; }
+        public string? Name { get; set; }
+        public string? Gender { get; set; }
+        public int? Age { get; set; }
+        public string? Size { get; set; }
+        public string? Color { get; set; }
+        public string? DailyFeedAmount { get; set; }
+        public string? Personality { get; set; }
+        public string? Origin { get; set; }
+        public string? SelectionRate { get; set; }
+        public string Species { get; set; }
+        public long PricePerDay { get; set; }
+        public int FosteringDays { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class ConsignmentController : ControllerBase
@@ -17,11 +44,13 @@ namespace swp_be.Controllers
         private readonly ApplicationDBContext _context;
         private readonly ConsignmentService consignmentService;
         private readonly TransactionService transactionService;
+        private readonly ConsignmentKoiService consignmentKoiService; 
         public ConsignmentController(ApplicationDBContext context)
         {
             this._context = context;
             this.consignmentService= new ConsignmentService(context);
             transactionService = new TransactionService(context);
+            consignmentKoiService=new ConsignmentKoiService(context);
         }
         [HttpGet]
         public async Task<ActionResult<Consignment>> GetConsignment()
@@ -43,16 +72,11 @@ namespace swp_be.Controllers
             return consignment;
         }
         [Authorize("staff, admin")]
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdateConsignment(
-              [FromQuery] int consignmentID,
-              [FromQuery] int customerID,
-              [FromQuery] ConsignmentType type,
-              [FromQuery] long fosterPrice,
-              [FromQuery] ConsignmentStatus status)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
         {
             // Find the consignment by ID
-            var consignment = await _context.Consignments.FindAsync(consignmentID);
+            var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
 
             if (consignment == null)
             {
@@ -60,10 +84,10 @@ namespace swp_be.Controllers
             }
 
             // Update the consignment properties
-            consignment.CustomerID = customerID;
-            consignment.Type = type;
-            consignment.FosterPrice = fosterPrice;
-            consignment.Status = status;
+            consignment.CustomerID = consignmentRequest.CustomerID;
+            consignment.Type = consignmentRequest.Type;
+            consignment.FosterPrice = consignmentRequest.FosterPrice;
+            consignment.Status = consignmentRequest.Status;
             //if (consignment.Status != ConsignmentStatus.pending)
             //{
             //    string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
@@ -83,47 +107,31 @@ namespace swp_be.Controllers
         [Authorize("staff, admin")]
         [Route("create")]
         [HttpPost]
-        public async Task<IActionResult> CreateConsignment(
-            [FromQuery] int customerID,
-            [FromQuery] ConsignmentType type,
-            [FromQuery] ConsignmentStatus status,
-            [FromQuery] string? name,
-            [FromQuery] string? gender,
-            [FromQuery] int? age,
-            [FromQuery] string? size,
-            [FromQuery] string? color,
-            [FromQuery] string? dailyFeedAmount,
-                [FromQuery] string? personality,
-                [FromQuery] string? origin,
-                [FromQuery] string? selectionRate,
-                [FromQuery] string species,
-                [FromQuery] long pricePerDay,
-                [FromQuery] int fosteringDays
-                )
+        public async Task<IActionResult> CreateConsignment(ConsignKoiRequest consignKoiRequest )
             {
                 // Create a new consignment object
                 var newConsignment = new Consignment
                 {
-                    CustomerID = customerID,
-                Type = type,
-                FosterPrice = fosteringDays * pricePerDay,
-                Status = status // Ensure this is correctly spelled
-            };
+                CustomerID = consignKoiRequest.CustomerID,
+                Type = consignKoiRequest.Type,
+                FosterPrice = consignKoiRequest.FosteringDays * consignKoiRequest.PricePerDay,
+                Status = consignKoiRequest.Status // Ensure this is correctly spelled
+                };
             // Create a new ConsignmentKoi object
             var fosterKoi = new ConsignmentKoi
             {
-                Name = name,
-                Gender = gender,
-                Age = age,
-                Size = size,
-                Color = color,
-                DailyFeedAmount = dailyFeedAmount,
-                Personality = personality,
-                Origin = origin,
-                SelectionRate = selectionRate,
-                Species = species,
-                Price = pricePerDay,
-                FosteringDays = fosteringDays,
+                Name = consignKoiRequest.Name,
+                Gender = consignKoiRequest.Gender,
+                Age = consignKoiRequest.Age,
+                Size = consignKoiRequest.Size,
+                Color = consignKoiRequest.Color,
+                DailyFeedAmount = consignKoiRequest.Color,
+                Personality = consignKoiRequest.Color,
+                Origin = consignKoiRequest.Color,
+                SelectionRate = consignKoiRequest.Color,
+                Species = consignKoiRequest.Species,
+                Price = consignKoiRequest.PricePerDay,
+                FosteringDays = consignKoiRequest.FosteringDays,
                 ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
             };
 

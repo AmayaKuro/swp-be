@@ -13,7 +13,6 @@ using swp_be.Data;
 using swp_be.Models;
 using swp_be.Services;
 using swp_be.Utils;
-using YourNamespace.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace swp_be.Controllers
