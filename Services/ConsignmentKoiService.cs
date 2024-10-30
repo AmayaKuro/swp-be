@@ -16,17 +16,22 @@ namespace swp_be.Services
 
         public async Task<IEnumerable<ConsignmentKoi>> GetConsignmentKois()
         {
-            return await unitOfWork.FosterKoiRepository.GetAllAsync();
+            return await unitOfWork.ConsignmentKoiRepository.GetAllAsync();
         }
 
         public async Task<ConsignmentKoi> GetConsignmentKoi(int id)
         {
-            return await unitOfWork.FosterKoiRepository.GetByIdAsync(id);
+            return await unitOfWork.ConsignmentKoiRepository.GetByIdAsync(id);
+        }
+
+        public async Task<List<ConsignmentKoi>> GetConsignmentKoisByUser(int userId)
+        {
+            return await unitOfWork.ConsignmentKoiRepository.GetConsignmentKoisByUserId(userId);
         }
 
         public async Task<ConsignmentKoi> DeleteKoi(ConsignmentKoi koi)
         {
-            unitOfWork.FosterKoiRepository.Remove(koi);
+            unitOfWork.ConsignmentKoiRepository.Remove(koi);
             unitOfWork.Save();
             return koi;
         }

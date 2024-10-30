@@ -22,7 +22,7 @@ namespace swp_be.Services
         private readonly ApplicationDBContext _context;
         private BatchRepository batchRepository;
         private KoiRepository koiRepository;
-        private ConsigmentKoiRepository consignmentKoiRepository;
+        private ConsignmentKoiRepository consignmentKoiRepository;
         private GenericRepository<Promotion> promotionRepository;
         private OrderRepository orderRepository;
 
@@ -31,7 +31,7 @@ namespace swp_be.Services
             _context = context;
             batchRepository = new BatchRepository(_context);
             koiRepository = new KoiRepository(_context);
-            consignmentKoiRepository = new ConsigmentKoiRepository(_context);
+            consignmentKoiRepository = new ConsignmentKoiRepository(_context);
             promotionRepository = new GenericRepository<Promotion>(_context);
             orderRepository = new OrderRepository(_context);
         }

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace swp_be.Data.Repositories
 {
-    public class ConsigmentKoiRepository : GenericRepository<ConsignmentKoi>
+    public class ConsignmentKoiRepository : GenericRepository<ConsignmentKoi>
     {
-        public ConsigmentKoiRepository(ApplicationDBContext context) : base(context)
+        public ConsignmentKoiRepository(ApplicationDBContext context) : base(context)
         {
         }
 
@@ -20,6 +20,15 @@ namespace swp_be.Data.Repositories
         {
             return _context.ConsignmentKois.Include(koi => koi.Consignment)
                                            .FirstOrDefault(koi => koi.ConsignmentID == id);
+        }
+
+        public async Task<List<ConsignmentKoi>> GetConsignmentKoisByUserId(int userId)
+        {
+            return await _context.ConsignmentKois
+                .Include(koi => koi.Consignment)
+                .ThenInclude(consignment => consignment.Customer)
+                .Where(koi => koi.Consignment.Customer.UserID == userId)
+                .ToListAsync();
         }
     }
 }

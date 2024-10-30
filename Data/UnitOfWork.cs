@@ -14,7 +14,7 @@ namespace swp_be.Data
         private GenericRepository<Batch> _batchRepository;
         private OrderRepository _orderRepository;
         private GenericRepository<Consignment> _consignmentRepository;
-        private ConsigmentKoiRepository _fosterKoiRepository;
+        private ConsignmentKoiRepository _ConsignmentKoiRepository;
         private GenericRepository<Staff> _staffRepository;
         private GenericRepository<FosterBatch> _fosterBatchRepository;
         private GenericRepository<Customer> _customerRepository;
@@ -40,7 +40,7 @@ namespace swp_be.Data
             _batchRepository = new GenericRepository<Batch>(_context);
             _orderRepository = new OrderRepository(_context);
             _consignmentRepository = new GenericRepository<Consignment>(_context);
-            _fosterKoiRepository = new ConsigmentKoiRepository(_context);
+            _ConsignmentKoiRepository = new ConsignmentKoiRepository(_context);
             _staffRepository = new GenericRepository<Staff>(_context);
             _fosterBatchRepository = new GenericRepository<FosterBatch>(_context);
             _customerRepository = new GenericRepository<Customer>(_context);
@@ -113,11 +113,11 @@ namespace swp_be.Data
             }
         }
 
-        public ConsigmentKoiRepository FosterKoiRepository
+        public ConsignmentKoiRepository ConsignmentKoiRepository
         {
             get
             {
-                return _fosterKoiRepository;
+                return _ConsignmentKoiRepository;
             }
         }
 

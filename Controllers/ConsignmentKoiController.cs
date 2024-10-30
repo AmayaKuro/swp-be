@@ -68,6 +68,19 @@ namespace swp_be.Controllers
 
             return consignmentKoi;
         }
+
+        [HttpGet("GetConsignmentKoisByUserID")]
+        [Authorize("all")]
+        public async Task<ActionResult<List<ConsignmentKoi>>> GetConsignmentKoisByUser(int userId)
+        {
+            var consignmentKois = await ConsignmentKoiservice.GetConsignmentKoisByUser(userId);
+            if (consignmentKois == null || !consignmentKois.Any())
+            {
+                return NotFound("No consignment koi found for the given user ID.");
+            }
+            return Ok(consignmentKois);
+        }
+
         [HttpGet("search")]
         [Authorize("all")]
         public async Task<ActionResult<IEnumerable<ConsignmentKoi>>> Search(
