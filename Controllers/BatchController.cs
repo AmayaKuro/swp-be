@@ -19,7 +19,6 @@ namespace swp_be.Controllers
             this.batchService = service;
         }
 
-        // GET: api/Batch
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Batch>>> GetBatches()
         {
@@ -27,7 +26,6 @@ namespace swp_be.Controllers
             return Ok(batches);
         }
 
-        // GET: api/Batch/5
         [HttpGet("{id}")]
         [Authorize("staff, admin")]
         public async Task<ActionResult<Batch>> GetBatch(int id)
@@ -41,7 +39,13 @@ namespace swp_be.Controllers
             return Ok(batch);
         }
 
-        // POST: api/Batch
+        [HttpGet("Available")]
+        public async Task<ActionResult<IEnumerable<Batch>>> GetAvailableBatches()
+        {
+            var batches = await batchService.GetAvailableBatches();
+            return Ok(batches);
+        }
+
         [HttpPost]
         [Authorize("all")]
         public async Task<ActionResult<Batch>> PostBatch(Batch batch)
@@ -50,7 +54,6 @@ namespace swp_be.Controllers
             return CreatedAtAction(nameof(GetBatch), new { id = createdBatch.BatchID }, createdBatch);
         }
 
-        // PUT: api/Batch/5
         [HttpPut("{id}")]
         [Authorize("staff, admin")]
         public async Task<IActionResult> PutBatch(int id, Batch batch)
@@ -72,7 +75,6 @@ namespace swp_be.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Batch/5
         [HttpDelete("{id}")]
         [Authorize("staff, admin")]
         public async Task<IActionResult> DeleteBatch(int id)

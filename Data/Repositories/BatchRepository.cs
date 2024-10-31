@@ -10,5 +10,12 @@ namespace swp_be.Data.Repositories
         {
         }
 
+        public async Task<IEnumerable<Batch>> GetAvailableBatches()
+        {
+            var availableBatches = await GetAllAsync();
+            return availableBatches.Where(b => b.RemainBatch > 0).ToList();
+        }
+
+
     }
 }

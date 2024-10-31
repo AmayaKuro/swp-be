@@ -11,7 +11,7 @@ namespace swp_be.Data
         private KoiRepository _koiRepository;
         private UserRepository _userRepository;
         private TokenRepository _tokenRepository;
-        private GenericRepository<Batch> _batchRepository;
+        private BatchRepository _batchRepository;
         private OrderRepository _orderRepository;
         private GenericRepository<Consignment> _consignmentRepository;
         private ConsignmentKoiRepository _ConsignmentKoiRepository;
@@ -37,7 +37,7 @@ namespace swp_be.Data
             _koiRepository = new KoiRepository(_context);
             _userRepository = new UserRepository(_context);
             _tokenRepository = new TokenRepository(_context);
-            _batchRepository = new GenericRepository<Batch>(_context);
+            _batchRepository = new BatchRepository(_context);
             _orderRepository = new OrderRepository(_context);
             _consignmentRepository = new GenericRepository<Consignment>(_context);
             _ConsignmentKoiRepository = new ConsignmentKoiRepository(_context);
@@ -81,7 +81,7 @@ namespace swp_be.Data
             }
         }
 
-        public GenericRepository<Batch> BatchRepository
+        public BatchRepository BatchRepository
         {
             get
             {

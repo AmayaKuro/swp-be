@@ -50,6 +50,12 @@ namespace swp_be.Services
             return await unitOfWork.BatchRepository.GetByIdAsync(id);
         }
 
+        public async Task<IEnumerable<Batch>> GetAvailableBatches()
+        {
+            return await unitOfWork.BatchRepository.GetAvailableBatches();
+        }
+
+
         public async Task<IEnumerable<Batch>> SearchBatches(string? name, string? species, decimal? minPrice, decimal? maxPrice)
         {
             var batches = await GetBatches();
