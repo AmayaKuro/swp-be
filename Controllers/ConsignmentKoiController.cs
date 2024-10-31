@@ -122,11 +122,11 @@ namespace swp_be.Controllers
         // PUT: api/Koi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize("staff, admin")]
-        [HttpPut]
-        public async Task<IActionResult> UpdateFosterKoi([FromForm] ConsignKoiReq consignKoi)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateFosterKoi(int id, [FromForm] ConsignKoiReq consignKoi)
         {
             // Find the foster koi, ensuring you await the result
-            var info = await _context.ConsignmentKois.FindAsync(consignKoi.ConsignmentKoiID);
+            var info = await _context.ConsignmentKois.FindAsync(id);
 
             // Check if foster koi exists
             if (info == null)

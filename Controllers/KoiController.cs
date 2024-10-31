@@ -13,6 +13,7 @@ using swp_be.Data.Repositories;
 using swp_be.Models;
 using swp_be.Services;
 using swp_be.Utils;
+using NuGet.Protocol.Plugins;
 
 namespace swp_be.Controllers
 {
@@ -25,11 +26,11 @@ namespace swp_be.Controllers
         public string? Size { get; set; }
         public string? Color { get; set; }
         public string? DailyFeedAmount { get; set; }
-        public long Price { get; set; }
+        public long? Price { get; set; }
         public string? Personality { get; set; }
         public string? Origin { get; set; }
         public string? SelectionRate { get; set; }
-        public string Species { get; set; }
+        public string? Species { get; set; }
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }  // Gi?y ngu?n g?c xu?t x?
         public IFormFile? HealthCertificate { get; set; }  // Gi?y ki?m tra s?c kh?e
@@ -89,6 +90,7 @@ namespace swp_be.Controllers
         public async Task<IActionResult> PutKoi(int id, [FromForm] KoiRequest koi)
         {
             Koi info = await koiService.GetKoi(id);
+            Console.WriteLine("price equal null" + koi.Price == null);
 
             if (info == null)
             {
@@ -101,11 +103,11 @@ namespace swp_be.Controllers
             info.Size = koi.Size ?? info.Size;
             info.Color = koi.Color ?? info.Color;
             info.DailyFeedAmount = koi.DailyFeedAmount ?? info.DailyFeedAmount;
-            info.Price = koi.Price != 0 ? koi.Price : info.Price;
+            info.Price = koi.Price ?? info.Price;
             info.Personality = koi.Personality ?? info.Personality;
             info.Origin = koi.Origin ?? info.Origin;
             info.SelectionRate = koi.SelectionRate ?? info.SelectionRate;
-            info.Species = koi.Species != "" ? koi.Species : info.Species;
+            info.Species = koi.Species ?? info.Species;
 
             // Add image base on input
             info.Image = await fbUtils.UploadImage(koi.Image?.OpenReadStream(), info.KoiID.ToString(), "koiImage") ?? info.Image;
@@ -122,7 +124,6 @@ namespace swp_be.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize("staff, admin")]
         [HttpPost]
-        // TODO: Set this to FromBody later
         public async Task<ActionResult<Koi>> PostKoi([FromForm] KoiRequest koiRequest)
         {
             // Prepare image URL
@@ -153,6 +154,16 @@ namespace swp_be.Controllers
             //        }
             //    }
             //}
+            if (koiRequest.Species == null)
+            {
+                return BadRequest(new { message = "Species is required!" });
+            }
+
+            if (koiRequest.Price == null)
+            {
+                return BadRequest(new { message = "Species is required!" });
+            }
+
 
             var koi = new Koi
             {
@@ -162,7 +173,7 @@ namespace swp_be.Controllers
                 Size = koiRequest.Size,
                 Color = koiRequest.Color,
                 DailyFeedAmount = koiRequest.DailyFeedAmount,
-                Price = koiRequest.Price,
+                Price = koiRequest.Price.Value,
                 Personality = koiRequest.Personality,
                 SelectionRate = koiRequest.SelectionRate,
                 Species = koiRequest.Species,
