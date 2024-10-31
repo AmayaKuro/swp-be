@@ -1,4 +1,5 @@
-﻿using swp_be.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using swp_be.Data;
 using swp_be.Models;
 
 namespace swp_be.Services
@@ -16,7 +17,9 @@ namespace swp_be.Services
 
         public async Task<IEnumerable<ConsignmentKoi>> GetConsignmentKois()
         {
-            return await unitOfWork.ConsignmentKoiRepository.GetAllAsync();
+            return await _context.ConsignmentKois
+                           .Include(c => c.AddOn)
+                           .ToListAsync();
         }
 
         public async Task<ConsignmentKoi> GetConsignmentKoi(int id)

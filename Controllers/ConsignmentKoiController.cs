@@ -164,7 +164,7 @@ namespace swp_be.Controllers
             if (consignKoi.pricePerDay >= 0) info.Price = consignKoi.pricePerDay ?? info.Price; 
             if (consignKoi.fosteringDays >= 0) info.FosteringDays = consignKoi.fosteringDays ?? info.FosteringDays;
             if (consignKoi.consignmentId > 0) info.ConsignmentID = consignKoi.consignmentId ?? info.ConsignmentID;
-
+            await _context.SaveChangesAsync();
             // Update image
             // Add image base on input
             info.Image = await fbUtils.UploadImage(consignKoi.Image?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "koiImage");
@@ -224,9 +224,9 @@ namespace swp_be.Controllers
                 Origin = consignKoi.origin,
                 SelectionRate = consignKoi.selectionRate,
                 Species = consignKoi.species,
-                Price = consignKoi.pricePerDay,
-                FosteringDays = consignKoi.fosteringDays,
-                ConsignmentID = consignKoi.consignmentId,
+                Price = consignKoi.pricePerDay ?? 1,  // Defaulting to 0 if null
+                FosteringDays = consignKoi.fosteringDays ?? 1,  // Defaulting to 0 if null
+                ConsignmentID = consignKoi.consignmentId ?? 0,  // Defaulting to 0 if null
                 AddOn = new AddOn(),
             };
 
