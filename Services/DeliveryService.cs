@@ -57,11 +57,13 @@ namespace swp_be.Services
 
         public Delivery CreateDeliveryFromOrder(Order order)
         {
-            var user = userService.GetUserProfile(order.CustomerID.Value);
+            var customer = unitOfWork.CustomerRepository.GetById(order.CustomerID.Value);
+            var user = unitOfWork.UserRepository.GetById(customer.UserID);
+
             Delivery delivery = new Delivery
             {
                 OrderID = order.OrderID,
-                CustomerID = user.UserID,
+                Customer = customer,
                 Status = DeliveryStatus.Delivering,
                 StartDeliDay = DateTime.Now,
                 Address = user.Address   

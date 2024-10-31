@@ -72,7 +72,7 @@ namespace swp_be.Services
             {
                 order.PromotionID = promotionID; //promotionID;
             }
-
+            Console.WriteLine(order.Type);
 
             order.OrderDetails = orderDetails;
 
@@ -162,7 +162,7 @@ namespace swp_be.Services
                 OrderDetail detail = new OrderDetail();
 
                 detail.ConsignmentKoi = consignmentKoiInfo;
-                detail.Type = OrderDetailType.Koi;
+                detail.Type = OrderDetailType.ConsignmentKoi;
                 detail.Price = consignmentKoiInfo.Price;
 
                 consignmentKoiInfo.Consignment.Status = ConsignmentStatus.pending;

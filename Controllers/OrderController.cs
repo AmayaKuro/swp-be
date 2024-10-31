@@ -47,7 +47,7 @@ namespace swp_be.Controllers
 
         // GET: api/Orders
         [HttpGet]
-        [Authorize("admin")]
+        [Authorize("staff, admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             return await _context.Orders.ToListAsync();
