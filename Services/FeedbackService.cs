@@ -35,7 +35,7 @@ namespace swp_be.Services
         public async Task<Feedback> CreateFeedback(Feedback feedback)
         {
             var order = _unitOfWork.OrderRepository.GetById(feedback.OrderID);
-            if (order == null /*|| order.Status != OrderStatus.Completed*/)
+            if (order == null || order.Status != OrderStatus.Completed)
             {
                 return null;
             }

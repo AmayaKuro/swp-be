@@ -51,7 +51,7 @@ namespace swp_be.Controllers
         }
 
         // GET: api/Koi/5
-        [Authorize("staff, admin")]
+        [Authorize("all")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Delivery>> GetDelivery(int id)
         {
@@ -64,7 +64,7 @@ namespace swp_be.Controllers
 
             return delivery;
         }
-        [Authorize("staff, admin")]
+        [Authorize("all")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDeliver(DeliveryRequest deliveryRequest)
         {
@@ -86,7 +86,7 @@ namespace swp_be.Controllers
 
         // POST: api/Koi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize("staff, admin")]
+        [Authorize("all")]
         [HttpPost]
         public async Task<IActionResult> CreateDelivery(DeliveryRequest deliveryRequest)
         {
