@@ -123,6 +123,8 @@ namespace swp_be.Services
 
                 Koi koiInfo = koiRepository.GetById(koiID);
 
+                if (koiInfo.Status != KoiStatus.Available) break;
+
                 if (koiInfo == null)
                 {
                     return null;
@@ -136,6 +138,9 @@ namespace swp_be.Services
 
                 // Add money to total
                 TotalAmount += detail.Price;
+
+                koiInfo.Status = KoiStatus.InOrder;
+                koiRepository.Update(koiInfo);
 
                 orderDetails.Add(detail);
             }
