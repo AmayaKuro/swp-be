@@ -25,6 +25,7 @@ namespace swp_be.Services
         private ConsignmentKoiRepository consignmentKoiRepository;
         private GenericRepository<Promotion> promotionRepository;
         private OrderRepository orderRepository;
+        private ConsignmentRepository consignmentRepository;
 
         public OrderService(ApplicationDBContext context)
         {
@@ -34,6 +35,7 @@ namespace swp_be.Services
             consignmentKoiRepository = new ConsignmentKoiRepository(_context);
             promotionRepository = new GenericRepository<Promotion>(_context);
             orderRepository = new OrderRepository(_context);
+            consignmentRepository = new ConsignmentRepository(_context);
         }
 
         public Order GetByID(int id)
@@ -151,6 +153,8 @@ namespace swp_be.Services
                 if (consignmentKoiID < 1) break;
                 ConsignmentKoi consignmentKoiInfo = consignmentKoiRepository.GetById(consignmentKoiID);
 
+                if (consignmentKoiInfo.Consignment.Status != ConsignmentStatus.available) break;
+
                 if (consignmentKoiInfo == null)
                 {
                     return null;
@@ -161,6 +165,9 @@ namespace swp_be.Services
                 detail.ConsignmentKoi = consignmentKoiInfo;
                 detail.Type = OrderDetailType.Koi;
                 detail.Price = consignmentKoiInfo.Price;
+                
+                consignmentKoiInfo.Consignment.Status = ConsignmentStatus.pending;
+                consignmentRepository.Update(consignmentKoiInfo.Consignment);               
 
                 // Add money to total
                 TotalAmount += detail.Price;
