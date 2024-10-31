@@ -63,7 +63,7 @@ namespace swp_be.Services
             transaction.Type = TransactionType.Shopping;
             transaction.Status = TransactionStatus.Pending;
             // Always online regardless of payment method
-            transaction.PaymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "Cash");
+            transaction.PaymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "VNPay");
 
             transactionRepository.Create(transaction);
             transactionRepository.Save();
@@ -125,7 +125,7 @@ namespace swp_be.Services
             transaction.Type = TransactionType.Consignment;
             transaction.Status = TransactionStatus.Pending;
             // Always online regardless of payment method
-            transaction.PaymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "Cash");
+            transaction.PaymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "VNPay");
 
             transactionRepository.Create(transaction);
             transactionRepository.Save();

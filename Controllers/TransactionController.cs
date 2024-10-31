@@ -234,7 +234,7 @@ namespace swp_be.Controllers
                 }
             }
 
-            return Redirect(Configuration.GetConfiguration()["FEUrl"] + "/" + feQueryString);
+            return Redirect(Configuration.GetConfiguration()["FEUrl"] + "/paymentSuccess" + feQueryString);
         }
     }
 }
