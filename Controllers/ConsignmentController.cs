@@ -85,11 +85,11 @@ namespace swp_be.Controllers
             return consignment;
         }
         [Authorize("staff, admin")]
-        [HttpPut]
-        public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateConsignment(int id, ConsignmentRequest consignmentRequest)
         {
             // Find the consignment by ID
-            var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
+            var consignment = await _context.Consignments.FindAsync(id);
 
             if (consignment == null)
             {
