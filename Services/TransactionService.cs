@@ -195,7 +195,7 @@ namespace swp_be.Services
             transaction.OrderID = orderID;
             transaction.CreateAt = DateTime.Now;
             transaction.Status = TransactionStatus.Pending;
-            transaction.Type = TransactionType.Offline;
+            transaction.Type = TransactionType.Shopping;
             transaction.Amount = depositAmount;
             transaction.CreateAt = DateTime.Now;
             transaction.EndAt = transaction.CreateAt.AddDays(1);

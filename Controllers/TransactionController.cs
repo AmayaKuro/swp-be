@@ -102,7 +102,7 @@ namespace swp_be.Controllers
         [HttpPost]
         [Route("createOffTransaction")]
         [Authorize("staff, admin")]
-        public async Task<ActionResult<Transaction>> CreateOffTransaction(int orderID)
+        public async Task<ActionResult<Transaction>> CreateOffTransaction([FromBody] int orderID)
         {
             var order = await transactionService.CreateOffTransaction(orderID);
 
