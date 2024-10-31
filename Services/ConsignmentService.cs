@@ -76,7 +76,41 @@ namespace swp_be.Services
             // Execute the query asynchronously and return the results
             return await query.ToListAsync();
         }
-       
 
+        public async Task<Consignment> UpdateConsignment(Consignment consignment)
+        {
+            try
+            {
+                _context.Consignments.Update(consignment);
+                await _context.SaveChangesAsync();
+                return consignment;
+            }
+            catch (DbUpdateException ex)
+            {
+                // Optionally, log the exception or rethrow as needed
+                throw new Exception("An error occurred while updating the consignment.", ex);
+            }
+        }
+        public async Task<Consignment> CreateConsignment(Consignment consignment, ConsignmentKoi consignmentKoi)
+        {
+            _context.Consignments.Add(consignment);
+            await _context.SaveChangesAsync();
+            try
+            {
+                // Set the ConsignmentID in consignmentKoi after saving consignment
+                consignmentKoi.ConsignmentID = consignment.ConsignmentID;
+
+                // Add the consignmentKoi to the database
+                _context.ConsignmentKois.Add(consignmentKoi);
+              await  _context.SaveChangesAsync(); // Save the Koi as well
+
+                return consignment;
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the exception for debugging purposes if needed
+                throw new Exception("Error creating consignment", ex);
+            }
+        }
     }
 }

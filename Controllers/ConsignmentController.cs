@@ -4,9 +4,10 @@ using swp_be.Data;
 using swp_be.Services;
 using swp_be.Models;
 using Microsoft.EntityFrameworkCore;
-
+using NuGet.Protocol.Plugins;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using swp_be.Utils;
 
 namespace swp_be.Controllers
 {
@@ -17,12 +18,19 @@ namespace swp_be.Controllers
         public ConsignmentType Type { get; set; }
         public long FosterPrice { get; set; }
         public ConsignmentStatus Status { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime StartDate { get; set; }
     }
     public class ConsignKoiRequest
     {
+        public int ConsignKoiID { get; set; }
+        public int ConsignmentID { get; set; }
         public int CustomerID { get; set; }
         public ConsignmentType Type { get; set; }
         public ConsignmentStatus Status { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime StartDate { get; set; }
+        //Bien cua consignKoi
         public string? Name { get; set; }
         public string? Gender { get; set; }
         public int? Age { get; set; }
@@ -35,6 +43,10 @@ namespace swp_be.Controllers
         public string Species { get; set; }
         public long PricePerDay { get; set; }
         public int FosteringDays { get; set; }
+        public IFormFile? Image { get; set; }
+        public IFormFile? OriginCertificate { get; set; }
+        public IFormFile? HealthCertificate { get; set; }
+        public IFormFile? OwnershipCertificate { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -44,7 +56,8 @@ namespace swp_be.Controllers
         private readonly ApplicationDBContext _context;
         private readonly ConsignmentService consignmentService;
         private readonly TransactionService transactionService;
-        private readonly ConsignmentKoiService consignmentKoiService; 
+        private readonly ConsignmentKoiService consignmentKoiService;
+        private readonly FirebaseUtils fbUtils = new FirebaseUtils();
         public ConsignmentController(ApplicationDBContext context)
         {
             this._context = context;
@@ -72,7 +85,7 @@ namespace swp_be.Controllers
             return consignment;
         }
         [Authorize("staff, admin")]
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
         {
             // Find the consignment by ID
@@ -88,6 +101,9 @@ namespace swp_be.Controllers
             consignment.Type = consignmentRequest.Type;
             consignment.FosterPrice = consignmentRequest.FosterPrice;
             consignment.Status = consignmentRequest.Status;
+            consignment.StartDate = consignmentRequest.StartDate;
+            consignment.EndDate = consignmentRequest.EndDate;
+
             //if (consignment.Status != ConsignmentStatus.pending)
             //{
             //    string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
@@ -95,9 +111,9 @@ namespace swp_be.Controllers
             // Save changes
             try
             {
-                await _context.SaveChangesAsync();
+                consignmentService.UpdateConsignment(consignment);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error updating consignment" });
             }
@@ -107,7 +123,7 @@ namespace swp_be.Controllers
         [Authorize("staff, admin")]
         [Route("create")]
         [HttpPost]
-        public async Task<IActionResult> CreateConsignment(ConsignKoiRequest consignKoiRequest )
+        public async Task<IActionResult> CreateConsignment([FromForm]ConsignKoiRequest consignKoiRequest )
             {
                 // Create a new consignment object
                 var newConsignment = new Consignment
@@ -115,10 +131,13 @@ namespace swp_be.Controllers
                 CustomerID = consignKoiRequest.CustomerID,
                 Type = consignKoiRequest.Type,
                 FosterPrice = consignKoiRequest.FosteringDays * consignKoiRequest.PricePerDay,
-                Status = consignKoiRequest.Status // Ensure this is correctly spelled
+                Status = consignKoiRequest.Status, // Ensure this is correctly spelled
+                CreateAt= DateTime.Now,
+                StartDate = consignKoiRequest.StartDate,
+                EndDate = consignKoiRequest.EndDate,
                 };
             // Create a new ConsignmentKoi object
-            var fosterKoi = new ConsignmentKoi
+            var consignmentKoi = new ConsignmentKoi
             {
                 Name = consignKoiRequest.Name,
                 Gender = consignKoiRequest.Gender,
@@ -132,48 +151,25 @@ namespace swp_be.Controllers
                 Species = consignKoiRequest.Species,
                 Price = consignKoiRequest.PricePerDay,
                 FosteringDays = consignKoiRequest.FosteringDays,
-                ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
+                ConsignmentID = newConsignment.ConsignmentID,
+                AddOn=new AddOn()
+                // Set this only after saving the consignment
             };
 
             // Add the new consignment to the database
-            _context.Consignments.Add(newConsignment);
-
-            // Save changes to the database
-            try
-            {
-                await _context.SaveChangesAsync();
-
-                // Set the ConsignmentID after saving to the database
-                fosterKoi.ConsignmentID = newConsignment.ConsignmentID;
-
-                // Add the Koi after the consignment is saved
-                _context.ConsignmentKois.Add(fosterKoi);
-                await _context.SaveChangesAsync(); // Save the Koi as well
-            }
-            catch (DbUpdateException ex)
-            {
-                // Log the exception for debugging purposes if needed
-                return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
-            }
+            await consignmentService.CreateConsignment(newConsignment, consignmentKoi);
+            consignmentKoi.Image = await fbUtils.UploadImage(consignKoiRequest.Image?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "koiImage");
+            consignmentKoi.AddOn.OriginCertificate = await fbUtils.UploadImage(consignKoiRequest.OriginCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "originCertificate");
+            consignmentKoi.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoiRequest.HealthCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "healthCertificate");
+            consignmentKoi.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoiRequest.OwnershipCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "ownershipCertificate");
+            await _context.SaveChangesAsync();
             string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment,HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             return Ok(new { paymentUrl });
         }
        
         [Route("pending")]
         [HttpPost]
-        public async Task<IActionResult> NegotiatingConsignment(
-        [FromQuery] ConsignmentType type,
-        [FromQuery] string? name,
-        [FromQuery] string? gender,
-        [FromQuery] int? age,
-        [FromQuery] string? size,
-        [FromQuery] string? color,
-        [FromQuery] string? dailyFeedAmount,
-        [FromQuery] string? personality,
-        [FromQuery] string? origin,
-        [FromQuery] string? selectionRate,
-        [FromQuery] string species,
-        [FromQuery] int fosteringDays)
+        public async Task<IActionResult> NegotiatingConsignment([FromForm]ConsignKoiRequest consignKoiRequest)
         {
             // Retrieve the customer ID from the user's claims
             int customerID = int.Parse(User.FindFirstValue("userID"));
@@ -182,41 +178,49 @@ namespace swp_be.Controllers
             var newConsignment = new Consignment
             {
                 CustomerID = customerID,
-                Type = type,
+                Type = consignKoiRequest.Type,
+                CreateAt = DateTime.Now,
+                StartDate = consignKoiRequest.StartDate,
+                EndDate = consignKoiRequest.EndDate,
                 Status = ConsignmentStatus.negotiate // Ensure this is correctly spelled
             };
 
             // Create a new ConsignmentKoi object
-            var fosterKoi = new ConsignmentKoi
+            var consignmentKoi = new ConsignmentKoi
             {
-                Name = name,
-                Gender = gender,
-                Age = age,
-                Size = size,
-                Color = color,
-                DailyFeedAmount = dailyFeedAmount,
-                Personality = personality,
-                Origin = origin,
-                SelectionRate = selectionRate,
-                Species = species,
+                Name = consignKoiRequest.Name,
+                Gender = consignKoiRequest.Gender,
+                Age = consignKoiRequest.Age,
+                Size = consignKoiRequest.Size,
+                Color = consignKoiRequest.Color,
+                DailyFeedAmount = consignKoiRequest.DailyFeedAmount,
+                Personality = consignKoiRequest.Personality,
+                Origin = consignKoiRequest.Origin,
+                SelectionRate = consignKoiRequest.SelectionRate,
+                Species = consignKoiRequest.Species,
                 //Price=null
-                FosteringDays = fosteringDays,
-                ConsignmentID = newConsignment.ConsignmentID // Set this only after saving the consignment
+                FosteringDays = consignKoiRequest.FosteringDays,
+                ConsignmentID = newConsignment.ConsignmentID, // Set this only after saving the consignment
+                AddOn = new AddOn()
             };
 
             // Add the new consignment to the database
             _context.Consignments.Add(newConsignment);
-
+            consignmentKoi.Image = await fbUtils.UploadImage(consignKoiRequest.Image?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "koiImage");
+            consignmentKoi.AddOn.OriginCertificate = await fbUtils.UploadImage(consignKoiRequest.OriginCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "originCertificate");
+            consignmentKoi.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoiRequest.HealthCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "healthCertificate");
+            consignmentKoi.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoiRequest.OwnershipCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "ownershipCertificate");
+            await _context.SaveChangesAsync();
             // Save changes to the database
             try
             {
                 await _context.SaveChangesAsync();
 
                 // Set the ConsignmentID after saving to the database
-                fosterKoi.ConsignmentID = newConsignment.ConsignmentID;
+                consignmentKoi.ConsignmentID = newConsignment.ConsignmentID;
 
                 // Add the Koi after the consignment is saved
-                _context.ConsignmentKois.Add(fosterKoi);
+                _context.ConsignmentKois.Add(consignmentKoi);
                 await _context.SaveChangesAsync(); // Save the Koi as well
             }
             catch (DbUpdateException ex)
