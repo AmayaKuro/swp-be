@@ -25,6 +25,7 @@ namespace swp_be.Data.Repositories
         public async Task<List<ConsignmentKoi>> GetConsignmentKoisByUserId(int userId)
         {
             return await _context.ConsignmentKois
+                .Include(koi=>koi.AddOn)
                 .Include(koi => koi.Consignment)
                 .ThenInclude(consignment => consignment.Customer)
                 .Where(koi => koi.Consignment.Customer.UserID == userId)
