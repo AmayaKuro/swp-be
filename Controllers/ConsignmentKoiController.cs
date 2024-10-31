@@ -126,7 +126,7 @@ namespace swp_be.Controllers
         public async Task<IActionResult> UpdateFosterKoi(int id, [FromForm] ConsignKoiReq consignKoi)
         {
             // Find the foster koi, ensuring you await the result
-            var info = await _context.ConsignmentKois.FindAsync(id);
+            var info = await ConsignmentKoiservice.GetById(id);
 
             // Check if foster koi exists
             if (info == null)

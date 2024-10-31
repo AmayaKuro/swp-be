@@ -18,6 +18,7 @@ namespace swp_be.Services
         public async Task<IEnumerable<ConsignmentKoi>> GetConsignmentKois()
         {
             return await _context.ConsignmentKois
+                           .Include(koi => koi.Consignment)
                            .Include(c => c.AddOn)
                            .ToListAsync();
         }
@@ -27,6 +28,12 @@ namespace swp_be.Services
             return await unitOfWork.ConsignmentKoiRepository.GetByIdAsync(id);
         }
 
+        public async Task<ConsignmentKoi> GetById(int id)
+        {
+            return await _context.ConsignmentKois.Include(koi => koi.Consignment)
+                                                 .Include(koi => koi.AddOn)
+                                                 .FirstOrDefaultAsync(koi => koi.ConsignmentKoiID == id);
+        }
         public async Task<List<ConsignmentKoi>> GetConsignmentKoisByUser(int userId)
         {
             return await unitOfWork.ConsignmentKoiRepository.GetConsignmentKoisByUserId(userId);
