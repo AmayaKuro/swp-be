@@ -20,6 +20,7 @@ namespace swp_be.Data.Repositories
                 .Include(c => c.Customer)                    // Include the Customer entity
                 .ThenInclude(c => c.User)                    // Include the User entity from the Customer
                 .Include(c => c.ConsignmentKois)             // Include related ConsignmentKois
+                .ThenInclude(c=>c.AddOn)                     // include addOn  
                 .ToListAsync();
         }
         public async Task<Consignment> GetById(int id)

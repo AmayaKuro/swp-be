@@ -14,6 +14,13 @@ namespace swp_be.Data.Repositories
         {
         }
 
+        public async Task<List<Koi>> GetKois()
+        {
+            return await  _context.Kois
+                    .Include(c=>c.AddOn)
+                    .ToListAsync();
+        }
+
         public async Task<List<object>> GetAvailableKoisAsync()
         {
             var availableKois = await _context.Kois

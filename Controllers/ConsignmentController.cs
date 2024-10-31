@@ -215,7 +215,6 @@ namespace swp_be.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-
                 // Set the ConsignmentID after saving to the database
                 consignmentKoi.ConsignmentID = newConsignment.ConsignmentID;
 
