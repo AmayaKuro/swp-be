@@ -25,9 +25,9 @@ namespace swp_be.Controllers
         public string? origin { get; set; }
         public string? selectionRate { get; set; }
         public string? species { get; set; }
-        public long pricePerDay { get; set; }
-        public int fosteringDays { get; set; }
-        public int consignmentId { get; set; }
+        public long? pricePerDay { get; set; }
+        public int? fosteringDays { get; set; }
+        public int? consignmentId { get; set; }
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }
         public IFormFile? HealthCertificate { get; set; }
@@ -161,9 +161,9 @@ namespace swp_be.Controllers
             if (consignKoi.origin != null) info.Origin = consignKoi.origin;
             if (consignKoi.selectionRate != null) info.SelectionRate = consignKoi.selectionRate;
             if (consignKoi.species != null) info.Species = consignKoi.species;
-            if (consignKoi.pricePerDay >= 0) info.Price = consignKoi.pricePerDay;
-            if (consignKoi.fosteringDays >= 0) info.FosteringDays = consignKoi.fosteringDays;
-            if (consignKoi.consignmentId > 0) info.ConsignmentID = consignKoi.consignmentId;
+            if (consignKoi.pricePerDay >= 0) info.Price = consignKoi.pricePerDay ?? info.Price; 
+            if (consignKoi.fosteringDays >= 0) info.FosteringDays = consignKoi.fosteringDays ?? info.FosteringDays;
+            if (consignKoi.consignmentId > 0) info.ConsignmentID = consignKoi.consignmentId ?? info.ConsignmentID;
 
             // Update image
             // Add image base on input
