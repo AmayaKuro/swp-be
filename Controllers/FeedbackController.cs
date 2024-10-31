@@ -7,6 +7,20 @@ using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
+    public class FeedbackRequest
+    {
+        public int CustomerID { get; set; }
+        public int OrderID { get; set; }
+        public int Rating { get; set; }
+        public string Comment { get; set; }
+    }
+
+    public class FeedbackUpdateRequest
+    {
+        public int Rating { get; set; }
+        public string Comment { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class FeedbackController : ControllerBase
@@ -22,22 +36,19 @@ namespace swp_be.Controllers
             this.userService = new UserService(Context);
         }
 
-        // GET: api/Feedback
         [HttpGet]
         [Authorize("all")]
         public async Task<ActionResult<IEnumerable<Feedback>>> GetFeedbacks()
         {
-            var feedbacks = await _feedbackService.GetFeedbacks();
+            var feedbacks = await _feedbackService.GetFeedbacksWithUser();
             return Ok(feedbacks);
         }
 
-        // GET: api/Feedback/5
         [HttpGet("{id}")]
         [Authorize("all")]
         public async Task<ActionResult<Feedback>> GetFeedback(int id)
         {
-            var feedback = await _feedbackService.GetFeedbackById(id);
-
+            var feedback = await _feedbackService.GetFeedbackWithUserById(id);
             if (feedback == null)
             {
                 return NotFound();
@@ -46,13 +57,18 @@ namespace swp_be.Controllers
             return Ok(feedback);
         }
 
-        // POST: api/Feedback
-        [HttpPost]
+        [HttpPost("CreateFeedback")]
         [Authorize("all")]
-        public async Task<ActionResult<Feedback>> CreateFeedback(Feedback feedback)
+        public async Task<ActionResult<Feedback>> CreateFeedback(FeedbackRequest feedbackRequest)
         {
-/*            var createdFeedback = await _feedbackService.CreateFeedback(feedback);
-            return CreatedAtAction(nameof(GetFeedback), new { id = createdFeedback.FeedbackID }, createdFeedback);*/
+            var feedback = new Feedback
+            {
+                CustomerID = feedbackRequest.CustomerID,
+                OrderID = feedbackRequest.OrderID,
+                Rating = feedbackRequest.Rating,
+                Comment = feedbackRequest.Comment,
+                DateFb = DateTime.Now
+            };
 
             var createdFeedback = await _feedbackService.CreateFeedback(feedback);
 
@@ -62,20 +78,15 @@ namespace swp_be.Controllers
             }
 
             return CreatedAtAction(nameof(GetFeedback), new { id = createdFeedback.FeedbackID }, createdFeedback);
-
         }
+
 
         // PUT: api/Feedback/5
         [HttpPut("{id}")]
         [Authorize("all")]
-        public async Task<IActionResult> UpdateFeedback(int id, Feedback feedback)
+        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackUpdateRequest updateRequest)
         {
-            if (id != feedback.FeedbackID)
-            {
-                return BadRequest();
-            }
-
-            var updatedFeedback = await _feedbackService.UpdateFeedback(feedback);
+            var updatedFeedback = await _feedbackService.UpdateRatingAndComment(id, updateRequest.Rating, updateRequest.Comment);
 
             if (updatedFeedback == null)
             {

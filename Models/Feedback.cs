@@ -13,7 +13,7 @@ namespace swp_be.Models
         public int OrderID { get; set; }
 
         [Required]
-        public int CustomerID { get; set; }
+        public int? CustomerID { get; set; }
 
         [Required, Range(1, 5)]
         public int Rating { get; set; }
@@ -23,7 +23,7 @@ namespace swp_be.Models
         [Required]
         public DateTime DateFb { get; set; }
 
-        public Order Order { get; set; }
-        public Customer Customer { get; set; }
+        public Order? Order { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

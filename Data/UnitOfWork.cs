@@ -19,7 +19,7 @@ namespace swp_be.Data
         private GenericRepository<FosterBatch> _fosterBatchRepository;
         private GenericRepository<Customer> _customerRepository;
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
-        private GenericRepository<Feedback> _feedbackRepository;
+        private FeedbackRepository _feedbackRepository;
 
         private GenericRepository<Delivery> _deliveryRepository;
 
@@ -45,7 +45,7 @@ namespace swp_be.Data
             _fosterBatchRepository = new GenericRepository<FosterBatch>(_context);
             _customerRepository = new GenericRepository<Customer>(_context);
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
-            _feedbackRepository = new GenericRepository<Feedback>(_context);
+            _feedbackRepository = new FeedbackRepository(_context);
 
             _deliveryRepository = new GenericRepository<Delivery>(_context); 
 
@@ -153,7 +153,7 @@ namespace swp_be.Data
             }
         }
 
-        public GenericRepository<Feedback> FeedbackRepository
+        public FeedbackRepository FeedbackRepository
         {
             get
             {

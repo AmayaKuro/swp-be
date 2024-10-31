@@ -11,21 +11,31 @@ namespace swp_be.Services
         {
             _unitOfWork = new UnitOfWork(context);
         }
-
         public async Task<IEnumerable<Feedback>> GetFeedbacks()
         {
             return await _unitOfWork.FeedbackRepository.GetAllAsync();
         }
-
         public async Task<Feedback> GetFeedbackById(int id)
         {
             return await _unitOfWork.FeedbackRepository.GetByIdAsync(id);
         }
 
+        public async Task<IEnumerable<Feedback>> GetFeedbacksWithUser()
+        {
+            return await _unitOfWork.FeedbackRepository.GetAllFeedbacksWithUserAsync();
+        }
+
+        public async Task<Feedback> GetFeedbackWithUserById(int id)
+        {
+            return await _unitOfWork.FeedbackRepository.GetFeedbackWithUserByIdAsync(id);
+        }
+
+
+
         public async Task<Feedback> CreateFeedback(Feedback feedback)
         {
             var order = _unitOfWork.OrderRepository.GetById(feedback.OrderID);
-            if (order == null || order.Status != OrderStatus.Completed)
+            if (order == null /*|| order.Status != OrderStatus.Completed*/)
             {
                 return null;
             }
@@ -35,13 +45,28 @@ namespace swp_be.Services
             return feedback;
         }
 
-        public async Task<Feedback> UpdateFeedback(Feedback feedback)
-        {
-            _unitOfWork.FeedbackRepository.Update(feedback);
-            _unitOfWork.Save();
-            return feedback;
-        }
 
+        public async Task<Feedback> UpdateRatingAndComment(int feedbackId, int rating, string comment)
+{
+   
+    var existingFeedback = await _unitOfWork.FeedbackRepository.GetByIdAsync(feedbackId);
+
+    if (existingFeedback == null)
+    {
+        return null;
+    }
+
+    existingFeedback.Rating = rating;
+    existingFeedback.Comment = comment;
+
+    _unitOfWork.FeedbackRepository.UpdatePartial(existingFeedback);
+    _unitOfWork.Save();
+
+    return existingFeedback;
+}
+
+
+       
         public async Task<bool> DeleteFeedback(int id)
         {
             var feedback = await _unitOfWork.FeedbackRepository.GetByIdAsync(id);
