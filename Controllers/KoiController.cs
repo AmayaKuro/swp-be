@@ -84,7 +84,7 @@ namespace swp_be.Controllers
 
         // PUT: api/Koi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize("staff, admin")]
+        //[Authorize("staff, admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutKoi(int id, [FromForm] KoiRequest koi)
         {
@@ -113,7 +113,7 @@ namespace swp_be.Controllers
             info.AddOn.HealthCertificate = await fbUtils.UploadImage(koi.HealthCertificate?.OpenReadStream(), info.KoiID.ToString(), "healthCertificate") ?? info.AddOn.HealthCertificate;
             info.AddOn.OwnershipCertificate = await fbUtils.UploadImage(koi.OwnershipCertificate?.OpenReadStream(), info.KoiID.ToString(), "ownershipCertificate") ?? info.AddOn.OwnershipCertificate;
 
-            koiService.UpdateKoi(info);
+             await koiService.UpdateKoi(info);
 
             return NoContent();
         }

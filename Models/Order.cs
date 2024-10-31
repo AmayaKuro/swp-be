@@ -54,7 +54,7 @@ namespace swp_be.Models
         [Required]
         public OrderType Type { get; set; }
 
-        [Required, MaxLength(50)]
+        [Required, MaxLength(250)]
         public OrderStatus Status { get; set; }
 
         public int? PromotionID { get; set; }

@@ -23,6 +23,7 @@ namespace swp_be.Controllers
         public DeliveryStatus? Status { get; set; }
         public DateTime? StartDeliDay { get; set; }
         public DateTime? EndDeliDay { get; set; }
+        public string ? Address { get; set; }
     }
 
     [Route("api/koi/[controller]")]
@@ -78,7 +79,7 @@ namespace swp_be.Controllers
             delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
             delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
             delivery.Status = deliveryRequest.Status ?? delivery.Status;
-
+            delivery.Address = deliveryRequest.Address ?? delivery.Address;
             await deliveryService.UpdateDelivery(delivery);
             return NoContent();
         }
@@ -97,7 +98,7 @@ namespace swp_be.Controllers
             delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
             delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
             delivery.Status = deliveryRequest.Status ?? delivery.Status;
-
+            delivery.Address = deliveryRequest.Address ?? delivery.Address;
             _context.Deliveries.Add(delivery);
             try
             {
