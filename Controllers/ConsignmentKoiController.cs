@@ -8,6 +8,7 @@ using swp_be.Models;
 using swp_be.Services;
 using swp_be.Utils;
 using System.Drawing;
+using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
@@ -70,10 +71,10 @@ namespace swp_be.Controllers
         }
 
         [HttpGet("GetConsignmentKoisByUserID")]
-        [Authorize("all")]
-        public async Task<ActionResult<List<ConsignmentKoi>>> GetConsignmentKoisByUser(int userId)
+        public async Task<ActionResult<List<ConsignmentKoi>>> GetConsignmentKoisByUser()
         {
-            var consignmentKois = await ConsignmentKoiservice.GetConsignmentKoisByUser(userId);
+            int userID = int.Parse(User.FindFirstValue("userID"));
+            var consignmentKois = await ConsignmentKoiservice.GetConsignmentKoisByUser(userID);
             if (consignmentKois == null || !consignmentKois.Any())
             {
                 return NotFound("No consignment koi found for the given user ID.");
