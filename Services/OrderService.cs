@@ -40,7 +40,7 @@ namespace swp_be.Services
 
         public Order GetByID(int id)
         {
-            return orderRepository.GetById(id);
+            return orderRepository.GetOrderByID(id);
         }
 
         public List<Order> GetByUserID(int id)
@@ -72,7 +72,7 @@ namespace swp_be.Services
             {
                 order.PromotionID = promotionID; //promotionID;
             }
-            
+
 
             order.OrderDetails = orderDetails;
 
@@ -108,7 +108,7 @@ namespace swp_be.Services
 
                 if (batchInfo.RemainBatch < item[1])
                 {
-                    return null; 
+                    return null;
                 }
                 batchInfo.RemainBatch -= item[1];
                 batchRepository.Update(batchInfo);
@@ -149,7 +149,6 @@ namespace swp_be.Services
 
             foreach (var consignmentKoiID in consignmentKois)
             {
-                Console.WriteLine("Conssingggment " + consignmentKoiID);
                 if (consignmentKoiID < 1) break;
                 ConsignmentKoi consignmentKoiInfo = consignmentKoiRepository.GetById(consignmentKoiID);
 
@@ -165,9 +164,9 @@ namespace swp_be.Services
                 detail.ConsignmentKoi = consignmentKoiInfo;
                 detail.Type = OrderDetailType.Koi;
                 detail.Price = consignmentKoiInfo.Price;
-                
+
                 consignmentKoiInfo.Consignment.Status = ConsignmentStatus.pending;
-                consignmentRepository.Update(consignmentKoiInfo.Consignment);               
+                consignmentRepository.Update(consignmentKoiInfo.Consignment);
 
                 // Add money to total
                 TotalAmount += detail.Price;
@@ -200,13 +199,21 @@ namespace swp_be.Services
 
             foreach (var detail in order.OrderDetails)
             {
-                if (detail.Type == OrderDetailType.Batch)
+                if (detail.Type == OrderDetailType.Koi)
                 {
-                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
+                    Koi koi = koiRepository.GetById(detail.KoiID.Value);
 
-                    batch.QuantityPerBatch -= detail.Quantity.Value;
+                    koi.Status = KoiStatus.Sold;
 
-                    batchRepository.Update(batch);
+                    koiRepository.Update(koi);
+                }
+                else if (detail.Type == OrderDetailType.Batch)
+                {
+                    //Batch batch = batchRepository.GetById(detail.BatchID.Value);
+
+                    //batch.QuantityPerBatch -= detail.Quantity.Value;
+
+                    //batchRepository.Update(batch);
                 }
                 else if (detail.Type == OrderDetailType.ConsignmentKoi)
                 {
@@ -233,6 +240,34 @@ namespace swp_be.Services
 
             order.Status = OrderStatus.Cancelled;
             order.UpdateAt = DateTime.Now;
+
+            foreach (var detail in order.OrderDetails)
+            {
+                if (detail.Type == OrderDetailType.Koi)
+                {
+                    Koi koi = koiRepository.GetById(detail.KoiID.Value);
+
+                    koi.Status = KoiStatus.Available;
+
+                    koiRepository.Update(koi);
+                }
+                else if (detail.Type == OrderDetailType.Batch)
+                {
+                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
+
+                    batch.QuantityPerBatch += detail.Quantity.Value;
+
+                    batchRepository.Update(batch);
+                }
+                else if (detail.Type == OrderDetailType.ConsignmentKoi)
+                {
+                    ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
+
+                    consignmentKoi.Consignment.Status = ConsignmentStatus.available;
+
+                    consignmentKoiRepository.Update(consignmentKoi);
+                }
+            }
 
             orderRepository.Update(order);
             orderRepository.Save();

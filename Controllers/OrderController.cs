@@ -123,7 +123,7 @@ namespace swp_be.Controllers
 
             if (orderDetails == null || orderDetails.Count == 0)
             {
-                return BadRequest("orderDetails not found!");
+                return BadRequest("Can't create order Details!");
             }
 
             var order = orderService.CreateOrder(userID, orderRequest.paymentMethod, orderRequest.promotionID);
@@ -131,7 +131,7 @@ namespace swp_be.Controllers
             // order == null mean data was not complete or wrongly input 
             if (order == null)
             {
-                return BadRequest("order not found!");
+                return BadRequest("Can't create order!");
             }
 
             string paymentUrl;

@@ -13,6 +13,7 @@ namespace swp_be.Services
         private TransactionRepository transactionRepository;
         private DeliveryService deliveryService;
         private OrderService orderService;
+        private GenericRepository<PaymentMethod> paymentMethodRepository;
 
         public TransactionService(ApplicationDBContext context)
         {
@@ -20,6 +21,7 @@ namespace swp_be.Services
             transactionRepository = new TransactionRepository(context);
             deliveryService = new DeliveryService(context);
             orderService = new OrderService(context);
+            paymentMethodRepository = new GenericRepository<PaymentMethod>(context);
         }
 
         /// <summary>
@@ -48,18 +50,20 @@ namespace swp_be.Services
             Transaction transaction = new Transaction();
 
             transaction.OrderID = order.OrderID;
-            if (order.Type == OrderType.Online) {
+            if (order.Type == OrderType.Online)
+            {
                 transaction.Amount = order.TotalAmount;
-            } else
+            }
+            else
             {
                 transaction.Amount = order.TotalAmount /= 2;
             }
-            
+
             transaction.CreateAt = DateTime.Now;
             transaction.Type = TransactionType.Shopping;
             transaction.Status = TransactionStatus.Pending;
             // Always online regardless of payment method
-            transaction.PaymentMethodID = 1;
+            transaction.PaymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "Cash");
 
             transactionRepository.Create(transaction);
             transactionRepository.Save();
@@ -109,7 +113,7 @@ namespace swp_be.Services
             string url = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
 
             return url;
-        } 
+        }
 
         public string CreateVNPayTransaction(Consignment consignment, string clientIPAddr)
         {
@@ -121,7 +125,7 @@ namespace swp_be.Services
             transaction.Type = TransactionType.Consignment;
             transaction.Status = TransactionStatus.Pending;
             // Always online regardless of payment method
-            transaction.PaymentMethodID = 1;
+            transaction.PaymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "Cash");
 
             transactionRepository.Create(transaction);
             transactionRepository.Save();
@@ -177,8 +181,8 @@ namespace swp_be.Services
         {
             Transaction transaction = new Transaction();
 
-
             var order = orderService.GetByID(orderID);
+            var paymentMethod = paymentMethodRepository.GetAll().Find(info => info.MethodName == "Cash");
 
             if (order == null)
             {
@@ -195,7 +199,7 @@ namespace swp_be.Services
             transaction.Amount = depositAmount;
             transaction.CreateAt = DateTime.Now;
             transaction.EndAt = transaction.CreateAt.AddDays(1);
-            transaction.PaymentMethodID = 1;
+            transaction.PaymentMethod = paymentMethod;
 
 
             // Lưu Transaction vào repository
@@ -215,7 +219,7 @@ namespace swp_be.Services
             transactionRepository.Save();
         }
 
-        public void UpdateStatus(Transaction transaction, TransactionStatus transactionStatus, string? token)
+        public void UpdateStatus(Transaction transaction, TransactionStatus transactionStatus, string token = "")
         {
             transaction.Status = transactionStatus;
             transaction.EndAt = DateTime.Now;
@@ -262,6 +266,16 @@ namespace swp_be.Services
             else if (transactionStatus == TransactionStatus.Cancelled)
             {
                 transaction.Order.Status = OrderStatus.Cancelled;
+                transaction.EndAt = DateTime.Now;
+
+                if (transaction.Type == TransactionType.Shopping)
+                {
+                    orderService.CancelOrder(transaction.OrderID.Value);
+                } else
+                {
+                    Consignment consignment = transaction.Consignment;
+                    consignment.Status = ConsignmentStatus.pending;
+                }
             }
 
             transactionRepository.Update(transaction);

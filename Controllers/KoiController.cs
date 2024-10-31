@@ -90,7 +90,6 @@ namespace swp_be.Controllers
         public async Task<IActionResult> PutKoi(int id, [FromForm] KoiRequest koi)
         {
             Koi info = await koiService.GetKoi(id);
-            Console.WriteLine("price equal null" + koi.Price == null);
 
             if (info == null)
             {

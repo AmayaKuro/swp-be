@@ -23,7 +23,7 @@ namespace swp_be.Controllers
         public DeliveryStatus? Status { get; set; }
         public DateTime? StartDeliDay { get; set; }
         public DateTime? EndDeliDay { get; set; }
-        public string ? Address { get; set; }
+        public string? Address { get; set; }
     }
 
     [Route("api/koi/[controller]")]
@@ -90,15 +90,34 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateDelivery(DeliveryRequest deliveryRequest)
         {
-            Delivery delivery = new Delivery();
-            
+            if (deliveryRequest.StartDeliDay == null)
+            {
+                return BadRequest("StartDeliDay is required.");
+            }
 
-            delivery.StartDeliDay = deliveryRequest.StartDeliDay ?? delivery.StartDeliDay;
-            delivery.EndDeliDay = deliveryRequest.EndDeliDay ?? delivery.EndDeliDay;
-            delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
-            delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
-            delivery.Status = deliveryRequest.Status ?? delivery.Status;
-            delivery.Address = deliveryRequest.Address ?? delivery.Address;
+            if (deliveryRequest.OrderID == null)
+            {
+                return BadRequest("OrderID is required.");
+            }
+
+            if (deliveryRequest.CustomerID == null)
+            {
+                return BadRequest("CustomerID is required.");
+            }
+
+            if (deliveryRequest.Status == null)
+            {
+                return BadRequest("Status is required.");
+            }
+
+            Delivery delivery = new Delivery();
+
+            delivery.StartDeliDay = deliveryRequest.StartDeliDay.Value;
+            delivery.EndDeliDay = deliveryRequest.EndDeliDay;
+            delivery.OrderID = deliveryRequest.OrderID.Value;
+            delivery.CustomerID = deliveryRequest.CustomerID.Value;
+            delivery.Status = deliveryRequest.Status.Value;
+            delivery.Address = deliveryRequest.Address;
             _context.Deliveries.Add(delivery);
             try
             {

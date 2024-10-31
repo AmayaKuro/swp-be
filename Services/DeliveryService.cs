@@ -2,6 +2,7 @@
 using swp_be.Models;
 using swp_be.Data;
 using swp_be.Data.Repositories;
+using System.Net;
 
 namespace swp_be.Services
 {
@@ -12,6 +13,7 @@ namespace swp_be.Services
         private readonly UnitOfWork unitOfWork;
         private readonly DeliveryRepository _repository;
         private readonly OrderService orderService;
+        private readonly UserService userService;
 
         public DeliveryService(ApplicationDBContext _context)
         {
@@ -19,6 +21,7 @@ namespace swp_be.Services
             this.unitOfWork = new UnitOfWork(_context);
             _repository = new DeliveryRepository(_context);
             orderService = new OrderService(_context);
+            userService = new UserService(_context);
         }
 
         public async Task<IEnumerable<Delivery>> GetDeliveries()
@@ -54,12 +57,32 @@ namespace swp_be.Services
 
         public Delivery CreateDeliveryFromOrder(Order order)
         {
+            var user = userService.GetUserProfile(order.CustomerID.Value);
             Delivery delivery = new Delivery
             {
                 OrderID = order.OrderID,
-                CustomerID = order.CustomerID.Value,
+                CustomerID = user.UserID,
                 Status = DeliveryStatus.Delivering,
-                StartDeliDay = DateTime.Now
+                StartDeliDay = DateTime.Now,
+                Address = user.Address   
+            };
+
+            unitOfWork.DeliverRepository.Create(delivery);
+            unitOfWork.Save();
+            return delivery;
+        }
+
+
+        public Delivery CreateDeliveryFromOrder(Order order, string address)
+        {
+            var user = userService.GetUserProfile(order.CustomerID.Value);
+            Delivery delivery = new Delivery
+            {
+                OrderID = order.OrderID,
+                CustomerID = user.UserID,
+                Status = DeliveryStatus.Delivering,
+                StartDeliDay = DateTime.Now,
+                Address = address
             };
 
             unitOfWork.DeliverRepository.Create(delivery);

@@ -112,6 +112,9 @@ namespace swp_be.Controllers
                 return NotFound("Order not found");
             }
 
+            // Cập nhật trạng thái của order
+            transactionService.UpdateStatus(order, TransactionStatus.Completed);
+
             // Trả về transaction đã tạo
             return CreatedAtAction("GetTransaction", new { id = order.TransactionID }, order);
         }
