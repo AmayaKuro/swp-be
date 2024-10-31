@@ -40,7 +40,7 @@ namespace swp_be.Controllers
         public string? Personality { get; set; }
         public string? Origin { get; set; }
         public string? SelectionRate { get; set; }
-        public string Species { get; set; }
+        public string? Species { get; set; }
         public long PricePerDay { get; set; }
         public int FosteringDays { get; set; }
         public IFormFile? Image { get; set; }

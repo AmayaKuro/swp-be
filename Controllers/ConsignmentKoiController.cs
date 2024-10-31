@@ -24,7 +24,7 @@ namespace swp_be.Controllers
         public string? personality { get; set; }
         public string? origin { get; set; }
         public string? selectionRate { get; set; }
-        public string species { get; set; }
+        public string? species { get; set; }
         public long pricePerDay { get; set; }
         public int fosteringDays { get; set; }
         public int consignmentId { get; set; }
