@@ -59,6 +59,10 @@ namespace swp_be.Models
 
         public int? PromotionID { get; set; }
 
+        public string? Reason { get; set; }
+
+        public string? ReasonImage { get; set; }
+
         [DeleteBehavior(DeleteBehavior.SetNull)]
         public Customer? Customer { get; set; }  // Navigation Property
 

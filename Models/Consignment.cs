@@ -40,6 +40,9 @@ namespace swp_be.Models
         public DateTime? EndDate { get; set; }
 
         public Customer Customer { get; set; }
+
+        public int ConsignmentPriceListID { get; set; }
         public ICollection<ConsignmentKoi> ConsignmentKois { get; set; }
+        public ConsignmentPriceList ConsignmentPriceList { get; set; }
     }
 }

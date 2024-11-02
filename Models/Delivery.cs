@@ -33,6 +33,10 @@ namespace swp_be.Models
 
         public DateTime? EndDeliDay { get; set; }
 
+        public string? Reason { get; set; }
+
+        public string? ReasonImage { get; set; }
+
         public Order Order { get; set; }  // Navigation Property
 
      

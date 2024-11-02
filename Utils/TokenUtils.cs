@@ -39,7 +39,7 @@ namespace swp_be.Utils
             {
                 Subject = new ClaimsIdentity(claims),
 
-                Expires = type == TokenType.REFRESH_TOKEN ? now.AddDays(7) : now.AddMinutes(30),
+                Expires =  now.AddDays(7),
 
                 Issuer = Configuration.GetConfiguration()["BEUrl"],
                 Audience = Configuration.GetConfiguration()["FEUrl"],
