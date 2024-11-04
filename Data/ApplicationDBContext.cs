@@ -49,6 +49,17 @@ namespace swp_be.Data
                 .HasOne(transaction => transaction.Consignment)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            //modelBuilder.Entity<User>()
+            //    .HasData(DataSeeding.Users);
+            //modelBuilder.Entity<PaymentMethod>()
+            //    .HasData(DataSeeding.PaymentMethods);
+            //modelBuilder.Entity<Staff>()
+            //    .HasData(DataSeeding.Staffs);
+            //modelBuilder.Entity<Customer>()
+            //    .HasData(DataSeeding.Customers);
+            //modelBuilder.Entity<ConsignmentPriceList>()
+            //    .HasData(DataSeeding.Consignments);
         }
     }
 }
