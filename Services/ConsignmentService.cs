@@ -81,8 +81,8 @@ namespace swp_be.Services
         {
             try
             {
-                _context.Consignments.Update(consignment);
-                await _context.SaveChangesAsync();
+                consignmentRepository.Update(consignment);
+                consignmentRepository.Save();
                 return consignment;
             }
             catch (DbUpdateException ex)

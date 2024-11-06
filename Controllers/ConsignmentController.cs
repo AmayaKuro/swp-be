@@ -270,6 +270,7 @@ namespace swp_be.Controllers
             return Ok(results);
         }
         [Authorize("staff, admin")]
+        [Route("Reasign")]
         [HttpPut]
         public async Task<IActionResult> Reasign(int id, ConsignmentRequest consignmentRequest)
         {
