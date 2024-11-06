@@ -17,7 +17,6 @@ namespace swp_be.Models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
-
         [Required, MaxLength(50)]
         public string Username { get; set; }
 

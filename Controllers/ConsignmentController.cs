@@ -20,6 +20,7 @@ namespace swp_be.Controllers
         public ConsignmentStatus Status { get; set; }
         public DateTime? EndDate { get; set; }
         public DateTime StartDate { get; set; }
+        public int PriceListId { get; set; }
     }
     public class ConsignKoiRequest
     {
@@ -30,6 +31,7 @@ namespace swp_be.Controllers
         public ConsignmentStatus Status { get; set; }
         public DateTime? EndDate { get; set; }
         public DateTime StartDate { get; set; }
+        public int PriceListId { get; set; }
         //Bien cua consignKoi
         public string? Name { get; set; }
         public string? Gender { get; set; }
@@ -43,6 +45,7 @@ namespace swp_be.Controllers
         public string? Species { get; set; }
         public long PricePerDay { get; set; }
         public int FosteringDays { get; set; }
+        
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }
         public IFormFile? HealthCertificate { get; set; }
@@ -103,7 +106,7 @@ namespace swp_be.Controllers
             consignment.Status = consignmentRequest.Status;
             consignment.StartDate = consignmentRequest.StartDate;
             consignment.EndDate = consignmentRequest.EndDate;
-
+            consignment.ConsignmentPriceListID = consignmentRequest.PriceListId;
             //if (consignment.Status != ConsignmentStatus.pending)
             //{
             //    string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
@@ -135,6 +138,7 @@ namespace swp_be.Controllers
                 CreateAt= DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
                 EndDate = consignKoiRequest.EndDate,
+                ConsignmentPriceListID= consignKoiRequest.PriceListId
                 };
             // Create a new ConsignmentKoi object
             var consignmentKoi = new ConsignmentKoi
@@ -182,7 +186,8 @@ namespace swp_be.Controllers
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
                 EndDate = consignKoiRequest.EndDate,
-                Status = ConsignmentStatus.negotiate // Ensure this is correctly spelled
+                Status = ConsignmentStatus.negotiate, // Ensure this is correctly spelled
+                ConsignmentPriceListID = consignKoiRequest.PriceListId
             };
 
             // Create a new ConsignmentKoi object
@@ -249,6 +254,7 @@ namespace swp_be.Controllers
         }
 
         [HttpGet("search")]
+        [Route("Reasign")]
         [Authorize("all")]
         public async Task<IActionResult> SearchConsignments(
            [FromQuery] int? customerID = null,
@@ -262,6 +268,45 @@ namespace swp_be.Controllers
 
             // Return the result
             return Ok(results);
+        }
+        [Authorize("staff, admin")]
+        [HttpPut]
+        public async Task<IActionResult> Reasign(int id, ConsignmentRequest consignmentRequest)
+        {
+
+            
+            // Find the consignment by ID
+
+            var consignment = await _context.Consignments.FindAsync(id);
+
+            if (consignment == null)
+            {
+                return NotFound(new { message = "Consignment not found" });
+            }
+
+            // Update the consignment properties
+            consignment.CustomerID = consignmentRequest.CustomerID;
+            consignment.Type = consignmentRequest.Type;
+            consignment.FosterPrice = consignmentRequest.FosterPrice;
+            consignment.Status = consignmentRequest.Status;
+            consignment.StartDate = consignmentRequest.StartDate;
+            consignment.EndDate = consignmentRequest.EndDate;
+            consignment.ConsignmentPriceListID = consignmentRequest.PriceListId;
+            //if (consignment.Status != ConsignmentStatus.pending)
+            //{
+            //    string paymentUrl = transactionService.CreateVNPayTransaction(consignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            //}
+            // Save changes
+            try
+            {
+                consignmentService.UpdateConsignment(consignment);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error updating consignment" });
+            }
+
+            return Ok(new { message = "Consignment updated successfully" });
         }
     }
 }

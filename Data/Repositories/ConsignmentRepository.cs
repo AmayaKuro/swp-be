@@ -17,6 +17,7 @@ namespace swp_be.Data.Repositories
         public async Task<List<Consignment>> GetConsignment()
         {
             return await _context.Consignments
+                .Include(c=>c.ConsignmentPriceList)
                 .Include(c => c.Customer)                    // Include the Customer entity
                 .ThenInclude(c => c.User)                    // Include the User entity from the Customer
                 .Include(c => c.ConsignmentKois)             // Include related ConsignmentKois

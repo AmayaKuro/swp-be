@@ -27,8 +27,7 @@ namespace swp_be.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Blog> Blogs { get; set; }  
-        
-
+        public DbSet<KoiInventory> KoiInventory { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Staff>()
