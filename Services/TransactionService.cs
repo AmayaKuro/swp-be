@@ -221,12 +221,13 @@ namespace swp_be.Services
 
         public void UpdateStatus(Transaction transaction, TransactionStatus transactionStatus, string token = "")
         {
+            // Update transaction status
             transaction.Status = transactionStatus;
             transaction.EndAt = DateTime.Now;
 
+            // Save token from payment gateway
             transaction.Token = token;
 
-            // Update order status
 
             // If success
             if (transactionStatus == TransactionStatus.Completed)
@@ -263,15 +264,14 @@ namespace swp_be.Services
                     }
                 }
             }
+            // If user cancel the transaction
             else if (transactionStatus == TransactionStatus.Cancelled)
             {
-                transaction.Order.Status = OrderStatus.Cancelled;
-                transaction.EndAt = DateTime.Now;
-
                 if (transaction.Type == TransactionType.Shopping)
                 {
                     orderService.CancelOrder(transaction.OrderID.Value);
-                } else
+                }
+                else
                 {
                     Consignment consignment = transaction.Consignment;
                     consignment.Status = ConsignmentStatus.pending;

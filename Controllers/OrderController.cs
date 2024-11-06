@@ -134,12 +134,9 @@ namespace swp_be.Controllers
                 return BadRequest("Can't create order!");
             }
 
-            string paymentUrl;
-
-
             try
             {
-
+                string paymentUrl;
                 if (orderRequest.paymentMethod == OrderType.Offline)
                 {
                     long depositAmount = order.TotalAmount / 2;
@@ -158,8 +155,6 @@ namespace swp_be.Controllers
 
                     return Ok(new { paymentUrl });
                 }
-
-
             }
             catch (Exception ex)
             {

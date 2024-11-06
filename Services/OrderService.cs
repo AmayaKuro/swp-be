@@ -94,6 +94,7 @@ namespace swp_be.Services
 
                 Batch batchInfo = batchRepository.GetById(item[0]);
 
+                // If batch not exist, cancel
                 if (batchInfo == null)
                 {
                     return null;
@@ -106,12 +107,11 @@ namespace swp_be.Services
                 detail.Type = OrderDetailType.Batch;
                 detail.Price = batchInfo.PricePerBatch * item[1];
 
+                // If there not enough batch to buy, cancel
                 if (batchInfo.RemainBatch < item[1])
                 {
                     return null;
                 }
-                batchInfo.RemainBatch -= item[1];
-                batchRepository.Update(batchInfo);
 
                 // Add money to total
                 TotalAmount += detail.Price;
@@ -127,6 +127,7 @@ namespace swp_be.Services
 
                 if (koiInfo.Status != KoiStatus.Available) break;
 
+                // If koi not exist, cancel
                 if (koiInfo == null)
                 {
                     return null;
@@ -154,6 +155,7 @@ namespace swp_be.Services
 
                 if (consignmentKoiInfo.Consignment.Status != ConsignmentStatus.available) break;
 
+                // If consignmentKoi not exist, cancel
                 if (consignmentKoiInfo == null)
                 {
                     return null;
@@ -192,11 +194,14 @@ namespace swp_be.Services
                 return;
             }
 
+            // Update order status to completed
             order.Status = OrderStatus.Completed;
             order.UpdateAt = DateTime.Now;
 
-
-
+            // Update value:
+            // - koi: update status to sold
+            // - batch: remove quantity
+            // - consignmentKoi: update consignment status to finished
             foreach (var detail in order.OrderDetails)
             {
                 if (detail.Type == OrderDetailType.Koi)
@@ -209,11 +214,11 @@ namespace swp_be.Services
                 }
                 else if (detail.Type == OrderDetailType.Batch)
                 {
-                    //Batch batch = batchRepository.GetById(detail.BatchID.Value);
+                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
 
-                    //batch.QuantityPerBatch -= detail.Quantity.Value;
+                    batch.QuantityPerBatch -= detail.Quantity.Value;
 
-                    //batchRepository.Update(batch);
+                    batchRepository.Update(batch);
                 }
                 else if (detail.Type == OrderDetailType.ConsignmentKoi)
                 {
@@ -238,36 +243,42 @@ namespace swp_be.Services
                 return;
             }
 
+            // Update order status to cancelled
             order.Status = OrderStatus.Cancelled;
             order.UpdateAt = DateTime.Now;
+            order.Reason = "User cancel order";
 
-            foreach (var detail in order.OrderDetails)
-            {
-                if (detail.Type == OrderDetailType.Koi)
-                {
-                    Koi koi = koiRepository.GetById(detail.KoiID.Value);
+            // Update value:
+            // - koi: update status to available
+            // - batch: re-add quantity
+            // - consignmentKoi: update consignment status to available
+            //foreach (var detail in order.OrderDetails)
+            //{
+            //    if (detail.Type == OrderDetailType.Koi)
+            //    {
+            //        Koi koi = koiRepository.GetById(detail.KoiID.Value);
 
-                    koi.Status = KoiStatus.Available;
+            //        koi.Status = KoiStatus.Available;
 
-                    koiRepository.Update(koi);
-                }
-                else if (detail.Type == OrderDetailType.Batch)
-                {
-                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
+            //        koiRepository.Update(koi);
+            //    }
+            //    else if (detail.Type == OrderDetailType.Batch)
+            //    {
+            //        Batch batch = batchRepository.GetById(detail.BatchID.Value);
 
-                    batch.QuantityPerBatch += detail.Quantity.Value;
+            //        batch.QuantityPerBatch += detail.Quantity.Value;
 
-                    batchRepository.Update(batch);
-                }
-                else if (detail.Type == OrderDetailType.ConsignmentKoi)
-                {
-                    ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
+            //        batchRepository.Update(batch);
+            //    }
+            //    else if (detail.Type == OrderDetailType.ConsignmentKoi)
+            //    {
+            //        ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
 
-                    consignmentKoi.Consignment.Status = ConsignmentStatus.available;
+            //        consignmentKoi.Consignment.Status = ConsignmentStatus.available;
 
-                    consignmentKoiRepository.Update(consignmentKoi);
-                }
-            }
+            //        consignmentKoiRepository.Update(consignmentKoi);
+            //    }
+            //}
 
             orderRepository.Update(order);
             orderRepository.Save();
