@@ -7,13 +7,10 @@ namespace swp_be.Data.Repositories
 {
     public class ConsignmentRepository : GenericRepository<Consignment>
     {   
-        private readonly TransactionRepository transactionRepository;
-        private readonly UnitOfWork unitOfWork;
         public ConsignmentRepository(ApplicationDBContext _context) : base(_context)
         {
-            transactionRepository = new TransactionRepository(_context);  
-            unitOfWork=new UnitOfWork(_context);
         }
+
         public async Task<List<Consignment>> GetConsignment()
         {
             return await _context.Consignments

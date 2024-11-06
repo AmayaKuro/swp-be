@@ -43,13 +43,10 @@ namespace swp_be.Data
             _customerRepository = new GenericRepository<Customer>(_context);
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new FeedbackRepository(_context);
-
             _deliveryRepository = new DeliveryRepository(_context);
-
-
             _blogRepository = new BlogRepository(_context);
-
             _promotionRepository = new PromotionRepository(_context);
+            _consignmentPriceListRepository = new GenericRepository<ConsignmentPriceList>(_context);
 
 
         }
