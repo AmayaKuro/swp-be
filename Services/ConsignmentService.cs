@@ -12,21 +12,29 @@ namespace swp_be.Services
         private ApplicationDBContext _context;
         private readonly UnitOfWork unitOfWork;
         private readonly ConsignmentRepository consignmentRepository;
+
         public ConsignmentService(ApplicationDBContext context)
         {
             this._context = context;
             this.unitOfWork= new UnitOfWork(context);
             this.consignmentRepository= new ConsignmentRepository(context);
         }
+
         public async Task<List<Consignment>> GetConsignment()
         {
             return await consignmentRepository.GetConsignment();
-            ;
         }
+
         public async Task<Consignment> GetById(int id)
         {
             return await consignmentRepository.GetById(id);  // Query by ID
         }
+
+        public async Task<List<ConsignmentPriceList>> GetPriceList()
+        {
+            return await unitOfWork.ConsignmentPriceListRepository.GetAllAsync();
+        }
+
         public async Task<bool> DeleteConsignment(Consignment consignment)
         {
             _context.Consignments.Remove(consignment);
@@ -91,6 +99,7 @@ namespace swp_be.Services
                 throw new Exception("An error occurred while updating the consignment.", ex);
             }
         }
+
         public async Task<Consignment> CreateConsignment(Consignment consignment, ConsignmentKoi consignmentKoi)
         {
             _context.Consignments.Add(consignment);

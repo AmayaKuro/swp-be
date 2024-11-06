@@ -13,19 +13,16 @@ namespace swp_be.Data
         private TokenRepository _tokenRepository;
         private BatchRepository _batchRepository;
         private OrderRepository _orderRepository;
-        private GenericRepository<Consignment> _consignmentRepository;
+        private ConsignmentRepository _consignmentRepository;
         private ConsignmentKoiRepository _ConsignmentKoiRepository;
+        private GenericRepository<ConsignmentPriceList> _consignmentPriceListRepository;
         private GenericRepository<Staff> _staffRepository;
         private GenericRepository<FosterBatch> _fosterBatchRepository;
         private GenericRepository<Customer> _customerRepository;
         private GenericRepository<PaymentMethod> _paymentMethodRepository;
         private FeedbackRepository _feedbackRepository;
-
-        private GenericRepository<Delivery> _deliveryRepository;
-
-
-        private GenericRepository<Blog> _blogRepository;
-
+        private DeliveryRepository _deliveryRepository;
+        private BlogRepository _blogRepository;
         private PromotionRepository _promotionRepository;
 
 
@@ -39,7 +36,7 @@ namespace swp_be.Data
             _tokenRepository = new TokenRepository(_context);
             _batchRepository = new BatchRepository(_context);
             _orderRepository = new OrderRepository(_context);
-            _consignmentRepository = new GenericRepository<Consignment>(_context);
+            _consignmentRepository = new ConsignmentRepository(_context);
             _ConsignmentKoiRepository = new ConsignmentKoiRepository(_context);
             _staffRepository = new GenericRepository<Staff>(_context);
             _fosterBatchRepository = new GenericRepository<FosterBatch>(_context);
@@ -47,10 +44,10 @@ namespace swp_be.Data
             _paymentMethodRepository = new GenericRepository<PaymentMethod>(_context);
             _feedbackRepository = new FeedbackRepository(_context);
 
-            _deliveryRepository = new GenericRepository<Delivery>(_context); 
+            _deliveryRepository = new DeliveryRepository(_context);
 
 
-            _blogRepository =new GenericRepository<Blog>(_context); 
+            _blogRepository = new BlogRepository(_context);
 
             _promotionRepository = new PromotionRepository(_context);
 
@@ -105,7 +102,7 @@ namespace swp_be.Data
             }
         }
 
-        public GenericRepository<Consignment> ConsignmentRepository
+        public ConsignmentRepository ConsignmentRepository
         {
             get
             {
@@ -161,19 +158,27 @@ namespace swp_be.Data
             }
         }
 
-        public GenericRepository<Delivery> DeliverRepository
+        public DeliveryRepository DeliverRepository
         {
             get
             {
                 return _deliveryRepository;
             }
         }
-        public GenericRepository<Blog> BlogRepository
+        public BlogRepository BlogRepository
         {
             get
             {
                 return _blogRepository;
 
+            }
+        }
+
+        public GenericRepository<ConsignmentPriceList> ConsignmentPriceListRepository
+        {
+            get
+            {
+                return _consignmentPriceListRepository;
             }
         }
 

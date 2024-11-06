@@ -45,7 +45,7 @@ namespace swp_be.Controllers
         public string? Species { get; set; }
         public long PricePerDay { get; set; }
         public int FosteringDays { get; set; }
-        
+
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }
         public IFormFile? HealthCertificate { get; set; }
@@ -64,9 +64,9 @@ namespace swp_be.Controllers
         public ConsignmentController(ApplicationDBContext context)
         {
             this._context = context;
-            this.consignmentService= new ConsignmentService(context);
+            this.consignmentService = new ConsignmentService(context);
             transactionService = new TransactionService(context);
-            consignmentKoiService=new ConsignmentKoiService(context);
+            consignmentKoiService = new ConsignmentKoiService(context);
         }
         [HttpGet]
         public async Task<ActionResult<Consignment>> GetConsignment()
@@ -74,7 +74,7 @@ namespace swp_be.Controllers
             var consignments = await consignmentService.GetConsignment();
             return Ok(consignments);
         }
-       
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Consignment>> GetConsignment(int id)
         {
@@ -87,6 +87,16 @@ namespace swp_be.Controllers
 
             return consignment;
         }
+
+        [Route("priceList")]
+        [HttpGet]
+        public async Task<ActionResult<Consignment>> GetPriceList()
+        {
+            var priceList = await consignmentService.GetPriceList();
+
+            return Ok(priceList);
+        }
+
         [Authorize("staff, admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateConsignment(int id, ConsignmentRequest consignmentRequest)
@@ -123,23 +133,24 @@ namespace swp_be.Controllers
 
             return Ok(new { message = "Consignment updated successfully" });
         }
+
         [Authorize("staff, admin")]
         [Route("create")]
         [HttpPost]
-        public async Task<IActionResult> CreateConsignment([FromForm]ConsignKoiRequest consignKoiRequest )
+        public async Task<IActionResult> CreateConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
+        {
+            // Create a new consignment object
+            var newConsignment = new Consignment
             {
-                // Create a new consignment object
-                var newConsignment = new Consignment
-                {
                 CustomerID = consignKoiRequest.CustomerID,
                 Type = consignKoiRequest.Type,
                 FosterPrice = consignKoiRequest.FosteringDays * consignKoiRequest.PricePerDay,
                 Status = consignKoiRequest.Status, // Ensure this is correctly spelled
-                CreateAt= DateTime.Now,
+                CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
                 EndDate = consignKoiRequest.EndDate,
-                ConsignmentPriceListID= consignKoiRequest.PriceListId
-                };
+                ConsignmentPriceListID = consignKoiRequest.PriceListId
+            };
             // Create a new ConsignmentKoi object
             var consignmentKoi = new ConsignmentKoi
             {
@@ -156,7 +167,7 @@ namespace swp_be.Controllers
                 Price = consignKoiRequest.PricePerDay,
                 FosteringDays = consignKoiRequest.FosteringDays,
                 ConsignmentID = newConsignment.ConsignmentID,
-                AddOn=new AddOn()
+                AddOn = new AddOn()
                 // Set this only after saving the consignment
             };
 
@@ -167,13 +178,13 @@ namespace swp_be.Controllers
             consignmentKoi.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoiRequest.HealthCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "healthCertificate");
             consignmentKoi.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoiRequest.OwnershipCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "ownershipCertificate");
             await _context.SaveChangesAsync();
-            string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment,HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             return Ok(new { paymentUrl });
         }
-       
+
         [Route("pending")]
         [HttpPost]
-        public async Task<IActionResult> NegotiatingConsignment([FromForm]ConsignKoiRequest consignKoiRequest)
+        public async Task<IActionResult> NegotiatingConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
         {
             // Retrieve the customer ID from the user's claims
             int customerID = int.Parse(User.FindFirstValue("userID"));
@@ -235,6 +246,7 @@ namespace swp_be.Controllers
             return Ok(new { message = "Consignment created successfully", consignmentID = newConsignment.ConsignmentID });
 
         }
+
         [Authorize("staff, admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConsignment(int id)
@@ -254,7 +266,6 @@ namespace swp_be.Controllers
         }
 
         [HttpGet("search")]
-        
         [Authorize("all")]
         public async Task<IActionResult> SearchConsignments(
            [FromQuery] int? customerID = null,
@@ -264,11 +275,12 @@ namespace swp_be.Controllers
            [FromQuery] decimal? maxFosterPrice = null)
         {
             // Call the SearchConsignments method
-            var results = await consignmentService.SearchConsignments(customerID,type,status,minFosterPrice,maxFosterPrice);
+            var results = await consignmentService.SearchConsignments(customerID, type, status, minFosterPrice, maxFosterPrice);
 
             // Return the result
             return Ok(results);
         }
+
         [Authorize("staff, admin")]
         [Route("Resign")]
         [HttpPut]
