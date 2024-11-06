@@ -155,7 +155,7 @@ namespace swp_be.Controllers
             {
                 CustomerID = consignKoiRequest.CustomerID,
                 Type = consignKoiRequest.Type,
-                FosterPrice = (long)((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays * priceList.PricePerDay),
+                FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay,
                 Status = consignKoiRequest.Status, // Ensure this is correctly spelled
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
@@ -214,7 +214,7 @@ namespace swp_be.Controllers
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
                 EndDate = consignKoiRequest.EndDate,
-                FosterPrice = (long)((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays * priceList.PricePerDay),
+                FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay,
                 Status = ConsignmentStatus.negotiate, // Ensure this is correctly spelled
                 ConsignmentPriceListID = consignKoiRequest.PriceListId
             };
@@ -321,7 +321,7 @@ namespace swp_be.Controllers
             // Update the consignment properties
             consignment.CustomerID = customerID;
             consignment.Type = consignmentRequest.Type;
-            consignment.FosterPrice = (long)((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays * priceList.PricePerDay);
+            consignment.FosterPrice = (long)Math.Ceiling((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays) * priceList.PricePerDay;
             consignment.Status = consignmentRequest.Status;
             consignment.StartDate = consignmentRequest.StartDate;
             consignment.EndDate = consignmentRequest.EndDate;
