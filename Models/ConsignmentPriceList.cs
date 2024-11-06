@@ -9,6 +9,7 @@ namespace swp_be.Models
         public int ConsignmentPriceListID { get; set; }
 
         public string? ConsignmentPriceName { get; set; }
+
         [Required]
         public long PricePerDay { get; set; }
 

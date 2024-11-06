@@ -8,6 +8,7 @@ using NuGet.Protocol.Plugins;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using swp_be.Utils;
+using swp_be.data.Repositories;
 
 namespace swp_be.Controllers
 {
@@ -18,7 +19,7 @@ namespace swp_be.Controllers
         public ConsignmentType Type { get; set; }
         public long FosterPrice { get; set; }
         public ConsignmentStatus Status { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         public DateTime StartDate { get; set; }
         public int PriceListId { get; set; }
     }
@@ -29,7 +30,7 @@ namespace swp_be.Controllers
         public int CustomerID { get; set; }
         public ConsignmentType Type { get; set; }
         public ConsignmentStatus Status { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         public DateTime StartDate { get; set; }
         public int PriceListId { get; set; }
         //Bien cua consignKoi
@@ -43,8 +44,7 @@ namespace swp_be.Controllers
         public string? Origin { get; set; }
         public string? SelectionRate { get; set; }
         public string? Species { get; set; }
-        public long PricePerDay { get; set; }
-        public int FosteringDays { get; set; }
+        public long Price { get; set; }
 
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }
@@ -58,16 +58,20 @@ namespace swp_be.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly ConsignmentService consignmentService;
+        private readonly GenericRepository<ConsignmentPriceList> consignmentPriceListRepository;
         private readonly TransactionService transactionService;
         private readonly ConsignmentKoiService consignmentKoiService;
         private readonly FirebaseUtils fbUtils = new FirebaseUtils();
+
         public ConsignmentController(ApplicationDBContext context)
         {
             this._context = context;
-            this.consignmentService = new ConsignmentService(context);
+            consignmentService = new ConsignmentService(context);
             transactionService = new TransactionService(context);
             consignmentKoiService = new ConsignmentKoiService(context);
+            consignmentPriceListRepository = new GenericRepository<ConsignmentPriceList>(context);
         }
+
         [HttpGet]
         public async Task<ActionResult<Consignment>> GetConsignment()
         {
@@ -139,12 +143,19 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
         {
+            var priceList = consignmentPriceListRepository.GetById(consignKoiRequest.PriceListId);
+
+            if (priceList == null)
+            {
+                return BadRequest(new { message = "Price type not found" });
+            }
+
             // Create a new consignment object
             var newConsignment = new Consignment
             {
                 CustomerID = consignKoiRequest.CustomerID,
                 Type = consignKoiRequest.Type,
-                FosterPrice = consignKoiRequest.FosteringDays * consignKoiRequest.PricePerDay,
+                FosterPrice = (long)((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays * priceList.PricePerDay),
                 Status = consignKoiRequest.Status, // Ensure this is correctly spelled
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
@@ -164,8 +175,7 @@ namespace swp_be.Controllers
                 Origin = consignKoiRequest.Color,
                 SelectionRate = consignKoiRequest.Color,
                 Species = consignKoiRequest.Species,
-                Price = consignKoiRequest.PricePerDay,
-                FosteringDays = consignKoiRequest.FosteringDays,
+                Price = consignKoiRequest.Price,
                 ConsignmentID = newConsignment.ConsignmentID,
                 AddOn = new AddOn()
                 // Set this only after saving the consignment
@@ -189,6 +199,13 @@ namespace swp_be.Controllers
             // Retrieve the customer ID from the user's claims
             int customerID = int.Parse(User.FindFirstValue("userID"));
 
+            var priceList = consignmentPriceListRepository.GetById(consignKoiRequest.PriceListId);
+
+            if (priceList == null)
+            {
+                return BadRequest(new { message = "Price type not found" });
+            }
+
             // Create a new consignment object
             var newConsignment = new Consignment
             {
@@ -197,6 +214,7 @@ namespace swp_be.Controllers
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
                 EndDate = consignKoiRequest.EndDate,
+                FosterPrice = (long)((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays * priceList.PricePerDay),
                 Status = ConsignmentStatus.negotiate, // Ensure this is correctly spelled
                 ConsignmentPriceListID = consignKoiRequest.PriceListId
             };
@@ -214,8 +232,7 @@ namespace swp_be.Controllers
                 Origin = consignKoiRequest.Origin,
                 SelectionRate = consignKoiRequest.SelectionRate,
                 Species = consignKoiRequest.Species,
-                //Price=null
-                FosteringDays = consignKoiRequest.FosteringDays,
+                Price = consignKoiRequest.Price,
                 ConsignmentID = newConsignment.ConsignmentID, // Set this only after saving the consignment
                 AddOn = new AddOn()
             };
@@ -294,10 +311,17 @@ namespace swp_be.Controllers
                 return NotFound(new { message = "Consignment not found" });
             }
 
+            var priceList = consignmentPriceListRepository.GetById(consignmentRequest.PriceListId);
+
+            if (priceList == null)
+            {
+                return BadRequest(new { message = "Price type not found" });
+            }
+
             // Update the consignment properties
             consignment.CustomerID = customerID;
             consignment.Type = consignmentRequest.Type;
-            consignment.FosterPrice = consignmentRequest.FosterPrice;
+            consignment.FosterPrice = (long)((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays * priceList.PricePerDay);
             consignment.Status = consignmentRequest.Status;
             consignment.StartDate = consignmentRequest.StartDate;
             consignment.EndDate = consignmentRequest.EndDate;

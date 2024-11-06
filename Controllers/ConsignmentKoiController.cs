@@ -25,8 +25,7 @@ namespace swp_be.Controllers
         public string? origin { get; set; }
         public string? selectionRate { get; set; }
         public string? species { get; set; }
-        public long? pricePerDay { get; set; }
-        public int? fosteringDays { get; set; }
+        public long? price { get; set; }
         public int? consignmentId { get; set; }
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }
@@ -140,12 +139,6 @@ namespace swp_be.Controllers
                 return BadRequest("Invalid species.");
             }
 
-            // Validate fostering days if provided
-            if (consignKoi.fosteringDays <= 0)
-            {
-                return BadRequest("Fostering days must be greater than zero.");
-            }
-
             // Update foster koi properties only if they are provided
             if (consignKoi.name != null) info.Name = consignKoi.name;
             if (consignKoi.gender != null) info.Gender = consignKoi.gender;
@@ -161,8 +154,7 @@ namespace swp_be.Controllers
             if (consignKoi.origin != null) info.Origin = consignKoi.origin;
             if (consignKoi.selectionRate != null) info.SelectionRate = consignKoi.selectionRate;
             if (consignKoi.species != null) info.Species = consignKoi.species;
-            if (consignKoi.pricePerDay >= 0) info.Price = consignKoi.pricePerDay ?? info.Price; 
-            if (consignKoi.fosteringDays >= 0) info.FosteringDays = consignKoi.fosteringDays ?? info.FosteringDays;
+            if (consignKoi.price >= 0) info.Price = consignKoi.price ?? info.Price; 
             if (consignKoi.consignmentId > 0) info.ConsignmentID = consignKoi.consignmentId ?? info.ConsignmentID;
             await _context.SaveChangesAsync();
             // Update image
@@ -207,11 +199,6 @@ namespace swp_be.Controllers
                 return BadRequest("Invalid species.");
             }
 
-            if (consignKoi.fosteringDays <= 0)
-            {
-                return BadRequest("Fostering days must be greater than zero.");
-            }
-
             var info = new ConsignmentKoi
             {
                 Name = consignKoi.name,
@@ -224,8 +211,7 @@ namespace swp_be.Controllers
                 Origin = consignKoi.origin,
                 SelectionRate = consignKoi.selectionRate,
                 Species = consignKoi.species,
-                Price = consignKoi.pricePerDay ?? 1,  // Defaulting to 0 if null
-                FosteringDays = consignKoi.fosteringDays ?? 1,  // Defaulting to 0 if null
+                Price = consignKoi.price ?? 1,  // Defaulting to 0 if null
                 ConsignmentID = consignKoi.consignmentId ?? 0,  // Defaulting to 0 if null
                 AddOn = new AddOn(),
             };

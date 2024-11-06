@@ -43,7 +43,7 @@ namespace swp_be.Models
 
         public DateTime StartDate { get; set; }
 
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         public Customer Customer { get; set; }
         public ConsignmentPriceList ConsignmentPriceList { get; set; }

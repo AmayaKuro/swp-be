@@ -39,10 +39,7 @@ namespace swp_be.Models
         public string Species { get; set; }
         //Khac koi tu day
 
-        public long Price { get; set; } = 0;
-
-        [Required]
-        public int FosteringDays { get; set; }
+        public long Price { get; set; } = 0;    
 
         [Required]
         public int ConsignmentID { get; set; }

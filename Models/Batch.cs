@@ -17,6 +17,8 @@ namespace swp_be.Models
 
         public string? Description { get; set; }
 
+        public string? Image { get; set; }
+
         [Required]
         public int QuantityPerBatch { get; set; }
 
