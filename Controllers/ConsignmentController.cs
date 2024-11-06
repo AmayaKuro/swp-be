@@ -254,7 +254,7 @@ namespace swp_be.Controllers
         }
 
         [HttpGet("search")]
-        [Route("Reasign")]
+        
         [Authorize("all")]
         public async Task<IActionResult> SearchConsignments(
            [FromQuery] int? customerID = null,
@@ -270,23 +270,20 @@ namespace swp_be.Controllers
             return Ok(results);
         }
         [Authorize("staff, admin")]
-        [Route("Reasign")]
+        [Route("Resign")]
         [HttpPut]
         public async Task<IActionResult> Reasign(int id, ConsignmentRequest consignmentRequest)
         {
-
-            
             // Find the consignment by ID
-
+            int customerID = int.Parse(User.FindFirstValue("userID"));
             var consignment = await _context.Consignments.FindAsync(id);
-
             if (consignment == null)
             {
                 return NotFound(new { message = "Consignment not found" });
             }
 
             // Update the consignment properties
-            consignment.CustomerID = consignmentRequest.CustomerID;
+            consignment.CustomerID = customerID;
             consignment.Type = consignmentRequest.Type;
             consignment.FosterPrice = consignmentRequest.FosterPrice;
             consignment.Status = consignmentRequest.Status;
