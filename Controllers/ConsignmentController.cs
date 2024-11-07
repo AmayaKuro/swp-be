@@ -65,7 +65,7 @@ namespace swp_be.Controllers
 
         public ConsignmentController(ApplicationDBContext context)
         {
-            this._context = context;
+            this._context = context;    
             consignmentService = new ConsignmentService(context);
             transactionService = new TransactionService(context);
             consignmentKoiService = new ConsignmentKoiService(context);
@@ -111,6 +111,7 @@ namespace swp_be.Controllers
         }
 
         [Authorize("staff, admin")]
+        [Route("Update")]
         [HttpPut]
         public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
         {
@@ -341,7 +342,7 @@ namespace swp_be.Controllers
             // Save changes
             try
             {
-                consignmentService.UpdateConsignment(consignment);
+               await consignmentService.UpdateConsignment(consignment);
             }
             catch (Exception ex)
             {
