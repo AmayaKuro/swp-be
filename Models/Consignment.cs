@@ -27,6 +27,7 @@ namespace swp_be.Models
         [Required]
         public int CustomerID { get; set; }
 
+        [Required]
         public int ConsignmentPriceListID { get; set; }
 
         public int? OrderID { get; set; }
@@ -37,16 +38,21 @@ namespace swp_be.Models
         [Required]
         public long FosterPrice { get; set; }
 
+        [Required]
         public ConsignmentStatus Status { get; set; }
 
+        [Required]
         public DateTime CreateAt { get; set; }
 
+        [Required]
         public DateTime StartDate { get; set; }
 
+        [Required]
         public DateTime EndDate { get; set; }
 
         public Customer Customer { get; set; }
         public ConsignmentPriceList ConsignmentPriceList { get; set; }
+        public Order? Order { get; set; }
 
         public ICollection<ConsignmentKoi> ConsignmentKois { get; set; }
     }
