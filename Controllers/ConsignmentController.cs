@@ -80,6 +80,7 @@ namespace swp_be.Controllers
         }
 
         [HttpGet]
+        [Authorize("all")]
         [Route("CustomerConsignment")]
         public async Task<ActionResult<Consignment>> GetConsignmentByUser()
         {
@@ -110,11 +111,11 @@ namespace swp_be.Controllers
         }
 
         [Authorize("staff, admin")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateConsignment(int id, ConsignmentRequest consignmentRequest)
+        [HttpPut]
+        public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
         {
             // Find the consignment by ID
-            var consignment = await _context.Consignments.FindAsync(id);
+            var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
 
             if (consignment == null)
             {
@@ -136,7 +137,7 @@ namespace swp_be.Controllers
             // Save changes
             try
             {
-                consignmentService.UpdateConsignment(consignment);
+                await consignmentService.UpdateConsignment(consignment);
             }
             catch (Exception ex)
             {
