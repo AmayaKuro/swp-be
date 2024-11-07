@@ -21,6 +21,17 @@ namespace swp_be.Data.Repositories
                 .ThenInclude(c=>c.AddOn)                     // include addOn  
                 .ToListAsync();
         }
+        public async Task<List<Consignment>> GetConsignmentByCustomerId(int customerId)
+        {
+            return await _context.Consignments
+                .Include(c => c.ConsignmentPriceList)
+                .Include(c => c.Customer)                    // Include the Customer entity
+                .ThenInclude(c => c.User)                    // Include the User entity from the Customer
+                .Include(c => c.ConsignmentKois)             // Include related ConsignmentKois
+                .ThenInclude(c => c.AddOn)                   // Include AddOn 
+                .Where(c => c.Customer.UserID == customerId) // Filter by CustomerID
+                .ToListAsync();
+        }
         public async Task<Consignment> GetById(int id)
         {
             return await _context.Consignments

@@ -79,6 +79,14 @@ namespace swp_be.Controllers
             return Ok(consignments);
         }
 
+        [HttpGet]
+        [Route("CustomerConsignment")]
+        public async Task<ActionResult<Consignment>> GetConsignmentByUser()
+        {
+            int customerID = int.Parse(User.FindFirstValue("userID"));
+            var consignments = await consignmentService.GetConsignmentByCustomer(customerID);
+            return Ok(consignments);
+        }
         [HttpGet("{id}")]
         public async Task<ActionResult<Consignment>> GetConsignment(int id)
         {
@@ -301,16 +309,15 @@ namespace swp_be.Controllers
         [Authorize("staff, admin")]
         [Route("Resign")]
         [HttpPut]
-        public async Task<IActionResult> Reasign(int id, ConsignmentRequest consignmentRequest)
+        public async Task<IActionResult> Reasign(ConsignmentRequest consignmentRequest)
         {
             // Find the consignment by ID
             int customerID = int.Parse(User.FindFirstValue("userID"));
-            var consignment = await _context.Consignments.FindAsync(id);
+            var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
             if (consignment == null)
             {
                 return NotFound(new { message = "Consignment not found" });
             }
-
             var priceList = consignmentPriceListRepository.GetById(consignmentRequest.PriceListId);
 
             if (priceList == null)

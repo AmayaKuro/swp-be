@@ -24,6 +24,10 @@ namespace swp_be.Services
         {
             return await consignmentRepository.GetConsignment();
         }
+        public async Task<List<Consignment>> GetConsignmentByCustomer(int id)
+        {
+            return await consignmentRepository.GetConsignmentByCustomerId(id);
+        }
 
         public async Task<Consignment> GetById(int id)
         {
