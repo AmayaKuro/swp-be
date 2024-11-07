@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace swp_be.Models
 {
@@ -16,16 +15,11 @@ namespace swp_be.Models
 
         public string? OwnershipCertificate { get; set; }  // Giấy chứng nhận cá Koi
 
-        public int? KoiID { get; set; }
-        [DeleteBehavior(DeleteBehavior.Cascade)]
-        public Koi? Koi { get; set; }
+        public int? KoiID { get; set; } 
+        public Koi? Koi { get; set; }  
 
         public int? ConsignmentKoiID { get; set; }
-        [DeleteBehavior(DeleteBehavior.Cascade)]
-        public ConsignmentKoi? ConsignmentKoi { get; set; }
-
-        [DeleteBehavior(DeleteBehavior.Cascade)]
-        public KoiInventory? KoiInventory { get; set; }
-        public int? KoiInventoryID { get; set; }
+        public ConsignmentKoi? ConsignmentKoi { get; set; } 
+ 
     }
 }

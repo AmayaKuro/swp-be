@@ -48,10 +48,7 @@ namespace swp_be.Data
                 .HasOne(transaction => transaction.Consignment)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<KoiInventory>()
-                .HasOne(ki => ki.AddOn)
-                .WithOne(a => a.KoiInventory)
-                .HasForeignKey<AddOn>(a => a.KoiInventoryID);
+
             //modelBuilder.Entity<User>()
             //    .HasData(DataSeeding.Users);
             //modelBuilder.Entity<PaymentMethod>()
