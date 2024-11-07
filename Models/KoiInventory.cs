@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace swp_be.Models
 {
@@ -55,7 +56,7 @@ namespace swp_be.Models
 
         // Image URL
         public string? Image { get; set; }
-
+      
         public AddOn AddOn { get; set; }
 
         public Customer Customer { get; set; }
