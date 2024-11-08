@@ -19,7 +19,9 @@ namespace swp_be.Models
         public Koi? Koi { get; set; }  
 
         public int? ConsignmentKoiID { get; set; }
-        public ConsignmentKoi? ConsignmentKoi { get; set; } 
- 
+        public ConsignmentKoi? ConsignmentKoi { get; set; }
+
+        public int? KoiInventoryID { get; set; }
+        public KoiInventory? KoiInventory { get; set; }
     }
 }

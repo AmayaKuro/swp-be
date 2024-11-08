@@ -30,6 +30,26 @@ namespace swp_be.Data
         public DbSet<KoiInventory> KoiInventory { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ConsignmentKoi>()
+                .HasOne(ck => ck.AddOn)
+                .WithOne(a => a.ConsignmentKoi)
+                .HasForeignKey<ConsignmentKoi>(ck => ck.AddOnId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Koi>()
+                .HasOne(k => k.AddOn)
+                .WithOne(a => a.Koi)
+                .HasForeignKey<Koi>(k => k.AddOnId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<KoiInventory>()
+                .HasOne(ki => ki.AddOn)
+                .WithOne(a => a.KoiInventory)
+                .HasForeignKey<KoiInventory>(ki => ki.AddOnId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Staff>()
                 .HasOne(staff => staff.User)
                 .WithOne()
