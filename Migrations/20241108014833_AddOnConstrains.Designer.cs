@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using swp_be.Data;
 
@@ -11,9 +12,11 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241108014833_AddOnConstrains")]
+    partial class AddOnConstrains
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,9 +42,6 @@ namespace swp_be.Migrations
                     b.Property<int?>("KoiID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("KoiInventoryID")
-                        .HasColumnType("int");
-
                     b.Property<string>("OriginCertificate")
                         .HasColumnType("nvarchar(max)");
 
@@ -57,10 +57,6 @@ namespace swp_be.Migrations
                     b.HasIndex("KoiID")
                         .IsUnique()
                         .HasFilter("[KoiID] IS NOT NULL");
-
-                    b.HasIndex("KoiInventoryID")
-                        .IsUnique()
-                        .HasFilter("[KoiInventoryID] IS NOT NULL");
 
                     b.ToTable("AddOn");
                 });
@@ -432,6 +428,9 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KoiInventoryID"));
 
+                    b.Property<int>("AddOnID")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
@@ -485,6 +484,8 @@ namespace swp_be.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("KoiInventoryID");
+
+                    b.HasIndex("AddOnID");
 
                     b.HasIndex("CustomerID");
 
@@ -771,19 +772,11 @@ namespace swp_be.Migrations
 
                     b.HasOne("swp_be.Models.Koi", "Koi")
                         .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "KoiID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("swp_be.Models.KoiInventory", "KoiInventory")
-                        .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "KoiInventoryID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("swp_be.Models.AddOn", "KoiID");
 
                     b.Navigation("ConsignmentKoi");
 
                     b.Navigation("Koi");
-
-                    b.Navigation("KoiInventory");
                 });
 
             modelBuilder.Entity("swp_be.Models.Blog", b =>
@@ -888,11 +881,19 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.KoiInventory", b =>
                 {
+                    b.HasOne("swp_be.Models.AddOn", "AddOn")
+                        .WithMany()
+                        .HasForeignKey("AddOnID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("swp_be.Models.Customer", "Customer")
                         .WithMany("KoiInventories")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AddOn");
 
                     b.Navigation("Customer");
                 });
@@ -1017,12 +1018,8 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.Koi", b =>
                 {
-                    b.Navigation("AddOn");
-                });
-
-            modelBuilder.Entity("swp_be.Models.KoiInventory", b =>
-                {
-                    b.Navigation("AddOn");
+                    b.Navigation("AddOn")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("swp_be.Models.Order", b =>

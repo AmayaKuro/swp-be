@@ -49,6 +49,7 @@ namespace swp_be.Models
 
         public Consignment Consignment { get; set; }
 
-        public AddOn AddOn { get; set; }
+        [InverseProperty("ConsignmentKoi")]
+        public AddOn? AddOn { get; set; }
     }
 }

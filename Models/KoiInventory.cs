@@ -56,7 +56,8 @@ namespace swp_be.Models
         // Image URL
         public string? Image { get; set; }
 
-        public AddOn AddOn { get; set; }
+        [InverseProperty("KoiInventory")]
+        public AddOn? AddOn { get; set; }
 
         public Customer Customer { get; set; }
     }

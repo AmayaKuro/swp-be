@@ -39,6 +39,7 @@ namespace swp_be.Data
                 .HasOne(customer => customer.User)
                 .WithOne()
                 .HasForeignKey<Customer>(customer => customer.UserID);
+
             modelBuilder.Entity<Transaction>()
                 .HasOne(transaction => transaction.Order)
                 .WithMany(order => order.Transactions)
@@ -47,6 +48,30 @@ namespace swp_be.Data
             modelBuilder.Entity<Transaction>()
                 .HasOne(transaction => transaction.Consignment)
                 .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ConsignmentKoi>()
+                .HasOne(ck => ck.Consignment)
+                .WithMany()
+                .HasForeignKey(ck => ck.ConsignmentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ConsignmentKoi>()
+                .HasOne(ck => ck.AddOn)
+                .WithOne(a => a.ConsignmentKoi)
+                .HasForeignKey<AddOn>(a => a.ConsignmentKoiID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Koi>()
+                .HasOne(k => k.AddOn)
+                .WithOne(a => a.Koi)
+                .HasForeignKey<AddOn>(a => a.KoiID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<KoiInventory>()
+                .HasOne(ki => ki.AddOn)
+                .WithOne(a => a.KoiInventory)
+                .HasForeignKey<AddOn>(a => a.KoiInventoryID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             //modelBuilder.Entity<User>()
