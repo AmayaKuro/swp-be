@@ -49,16 +49,16 @@ namespace swp_be.Data
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //modelBuilder.Entity<User>()
-            //    .HasData(DataSeeding.Users);
-            //modelBuilder.Entity<PaymentMethod>()
-            //    .HasData(DataSeeding.PaymentMethods);
-            //modelBuilder.Entity<Staff>()
-            //    .HasData(DataSeeding.Staffs);
-            //modelBuilder.Entity<Customer>()
-            //    .HasData(DataSeeding.Customers);
-            //modelBuilder.Entity<ConsignmentPriceList>()
-            //    .HasData(DataSeeding.Consignments);
+            modelBuilder.Entity<User>()
+                .HasData(DataSeeding.Users);
+            modelBuilder.Entity<PaymentMethod>()
+                .HasData(DataSeeding.PaymentMethods);
+            modelBuilder.Entity<Staff>()
+                .HasData(DataSeeding.Staffs);
+            modelBuilder.Entity<Customer>()
+                .HasData(DataSeeding.Customers);
+            modelBuilder.Entity<ConsignmentPriceList>()
+                .HasData(DataSeeding.Consignments);
         }
     }
 }
