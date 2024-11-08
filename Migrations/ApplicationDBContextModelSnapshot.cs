@@ -39,9 +39,6 @@ namespace swp_be.Migrations
                     b.Property<int?>("KoiID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("KoiInventoryID")
-                        .HasColumnType("int");
-
                     b.Property<string>("OriginCertificate")
                         .HasColumnType("nvarchar(max)");
 
@@ -57,10 +54,6 @@ namespace swp_be.Migrations
                     b.HasIndex("KoiID")
                         .IsUnique()
                         .HasFilter("[KoiID] IS NOT NULL");
-
-                    b.HasIndex("KoiInventoryID")
-                        .IsUnique()
-                        .HasFilter("[KoiInventoryID] IS NOT NULL");
 
                     b.ToTable("AddOn");
                 });
@@ -205,9 +198,6 @@ namespace swp_be.Migrations
                     b.Property<int>("ConsignmentID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ConsignmentID1")
-                        .HasColumnType("int");
-
                     b.Property<string>("DailyFeedAmount")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -250,8 +240,6 @@ namespace swp_be.Migrations
                     b.HasKey("ConsignmentKoiID");
 
                     b.HasIndex("ConsignmentID");
-
-                    b.HasIndex("ConsignmentID1");
 
                     b.ToTable("ConsignmentKois");
                 });
@@ -432,6 +420,9 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KoiInventoryID"));
 
+                    b.Property<int>("AddOnID")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
@@ -485,6 +476,8 @@ namespace swp_be.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("KoiInventoryID");
+
+                    b.HasIndex("AddOnID");
 
                     b.HasIndex("CustomerID");
 
@@ -766,24 +759,15 @@ namespace swp_be.Migrations
                 {
                     b.HasOne("swp_be.Models.ConsignmentKoi", "ConsignmentKoi")
                         .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "ConsignmentKoiID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("swp_be.Models.AddOn", "ConsignmentKoiID");
 
                     b.HasOne("swp_be.Models.Koi", "Koi")
                         .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "KoiID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("swp_be.Models.KoiInventory", "KoiInventory")
-                        .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "KoiInventoryID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("swp_be.Models.AddOn", "KoiID");
 
                     b.Navigation("ConsignmentKoi");
 
                     b.Navigation("Koi");
-
-                    b.Navigation("KoiInventory");
                 });
 
             modelBuilder.Entity("swp_be.Models.Blog", b =>
@@ -825,14 +809,10 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.ConsignmentKoi", b =>
                 {
                     b.HasOne("swp_be.Models.Consignment", "Consignment")
-                        .WithMany()
-                        .HasForeignKey("ConsignmentID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("swp_be.Models.Consignment", null)
                         .WithMany("ConsignmentKois")
-                        .HasForeignKey("ConsignmentID1");
+                        .HasForeignKey("ConsignmentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Consignment");
                 });
@@ -888,11 +868,19 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.KoiInventory", b =>
                 {
+                    b.HasOne("swp_be.Models.AddOn", "AddOn")
+                        .WithMany()
+                        .HasForeignKey("AddOnID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("swp_be.Models.Customer", "Customer")
                         .WithMany("KoiInventories")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AddOn");
 
                     b.Navigation("Customer");
                 });
@@ -975,7 +963,7 @@ namespace swp_be.Migrations
                     b.HasOne("swp_be.Models.Consignment", "Consignment")
                         .WithMany()
                         .HasForeignKey("ConsignmentID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("swp_be.Models.Order", "Order")
                         .WithMany("Transactions")
@@ -1002,7 +990,8 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.ConsignmentKoi", b =>
                 {
-                    b.Navigation("AddOn");
+                    b.Navigation("AddOn")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("swp_be.Models.ConsignmentPriceList", b =>
@@ -1017,12 +1006,8 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.Koi", b =>
                 {
-                    b.Navigation("AddOn");
-                });
-
-            modelBuilder.Entity("swp_be.Models.KoiInventory", b =>
-                {
-                    b.Navigation("AddOn");
+                    b.Navigation("AddOn")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("swp_be.Models.Order", b =>
