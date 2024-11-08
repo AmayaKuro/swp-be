@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using swp_be.Data;
 
@@ -11,9 +12,11 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241108033448_AddOnConstrains")]
+    partial class AddOnConstrains
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,14 +266,6 @@ namespace swp_be.Migrations
                     b.HasKey("ConsignmentPriceListID");
 
                     b.ToTable("ConsignmentPriceList");
-
-                    b.HasData(
-                        new
-                        {
-                            ConsignmentPriceListID = 1,
-                            ConsignmentPriceName = "gay tra nhieu tien",
-                            PricePerDay = 100000L
-                        });
                 });
 
             modelBuilder.Entity("swp_be.Models.Customer", b =>
@@ -284,18 +279,6 @@ namespace swp_be.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Customers");
-
-                    b.HasData(
-                        new
-                        {
-                            UserID = 3003,
-                            LoyaltyPoints = 0
-                        },
-                        new
-                        {
-                            UserID = 3004,
-                            LoyaltyPoints = 0
-                        });
                 });
 
             modelBuilder.Entity("swp_be.Models.Delivery", b =>
@@ -623,18 +606,6 @@ namespace swp_be.Migrations
                     b.HasKey("PaymentMethodID");
 
                     b.ToTable("PaymentMethods");
-
-                    b.HasData(
-                        new
-                        {
-                            PaymentMethodID = 1,
-                            MethodName = "Cash"
-                        },
-                        new
-                        {
-                            PaymentMethodID = 2,
-                            MethodName = "VNPay"
-                        });
                 });
 
             modelBuilder.Entity("swp_be.Models.Promotion", b =>
@@ -681,16 +652,6 @@ namespace swp_be.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Staff");
-
-                    b.HasData(
-                        new
-                        {
-                            UserID = 3001
-                        },
-                        new
-                        {
-                            UserID = 3002
-                        });
                 });
 
             modelBuilder.Entity("swp_be.Models.Token", b =>
@@ -806,40 +767,6 @@ namespace swp_be.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserID = 3001,
-                            Name = "Admin",
-                            Password = "$2a$11$UsBlcZvVRSrDNdq.3.Dm2Osl.Wa.wP/.WLYtKzNUpz5KoipzD71lq",
-                            Role = 0,
-                            Username = "admin"
-                        },
-                        new
-                        {
-                            UserID = 3002,
-                            Name = "Staff",
-                            Password = "$2a$11$5lAjnn.etoeKOW3yhEX/JuS8hb3Zj/9J.9uqE698rg7ZK0G7jkCI6",
-                            Role = 1,
-                            Username = "staff"
-                        },
-                        new
-                        {
-                            UserID = 3003,
-                            Name = "Customer",
-                            Password = "$2a$11$XAtmAWoPTl1Iq5uV1mtrnO.oefA8.Mo3Aa1TBkbLp8xaCfQdHPOAG",
-                            Role = 2,
-                            Username = "customer"
-                        },
-                        new
-                        {
-                            UserID = 3004,
-                            Name = "String",
-                            Password = "$2a$11$Xcx.h5m.vjNLX.Wg5N6Fj.TVn9diErlgfF2NiC7mxrKqAIC6Xcc4y",
-                            Role = 0,
-                            Username = "string"
-                        });
                 });
 
             modelBuilder.Entity("swp_be.Models.Blog", b =>

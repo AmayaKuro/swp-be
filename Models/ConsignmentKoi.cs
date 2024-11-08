@@ -49,6 +49,9 @@ namespace swp_be.Models
 
         public Consignment Consignment { get; set; }
 
-        public AddOn AddOn { get; set; }
+        public int? AddOnId { get; set; }
+
+        [ForeignKey("AddOnId")]
+        public AddOn? AddOn { get; set; }
     }
 }
