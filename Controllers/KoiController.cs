@@ -34,7 +34,7 @@ namespace swp_be.Controllers
         public IFormFile? Image { get; set; }
         public IFormFile? OriginCertificate { get; set; }  // Gi?y ngu?n g?c xu?t x?
         public IFormFile? HealthCertificate { get; set; }  // Gi?y ki?m tra s?c kh?e
-        public IFormFile? OwnershipCertificate { get; set; }  // Gi?y ch?ng nh?n cá Koi
+        public IFormFile? OwnershipCertificate { get; set; }  // Gi?y ch?ng nh?n cï¿½ Koi
     }
 
     [Route("api/koi/[controller]")]
@@ -291,6 +291,72 @@ namespace swp_be.Controllers
 
             return Ok(kois.ToList());
         }
+
+        // GET: api/koi/AvailableKoiSorted
+        [HttpGet("AvailableKoiSorted")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAvailableKoiSorted([FromQuery] string? sortBy)
+        {
+            var availableKois = await koiService.GetAvailableKoisAsync();
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                availableKois = sortBy.ToLower() switch
+                {
+                    "name" => availableKois.OrderBy(k => ((Koi)k).Name).ToList(),
+                    "price" => availableKois.OrderBy(k => ((Koi)k).Price).ToList(),
+                    "age" => availableKois.OrderBy(k => ((Koi)k).Age).ToList(),
+                    _ => availableKois
+                };
+            }
+
+            return Ok(availableKois);
+        }
+
+        // GET: api/koi/AvailableKoiFilter
+        [HttpGet("AvailableKoiFilter")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAvailableKoiFilter(
+            [FromQuery] string? name,
+            [FromQuery] string? gender,
+            [FromQuery] int? minAge,
+            [FromQuery] int? maxAge,
+            [FromQuery] string? size,
+            [FromQuery] string? color,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? species)
+        {
+            var availableKois = await koiService.GetAvailableKoisAsync();
+
+            if (!string.IsNullOrEmpty(name))
+                availableKois = availableKois.Where(k => ((Koi)k).Name != null && ((Koi)k).Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!string.IsNullOrEmpty(gender))
+                availableKois = availableKois.Where(k => ((Koi)k).Gender != null && ((Koi)k).Gender.Equals(gender, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (minAge.HasValue)
+                availableKois = availableKois.Where(k => ((Koi)k).Age.HasValue && ((Koi)k).Age >= minAge).ToList();
+
+            if (maxAge.HasValue)
+                availableKois = availableKois.Where(k => ((Koi)k).Age.HasValue && ((Koi)k).Age <= maxAge).ToList();
+
+            if (!string.IsNullOrEmpty(size))
+                availableKois = availableKois.Where(k => ((Koi)k).Size != null && ((Koi)k).Size.Contains(size, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (!string.IsNullOrEmpty(color))
+                availableKois = availableKois.Where(k => ((Koi)k).Color != null && ((Koi)k).Color.Contains(color, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (minPrice.HasValue)
+                availableKois = availableKois.Where(k => ((Koi)k).Price >= minPrice).ToList();
+
+            if (maxPrice.HasValue)
+                availableKois = availableKois.Where(k => ((Koi)k).Price <= maxPrice).ToList();
+
+            if (!string.IsNullOrEmpty(species))
+                availableKois = availableKois.Where(k => ((Koi)k).Species.Contains(species, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            return Ok(availableKois);
+        }
+
 
     }
 }
