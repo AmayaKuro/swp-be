@@ -7,7 +7,7 @@
 namespace swp_be.Migrations
 {
     /// <inheritdoc />
-    public partial class reInitDB : Migration
+    public partial class HotFixReInitDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,10 +31,10 @@ namespace swp_be.Migrations
                 columns: new[] { "UserID", "Address", "Email", "Name", "Password", "Phone", "Role", "Username" },
                 values: new object[,]
                 {
-                    { 3001, null, null, "Admin", "$2a$11$UsBlcZvVRSrDNdq.3.Dm2Osl.Wa.wP/.WLYtKzNUpz5KoipzD71lq", null, 0, "admin" },
-                    { 3002, null, null, "Staff", "$2a$11$5lAjnn.etoeKOW3yhEX/JuS8hb3Zj/9J.9uqE698rg7ZK0G7jkCI6", null, 1, "staff" },
-                    { 3003, null, null, "Customer", "$2a$11$XAtmAWoPTl1Iq5uV1mtrnO.oefA8.Mo3Aa1TBkbLp8xaCfQdHPOAG", null, 2, "customer" },
-                    { 3004, null, null, "String", "$2a$11$Xcx.h5m.vjNLX.Wg5N6Fj.TVn9diErlgfF2NiC7mxrKqAIC6Xcc4y", null, 0, "string" }
+                    { 3001, null, null, "Admin", "$2a$11$npRibh4p9.IM/LORnkyjN.shsiaBvs1CXf0zEdKwrh3apO.iL63y2", null, 0, "admin" },
+                    { 3002, null, null, "Staff", "$2a$11$IRm9Msgo4d2zr6Hx011wZe.FHiyl8m38gcn1p2EEw1woxtOnLEv..", null, 1, "staff" },
+                    { 3003, null, null, "Customer", "$2a$11$1hzf/L48uj9OQy7ejaqSyuEUv8qcQAhHRLQeXuxxlzuZbdBnQMirS", null, 2, "customer" },
+                    { 3004, null, null, "String", "$2a$11$CrqHZpiIsIID5Yq0AjQHx.ZyquwctpPCUyjZewF32kWbgoZfrLVTi", null, 0, "string" }
                 });
 
             migrationBuilder.InsertData(

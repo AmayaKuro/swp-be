@@ -12,8 +12,8 @@ using swp_be.Data;
 namespace swp_be.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241108171346_reInitDB")]
-    partial class reInitDB
+    [Migration("20241111141239_HotFixReInitDB")]
+    partial class HotFixReInitDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,9 @@ namespace swp_be.Migrations
                     b.Property<int?>("KoiID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("KoiInventoryID")
+                        .HasColumnType("int");
+
                     b.Property<string>("OriginCertificate")
                         .HasColumnType("nvarchar(max)");
 
@@ -49,14 +52,6 @@ namespace swp_be.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AddOnID");
-
-                    b.HasIndex("ConsignmentKoiID")
-                        .IsUnique()
-                        .HasFilter("[ConsignmentKoiID] IS NOT NULL");
-
-                    b.HasIndex("KoiID")
-                        .IsUnique()
-                        .HasFilter("[KoiID] IS NOT NULL");
 
                     b.ToTable("AddOn");
                 });
@@ -191,6 +186,9 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConsignmentKoiID"));
 
+                    b.Property<int?>("AddOnId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
@@ -241,6 +239,10 @@ namespace swp_be.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("ConsignmentKoiID");
+
+                    b.HasIndex("AddOnId")
+                        .IsUnique()
+                        .HasFilter("[AddOnId] IS NOT NULL");
 
                     b.HasIndex("ConsignmentID");
 
@@ -381,6 +383,9 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KoiID"));
 
+                    b.Property<int?>("AddOnId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
@@ -432,6 +437,10 @@ namespace swp_be.Migrations
 
                     b.HasKey("KoiID");
 
+                    b.HasIndex("AddOnId")
+                        .IsUnique()
+                        .HasFilter("[AddOnId] IS NOT NULL");
+
                     b.ToTable("Kois");
                 });
 
@@ -443,7 +452,7 @@ namespace swp_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KoiInventoryID"));
 
-                    b.Property<int>("AddOnID")
+                    b.Property<int?>("AddOnId")
                         .HasColumnType("int");
 
                     b.Property<int?>("Age")
@@ -500,7 +509,9 @@ namespace swp_be.Migrations
 
                     b.HasKey("KoiInventoryID");
 
-                    b.HasIndex("AddOnID");
+                    b.HasIndex("AddOnId")
+                        .IsUnique()
+                        .HasFilter("[AddOnId] IS NOT NULL");
 
                     b.HasIndex("CustomerID");
 
@@ -804,7 +815,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3001,
                             Name = "Admin",
-                            Password = "$2a$11$UsBlcZvVRSrDNdq.3.Dm2Osl.Wa.wP/.WLYtKzNUpz5KoipzD71lq",
+                            Password = "$2a$11$npRibh4p9.IM/LORnkyjN.shsiaBvs1CXf0zEdKwrh3apO.iL63y2",
                             Role = 0,
                             Username = "admin"
                         },
@@ -812,7 +823,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3002,
                             Name = "Staff",
-                            Password = "$2a$11$5lAjnn.etoeKOW3yhEX/JuS8hb3Zj/9J.9uqE698rg7ZK0G7jkCI6",
+                            Password = "$2a$11$IRm9Msgo4d2zr6Hx011wZe.FHiyl8m38gcn1p2EEw1woxtOnLEv..",
                             Role = 1,
                             Username = "staff"
                         },
@@ -820,7 +831,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3003,
                             Name = "Customer",
-                            Password = "$2a$11$XAtmAWoPTl1Iq5uV1mtrnO.oefA8.Mo3Aa1TBkbLp8xaCfQdHPOAG",
+                            Password = "$2a$11$1hzf/L48uj9OQy7ejaqSyuEUv8qcQAhHRLQeXuxxlzuZbdBnQMirS",
                             Role = 2,
                             Username = "customer"
                         },
@@ -828,25 +839,10 @@ namespace swp_be.Migrations
                         {
                             UserID = 3004,
                             Name = "String",
-                            Password = "$2a$11$Xcx.h5m.vjNLX.Wg5N6Fj.TVn9diErlgfF2NiC7mxrKqAIC6Xcc4y",
+                            Password = "$2a$11$CrqHZpiIsIID5Yq0AjQHx.ZyquwctpPCUyjZewF32kWbgoZfrLVTi",
                             Role = 0,
                             Username = "string"
                         });
-                });
-
-            modelBuilder.Entity("swp_be.Models.AddOn", b =>
-                {
-                    b.HasOne("swp_be.Models.ConsignmentKoi", "ConsignmentKoi")
-                        .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "ConsignmentKoiID");
-
-                    b.HasOne("swp_be.Models.Koi", "Koi")
-                        .WithOne("AddOn")
-                        .HasForeignKey("swp_be.Models.AddOn", "KoiID");
-
-                    b.Navigation("ConsignmentKoi");
-
-                    b.Navigation("Koi");
                 });
 
             modelBuilder.Entity("swp_be.Models.Blog", b =>
@@ -887,11 +883,18 @@ namespace swp_be.Migrations
 
             modelBuilder.Entity("swp_be.Models.ConsignmentKoi", b =>
                 {
+                    b.HasOne("swp_be.Models.AddOn", "AddOn")
+                        .WithOne("ConsignmentKoi")
+                        .HasForeignKey("swp_be.Models.ConsignmentKoi", "AddOnId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("swp_be.Models.Consignment", "Consignment")
                         .WithMany("ConsignmentKois")
                         .HasForeignKey("ConsignmentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AddOn");
 
                     b.Navigation("Consignment");
                 });
@@ -945,13 +948,22 @@ namespace swp_be.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("swp_be.Models.Koi", b =>
+                {
+                    b.HasOne("swp_be.Models.AddOn", "AddOn")
+                        .WithOne("Koi")
+                        .HasForeignKey("swp_be.Models.Koi", "AddOnId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("AddOn");
+                });
+
             modelBuilder.Entity("swp_be.Models.KoiInventory", b =>
                 {
                     b.HasOne("swp_be.Models.AddOn", "AddOn")
-                        .WithMany()
-                        .HasForeignKey("AddOnID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("KoiInventory")
+                        .HasForeignKey("swp_be.Models.KoiInventory", "AddOnId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("swp_be.Models.Customer", "Customer")
                         .WithMany("KoiInventories")
@@ -1062,15 +1074,18 @@ namespace swp_be.Migrations
                     b.Navigation("PaymentMethod");
                 });
 
+            modelBuilder.Entity("swp_be.Models.AddOn", b =>
+                {
+                    b.Navigation("ConsignmentKoi");
+
+                    b.Navigation("Koi");
+
+                    b.Navigation("KoiInventory");
+                });
+
             modelBuilder.Entity("swp_be.Models.Consignment", b =>
                 {
                     b.Navigation("ConsignmentKois");
-                });
-
-            modelBuilder.Entity("swp_be.Models.ConsignmentKoi", b =>
-                {
-                    b.Navigation("AddOn")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("swp_be.Models.ConsignmentPriceList", b =>
@@ -1081,12 +1096,6 @@ namespace swp_be.Migrations
             modelBuilder.Entity("swp_be.Models.Customer", b =>
                 {
                     b.Navigation("KoiInventories");
-                });
-
-            modelBuilder.Entity("swp_be.Models.Koi", b =>
-                {
-                    b.Navigation("AddOn")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("swp_be.Models.Order", b =>

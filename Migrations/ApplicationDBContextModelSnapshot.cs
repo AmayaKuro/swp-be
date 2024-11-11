@@ -812,7 +812,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3001,
                             Name = "Admin",
-                            Password = "$2a$11$UsBlcZvVRSrDNdq.3.Dm2Osl.Wa.wP/.WLYtKzNUpz5KoipzD71lq",
+                            Password = "$2a$11$npRibh4p9.IM/LORnkyjN.shsiaBvs1CXf0zEdKwrh3apO.iL63y2",
                             Role = 0,
                             Username = "admin"
                         },
@@ -820,7 +820,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3002,
                             Name = "Staff",
-                            Password = "$2a$11$5lAjnn.etoeKOW3yhEX/JuS8hb3Zj/9J.9uqE698rg7ZK0G7jkCI6",
+                            Password = "$2a$11$IRm9Msgo4d2zr6Hx011wZe.FHiyl8m38gcn1p2EEw1woxtOnLEv..",
                             Role = 1,
                             Username = "staff"
                         },
@@ -828,7 +828,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3003,
                             Name = "Customer",
-                            Password = "$2a$11$XAtmAWoPTl1Iq5uV1mtrnO.oefA8.Mo3Aa1TBkbLp8xaCfQdHPOAG",
+                            Password = "$2a$11$1hzf/L48uj9OQy7ejaqSyuEUv8qcQAhHRLQeXuxxlzuZbdBnQMirS",
                             Role = 2,
                             Username = "customer"
                         },
@@ -836,7 +836,7 @@ namespace swp_be.Migrations
                         {
                             UserID = 3004,
                             Name = "String",
-                            Password = "$2a$11$Xcx.h5m.vjNLX.Wg5N6Fj.TVn9diErlgfF2NiC7mxrKqAIC6Xcc4y",
+                            Password = "$2a$11$CrqHZpiIsIID5Yq0AjQHx.ZyquwctpPCUyjZewF32kWbgoZfrLVTi",
                             Role = 0,
                             Username = "string"
                         });

@@ -20,12 +20,18 @@ namespace swp_be.Controllers
 {
     public class OrderRequest
     {
+        public class ConsignemtOnOrder
+        {
+            public DateTime EndDate { get; set; }
+            public int PriceListId { get; set; }
+        }
         public int[] kois { get; set; } = [];
         public int[] consignmentKois { get; set; } = [];
         // Syntax: [ [batchID, quantity] ]
         public List<int[]> batchs { get; set; } = [];
         public int promotionID { get; set; } = 0;
         public OrderType paymentMethod { get; set; }
+        public ConsignemtOnOrder consignment { get; set; }
     }
 
     [Route("api/[controller]")]
