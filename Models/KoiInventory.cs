@@ -53,13 +53,20 @@ namespace swp_be.Models
 
         public InvenKoiStatus Status { get; set; }
 
+        public DateTime? StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+
+        public long? FosterPrice { get; set; }
+
         // Image URL
         public string? Image { get; set; }
 
         public int? AddOnId { get; set; }
 
         [ForeignKey("AddOnId")]
-        public AddOn AddOn { get; set; }
+        public AddOn? AddOn { get; set; }
 
         public Customer Customer { get; set; }
     }

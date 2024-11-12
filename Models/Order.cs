@@ -62,6 +62,9 @@ namespace swp_be.Models
         public string? Reason { get; set; }
 
         public string? ReasonImage { get; set; }
+        public int? ConsignmentID { get; set; }
+        [ForeignKey("ConsignmentID")]
+        public Consignment? Consignment { get; set; }
 
         [DeleteBehavior(DeleteBehavior.SetNull)]
         public Customer? Customer { get; set; }  // Navigation Property

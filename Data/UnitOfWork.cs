@@ -24,6 +24,7 @@ namespace swp_be.Data
         private DeliveryRepository _deliveryRepository;
         private BlogRepository _blogRepository;
         private PromotionRepository _promotionRepository;
+        private KoiInventoryRepository _koiInventoryRepository;
 
 
         private bool disposed = false;
@@ -47,6 +48,7 @@ namespace swp_be.Data
             _blogRepository = new BlogRepository(_context);
             _promotionRepository = new PromotionRepository(_context);
             _consignmentPriceListRepository = new GenericRepository<ConsignmentPriceList>(_context);
+            _koiInventoryRepository = new KoiInventoryRepository(_context);
 
 
         }
@@ -179,7 +181,13 @@ namespace swp_be.Data
             }
         }
 
-
+        public KoiInventoryRepository KoiInventoryRepository
+        {
+            get
+            {
+                return _koiInventoryRepository;
+            }
+        }
 
         public void Save()
         {

@@ -86,6 +86,7 @@ builder.Services.AddAuthorizationBuilder().AddPolicy("staff, admin", policy => p
 
 builder.Services.AddScoped<BatchService>();
 builder.Services.AddScoped<FeedbackService>();
+builder.Services.AddScoped<KoiInventoryService>();
 
 var app = builder.Build();
 

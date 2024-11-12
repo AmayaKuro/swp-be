@@ -18,5 +18,12 @@ namespace swp_be.Data.Repositories
                     .ToListAsync();
         }
 
+        public async Task<List<KoiInventory>> GetKoiInventoryByUserId(int userId)
+        {
+            return await _context.KoiInventory
+                .Include(k => k.AddOn)
+                .Where(k => k.CustomerID == userId)
+                .ToListAsync();
+        }
     }
 }
