@@ -31,7 +31,7 @@ namespace swp_be.Controllers
         public List<int[]> batchs { get; set; } = [];
         public int promotionID { get; set; } = 0;
         public OrderType paymentMethod { get; set; }
-        public ConsignemtOnOrder consignment { get; set; }
+        public ConsignemtOnOrder? consignment { get; set; }
     }
 
     [Route("api/[controller]")]
