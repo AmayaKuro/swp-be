@@ -58,11 +58,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionString", System.EnvironmentVariableTarget.User));
+    options.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionString"));
 });
 
 //Jwt configuration starts here
-var jwtSecretKey = Environment.GetEnvironmentVariable("Swp_Secret_key", System.EnvironmentVariableTarget.User) ?? "YSBsb25nIEFzc3MgIHN0cmluZyB0aGF0J3MgbGFzc3QgNjQgY2hhcmFjdGVyPz8/";
+var jwtSecretKey = Environment.GetEnvironmentVariable("Swp_Secret_key") ?? "YSBsb25nIEFzc3MgIHN0cmluZyB0aGF0J3MgbGFzc3QgNjQgY2hhcmFjdGVyPz8/";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

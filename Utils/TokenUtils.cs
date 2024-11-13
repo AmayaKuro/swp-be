@@ -17,7 +17,7 @@ namespace swp_be.Utils
 
     public class TokenUtils
     {
-        private string Secret = Environment.GetEnvironmentVariable("Swp_Secret_key", System.EnvironmentVariableTarget.User) ?? "YSBsb25nIEFzc3MgIHN0cmluZyB0aGF0J3MgbGFzc3QgNjQgY2hhcmFjdGVyPz8/";
+        private string Secret = Environment.GetEnvironmentVariable("Swp_Secret_key") ?? "YSBsb25nIEFzc3MgIHN0cmluZyB0aGF0J3MgbGFzc3QgNjQgY2hhcmFjdGVyPz8/";
 
         public string Sign(User user, TokenType type)
         {
