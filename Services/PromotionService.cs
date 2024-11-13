@@ -87,7 +87,7 @@ namespace swp_be.Services
             }
 
             // Kiểm tra điểm LoyaltyPoints
-            if (customer.LoyaltyPoints < 100)
+            if (customer.LoyaltyPoints < 10)
             {
                 throw new InvalidOperationException("Not enough Loyalty Points to redeem promotion");
             }
@@ -105,7 +105,7 @@ namespace swp_be.Services
             };
 
             // Trừ điểm LoyaltyPoints
-            customer.LoyaltyPoints -= 100;
+            customer.LoyaltyPoints -= 10;
 
             // Lưu thay đổi
             unitOfWork.PromotionRepository.Create(promotion);

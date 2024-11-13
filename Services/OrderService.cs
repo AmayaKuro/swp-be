@@ -30,6 +30,7 @@ namespace swp_be.Services
         private DeliveryRepository deliveryRepository;
         private readonly UserService userService;
         UnitOfWork unitOfWork;
+        private KoiInventoryService koiInventoryService;
 
         public OrderService(ApplicationDBContext context)
         {
@@ -43,6 +44,7 @@ namespace swp_be.Services
             deliveryRepository = new DeliveryRepository(_context);
             userService = new UserService(_context);
             unitOfWork = new UnitOfWork(_context);
+            koiInventoryService = new KoiInventoryService(_context);
         }
 
         public List<Order> GetOrders()
@@ -249,6 +251,8 @@ namespace swp_be.Services
                     koi.Status = KoiStatus.Sold;
 
                     koiRepository.Update(koi);
+
+                    koiInventoryService.CreateKoiInventoryFromKoi(koi.KoiID, customerID, false);
                 }
                 else if (detail.Type == OrderDetailType.ConsignmentKoi)
                 {
@@ -257,6 +261,8 @@ namespace swp_be.Services
                     consignmentKoi.Consignment.Status = ConsignmentStatus.finished;
 
                     consignmentKoiRepository.Update(consignmentKoi);
+
+                    koiInventoryService.CreateKoiInventoryFromKoi(consignmentKoi.ConsignmentKoiID, customerID, true);
                 }
             }
 
