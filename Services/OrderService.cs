@@ -26,6 +26,7 @@ namespace swp_be.Services
         private GenericRepository<Promotion> promotionRepository;
         private OrderRepository orderRepository;
         private ConsignmentRepository consignmentRepository;
+        private readonly UserService userService;
 
         public OrderService(ApplicationDBContext context)
         {
@@ -36,6 +37,7 @@ namespace swp_be.Services
             promotionRepository = new GenericRepository<Promotion>(_context);
             orderRepository = new OrderRepository(_context);
             consignmentRepository = new ConsignmentRepository(_context);
+            userService = new UserService(_context);
         }
 
         public Order GetByID(int id)
@@ -188,11 +190,17 @@ namespace swp_be.Services
         public void FinishOrder(int id)
         {
             Order order = orderRepository.GetOrderByID(id);
-
+            
             if (order == null)
             {
                 return;
             }
+
+            int customerID = order.CustomerID ?? -1;
+            Customer customer = userService.GetCustomerByID(customerID).GetAwaiter().GetResult();
+            customer.LoyaltyPoints += 10;
+            userService.UpdateCustomer(customer);
+
 
             // Update order status to completed
             order.Status = OrderStatus.Completed;

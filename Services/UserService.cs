@@ -165,5 +165,20 @@ namespace swp_be.Services
             return true;
         }
 
+        public async Task<Customer> GetCustomerByID(int id)
+        {
+            User info = unitOfWork.UserRepository.GetById(id);
+            if(info.Role == Role.Customer)
+            {
+                return await unitOfWork.UserRepository.GetCustomerByID(id);
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdateCustomer(Customer customer)
+        {
+            return await unitOfWork.UserRepository.UpdateCustomer(customer);
+        }
+
     }
 }
