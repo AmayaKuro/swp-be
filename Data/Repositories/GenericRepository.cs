@@ -19,7 +19,7 @@ namespace swp_be.data.Repositories
             //return _context.Set<T>().AsNoTracking().ToList();
         }
 
-        public void Create(T entity)
+        public virtual void Create(T entity)
         {
             _context.Add(entity);
         }

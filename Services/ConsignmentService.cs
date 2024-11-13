@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using swp_be.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using swp_be.Controllers;
 
 namespace swp_be.Services
 {
@@ -16,8 +17,8 @@ namespace swp_be.Services
         public ConsignmentService(ApplicationDBContext context)
         {
             this._context = context;
-            this.unitOfWork= new UnitOfWork(context);
-            this.consignmentRepository= new ConsignmentRepository(context);
+            this.unitOfWork = new UnitOfWork(context);
+            this.consignmentRepository = new ConsignmentRepository(context);
         }
 
         public async Task<List<Consignment>> GetConsignment()
@@ -31,12 +32,22 @@ namespace swp_be.Services
 
         public async Task<Consignment> GetById(int id)
         {
-            return await consignmentRepository.GetById(id);  // Query by ID
+            return await consignmentRepository.GetConsignmentById(id);  // Query by ID
+        }
+
+        public Consignment GetByIdSync(int id)
+        {
+            return consignmentRepository.GetConsignmentByIdSync(id);  // Query by ID
         }
 
         public async Task<List<ConsignmentPriceList>> GetPriceList()
         {
             return await unitOfWork.ConsignmentPriceListRepository.GetAllAsync();
+        }
+
+        public async Task<ConsignmentPriceList> GetPriceListByID(int id)
+        {
+            return await unitOfWork.ConsignmentPriceListRepository.GetByIdAsync(id);
         }
 
         public async Task<bool> DeleteConsignment(Consignment consignment)
@@ -115,7 +126,7 @@ namespace swp_be.Services
 
                 // Add the consignmentKoi to the database
                 _context.ConsignmentKois.Add(consignmentKoi);
-              await  _context.SaveChangesAsync(); // Save the Koi as well
+                await _context.SaveChangesAsync(); // Save the Koi as well
 
                 return consignment;
             }
@@ -124,6 +135,31 @@ namespace swp_be.Services
                 // Log the exception for debugging purposes if needed
                 throw new Exception("Error creating consignment", ex);
             }
+        }
+
+        public Consignment CreateConsignment(Consignment consignment)
+        {
+            var price = unitOfWork.ConsignmentPriceListRepository.GetById(consignment.ConsignmentPriceListID);
+
+            consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays) * price.PricePerDay;
+
+            consignmentRepository.Create(consignment);
+            _context.SaveChanges();
+            return consignment;
+        }
+
+        public async Task FinishConsignment(int id)
+        {
+            Consignment consignment = await consignmentRepository.GetConsignmentById(id);
+
+            if (consignment == null)
+            {
+                return;
+            }
+
+            consignment.Status = ConsignmentStatus.finished;
+            consignmentRepository.Update(consignment);
+            consignmentRepository.Save();
         }
     }
 }

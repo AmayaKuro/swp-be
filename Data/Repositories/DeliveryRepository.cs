@@ -28,5 +28,12 @@ namespace swp_be.Data.Repositories
                        .Include(d => d.Customer) // Eager loading the Customer entity
                        .FirstOrDefault(d => d.DeliveryID == deliveryId); // Fetch delivery by ID
         }
+        public Delivery GetDeliveryByOrderId(int orderId)
+        {
+            return _context.Deliveries
+                      .Include(d => d.Order)    
+                      .Include(d => d.Customer) 
+                      .FirstOrDefault(d => d.OrderID == orderId);
+        }
     }
 }

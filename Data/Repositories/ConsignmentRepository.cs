@@ -11,6 +11,11 @@ namespace swp_be.Data.Repositories
         {
         }
 
+        public override void Create(Consignment entity)
+        {
+            _context.Consignments.Add(entity);
+        }
+
         public async Task<List<Consignment>> GetConsignment()
         {
             return await _context.Consignments
@@ -32,7 +37,7 @@ namespace swp_be.Data.Repositories
                 .Where(c => c.Customer.UserID == customerId) // Filter by CustomerID
                 .ToListAsync();
         }
-        public async Task<Consignment> GetById(int id)
+        public async Task<Consignment> GetConsignmentById(int id)
         {
             return await _context.Consignments
                 .Include(c => c.Customer)                      // Include related Customer
@@ -40,6 +45,23 @@ namespace swp_be.Data.Repositories
                 .Include(c => c.ConsignmentKois)               // Include related ConsignmentKois
                 .FirstOrDefaultAsync(c => c.ConsignmentID == id);  // Query by ID
         }
-       
+
+        public Consignment GetConsignmentByIdSync(int id)
+        {
+            return _context.Consignments
+                .Include(c => c.Customer)                      // Include related Customer
+                .ThenInclude(c => c.User)                      // Include related User from Customer
+                .Include(c => c.ConsignmentKois)               // Include related ConsignmentKois
+                .FirstOrDefault(c => c.ConsignmentID == id);  // Query by ID
+        }
+
+        public Consignment GetConsignmentByOrderID(int orderID)
+        {
+            return _context.Consignments
+                .Include(c => c.Customer)                      // Include related Customer
+                .ThenInclude(c => c.User)                      // Include related User from Customer
+                .Include(c => c.ConsignmentKois)               // Include related ConsignmentKois
+                .FirstOrDefault(c => c.OrderID == orderID);  // Query by ID
+        }
     }
 }

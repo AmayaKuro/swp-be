@@ -14,6 +14,7 @@ namespace swp_be.Services
         private DeliveryService deliveryService;
         private OrderService orderService;
         private GenericRepository<PaymentMethod> paymentMethodRepository;
+        private ConsignmentService consignmentService;
 
         public TransactionService(ApplicationDBContext context)
         {
@@ -22,6 +23,7 @@ namespace swp_be.Services
             deliveryService = new DeliveryService(context);
             orderService = new OrderService(context);
             paymentMethodRepository = new GenericRepository<PaymentMethod>(context);
+            consignmentService = new ConsignmentService(context);
         }
 
         /// <summary>
@@ -53,6 +55,12 @@ namespace swp_be.Services
             if (order.Type == OrderType.Online)
             {
                 transaction.Amount = order.TotalAmount;
+                
+                // Add Fostering fee if consignment exist
+                if (order.Consignment != null)
+                {
+                    transaction.Amount += order.Consignment.FosterPrice;
+                }
             }
             else
             {
@@ -198,7 +206,7 @@ namespace swp_be.Services
             transaction.Type = TransactionType.Shopping;
             transaction.Amount = depositAmount;
             transaction.CreateAt = DateTime.Now;
-            transaction.EndAt = transaction.CreateAt.AddDays(1);
+            transaction.EndAt = transaction.CreateAt.AddSeconds(1);
             transaction.PaymentMethod = paymentMethod;
 
 
@@ -219,7 +227,7 @@ namespace swp_be.Services
             transactionRepository.Save();
         }
 
-        public void UpdateStatus(Transaction transaction, TransactionStatus transactionStatus, string token = "")
+        public async void UpdateStatus(Transaction transaction, TransactionStatus transactionStatus, string token = "")
         {
             // Update transaction status
             transaction.Status = transactionStatus;
@@ -237,13 +245,23 @@ namespace swp_be.Services
                 {
                     Order order = transaction.Order;
 
-                    // Final payment for Online order, auto create delivery
+                    // Final payment for Online order, auto set consignment to fostering
                     if (order.Type == OrderType.Online)
                     {
-                        deliveryService.CreateDeliveryFromOrder(order);
+                        if (order.ConsignmentID != null)
+                        {
+                            Consignment consignment = consignmentService.GetByIdSync(order.ConsignmentID.Value);
+
+                            if (consignment != null)
+                            {
+                                consignment.Status = ConsignmentStatus.raising;
+                                await consignmentService.UpdateConsignment(consignment);
+                            }
+                        }
                     }
+
                     // Final payment for offline order (cash), order is completed. Optional delivery will be created by staff (CRUD Delivery site)
-                    else if (transaction.PaymentMethod.MethodName == "Cash"
+                    if (transaction.PaymentMethod.MethodName == "Cash"
                         && order.Type == OrderType.Offline)
                     {
                         orderService.FinishOrder(order.OrderID);
@@ -265,7 +283,7 @@ namespace swp_be.Services
                 }
             }
             // If user cancel the transaction
-            else if (transactionStatus == TransactionStatus.Cancelled)
+            else if (transactionStatus == TransactionStatus.Cancelled || transactionStatus == TransactionStatus.Failed)
             {
                 if (transaction.Type == TransactionType.Shopping)
                 {
@@ -279,7 +297,6 @@ namespace swp_be.Services
             }
 
             transactionRepository.Update(transaction);
-            transactionRepository.Save();
         }
     }
 }
