@@ -78,7 +78,7 @@ namespace swp_be.Services
         }
 
 
-        public Delivery CreateDeliveryFromOrder(Order order, string address)
+        public Delivery CreateDeliveryFromOrder(Order order, string? address)
         {
             var user = userService.GetUserProfile(order.CustomerID.Value);
             Delivery delivery = new Delivery
@@ -86,8 +86,10 @@ namespace swp_be.Services
                 OrderID = order.OrderID,
                 CustomerID = user.UserID,
                 Status = DeliveryStatus.Delivering,
-                StartDeliDay = DateTime.Now,
-                Address = address
+                // Set the start delivery day to the current day if no consignment after order, otherwise set to consignment end date
+                StartDeliDay = (order.Consignment != null) ? order.Consignment.EndDate : DateTime.Now,
+                // Set address if provided, otherwise use the user's address
+                Address = (address == null || address == "") ? user.Address : address,
             };
 
             unitOfWork.DeliverRepository.Create(delivery);

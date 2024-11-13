@@ -21,6 +21,11 @@ namespace swp_be.Models
 
     public class Consignment
     {
+        public Consignment()
+        {
+            ConsignmentKois = new List<ConsignmentKoi>();
+        }
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ConsignmentID { get; set; }
 

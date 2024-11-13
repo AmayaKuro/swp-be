@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using swp_be.Controllers;
 using swp_be.data.Repositories;
 using swp_be.Data;
@@ -26,6 +27,7 @@ namespace swp_be.Services
         private GenericRepository<Promotion> promotionRepository;
         private OrderRepository orderRepository;
         private ConsignmentRepository consignmentRepository;
+        private DeliveryRepository deliveryRepository;
         private readonly UserService userService;
 
         public OrderService(ApplicationDBContext context)
@@ -36,7 +38,8 @@ namespace swp_be.Services
             consignmentKoiRepository = new ConsignmentKoiRepository(_context);
             promotionRepository = new GenericRepository<Promotion>(_context);
             orderRepository = new OrderRepository(_context);
-            consignmentRepository = new ConsignmentRepository(_context);
+            consignmentRepository = new ConsignmentRepository(_context)
+            deliveryRepository = new DeliveryRepository(_context);
             userService = new UserService(_context);
         }
 
@@ -54,7 +57,7 @@ namespace swp_be.Services
 
         // Go to upper comment to understand flow 
         // Create standalone CreateOrder if you like
-        public Order CreateOrder(int customerID, OrderType orderType, int promotionID)
+        public Order CreateOrder(int customerID, OrderType orderType, int promotionID, Consignment? consignment = null)
         {
             // If promotionID present and not exist in db, cancel create
             if (promotionID > 0 && promotionRepository.GetById(promotionID) == null)
@@ -68,18 +71,28 @@ namespace swp_be.Services
             order.Status = OrderStatus.Pending;
             order.Type = orderType;
             order.TotalAmount = TotalAmount;
-            order.CustomerID = customerID;
             order.StaffID = 7; // This is for testing purpose
+
+            order.CustomerID = customerID;
+            order.OrderDetails = orderDetails;
+
             if (promotionRepository.GetById(promotionID) != null)
             {
                 order.PromotionID = promotionID; //promotionID;
             }
-            Console.WriteLine(order.Type);
-
-            order.OrderDetails = orderDetails;
 
             orderRepository.Create(order);
             orderRepository.Save();
+
+            // Add consignment to order  if consignment existed
+            if (consignment != null)
+            {
+                consignment.OrderID = order.OrderID;
+                order.Consignment = consignment;
+
+                consignmentRepository.Create(consignment);
+                consignmentRepository.Save();
+            }
 
             return order;
         }
@@ -115,6 +128,9 @@ namespace swp_be.Services
                     return null;
                 }
 
+                batchInfo.RemainBatch -= item[1];
+                batchRepository.Update(batchInfo);
+
                 // Add money to total
                 TotalAmount += detail.Price;
 
@@ -127,13 +143,13 @@ namespace swp_be.Services
 
                 Koi koiInfo = koiRepository.GetById(koiID);
 
-                if (koiInfo.Status != KoiStatus.Available) break;
-
                 // If koi not exist, cancel
                 if (koiInfo == null)
                 {
                     return null;
                 }
+
+                if (koiInfo.Status != KoiStatus.Available) break;
 
                 OrderDetail detail = new OrderDetail();
 
@@ -155,13 +171,13 @@ namespace swp_be.Services
                 if (consignmentKoiID < 1) break;
                 ConsignmentKoi consignmentKoiInfo = consignmentKoiRepository.GetById(consignmentKoiID);
 
-                if (consignmentKoiInfo.Consignment.Status != ConsignmentStatus.available) break;
-
                 // If consignmentKoi not exist, cancel
                 if (consignmentKoiInfo == null)
                 {
                     return null;
                 }
+
+                if (consignmentKoiInfo.Consignment.Status != ConsignmentStatus.available) break;
 
                 OrderDetail detail = new OrderDetail();
 
@@ -208,7 +224,7 @@ namespace swp_be.Services
 
             // Update value:
             // - koi: update status to sold
-            // - batch: remove quantity
+            // - batch: remove quantity (none)
             // - consignmentKoi: update consignment status to finished
             foreach (var detail in order.OrderDetails)
             {
@@ -219,14 +235,6 @@ namespace swp_be.Services
                     koi.Status = KoiStatus.Sold;
 
                     koiRepository.Update(koi);
-                }
-                else if (detail.Type == OrderDetailType.Batch)
-                {
-                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
-
-                    batch.QuantityPerBatch -= detail.Quantity.Value;
-
-                    batchRepository.Update(batch);
                 }
                 else if (detail.Type == OrderDetailType.ConsignmentKoi)
                 {
@@ -244,7 +252,7 @@ namespace swp_be.Services
 
         public void CancelOrder(int id)
         {
-            Order order = orderRepository.GetById(id);
+            Order order = orderRepository.GetOrderByID(id);
 
             if (order == null)
             {
@@ -256,37 +264,51 @@ namespace swp_be.Services
             order.UpdateAt = DateTime.Now;
             order.Reason = "User cancel order";
 
+            // Delete consignment if exist
+            if (order.Consignment != null)
+            {
+                consignmentRepository.Remove(order.Consignment);
+            }
+
+            // Delete delivery if exist
+            Delivery delivery = deliveryRepository.GetDeliveryByOrderId(order.OrderID);
+            if (delivery != null)
+            {
+                deliveryRepository.Remove(delivery);
+                deliveryRepository.Save();
+            }
+
             // Update value:
             // - koi: update status to available
             // - batch: re-add quantity
             // - consignmentKoi: update consignment status to available
-            //foreach (var detail in order.OrderDetails)
-            //{
-            //    if (detail.Type == OrderDetailType.Koi)
-            //    {
-            //        Koi koi = koiRepository.GetById(detail.KoiID.Value);
+            foreach (var detail in order.OrderDetails)
+            {
+                if (detail.Type == OrderDetailType.Koi)
+                {
+                    Koi koi = koiRepository.GetById(detail.KoiID.Value);
 
-            //        koi.Status = KoiStatus.Available;
+                    koi.Status = KoiStatus.Available;
 
-            //        koiRepository.Update(koi);
-            //    }
-            //    else if (detail.Type == OrderDetailType.Batch)
-            //    {
-            //        Batch batch = batchRepository.GetById(detail.BatchID.Value);
+                    koiRepository.Update(koi);
+                }
+                else if (detail.Type == OrderDetailType.Batch)
+                {
+                    Batch batch = batchRepository.GetById(detail.BatchID.Value);
 
-            //        batch.QuantityPerBatch += detail.Quantity.Value;
+                    batch.QuantityPerBatch += detail.Quantity.Value;
 
-            //        batchRepository.Update(batch);
-            //    }
-            //    else if (detail.Type == OrderDetailType.ConsignmentKoi)
-            //    {
-            //        ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
+                    batchRepository.Update(batch);
+                }
+                else if (detail.Type == OrderDetailType.ConsignmentKoi)
+                {
+                    ConsignmentKoi consignmentKoi = consignmentKoiRepository.GetById(detail.ConsignmentKoiID.Value);
 
-            //        consignmentKoi.Consignment.Status = ConsignmentStatus.available;
+                    consignmentKoi.Consignment.Status = ConsignmentStatus.available;
 
-            //        consignmentKoiRepository.Update(consignmentKoi);
-            //    }
-            //}
+                    consignmentKoiRepository.Update(consignmentKoi);
+                }
+            }
 
             orderRepository.Update(order);
             orderRepository.Save();
