@@ -6,9 +6,9 @@ namespace swp_be.Models
 {
     public enum OrderDetailType
     {
-        Koi,
-        Batch,
-        ConsignmentKoi,
+        Koi = 0,
+        Batch = 1,
+        ConsignmentKoi = 2,
     }
     public class OrderDetail
     {

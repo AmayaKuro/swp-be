@@ -6,9 +6,9 @@ namespace swp_be.Models
 {
     public enum KoiStatus
     {
-        Available,
-        InOrder,
-        Sold
+        Available = 0,
+        InOrder = 1,
+        Sold = 2
     }
 
     public class Koi

@@ -14,24 +14,24 @@ namespace swp_be.Models
         /// <summary>
         /// The order is pending for payment.
         /// </summary>
-        Pending,
+        Pending = 0,
 
         /// <summary>
         /// The order is completed.
         /// </summary>
-        Completed,
+        Completed = 1,
 
         /// <summary>
         /// The order is cancelled.
         /// </summary>
-        Cancelled,
+        Cancelled = 2,
     }
 
     public enum OrderType
     {
-        Online,
+        Online = 0,
         // Đặt cọc 50% giá trị đơn hàng, sau đó thanh toán phần còn lại bằng tiền mặt khi nhận hàng
-        Offline,
+        Offline = 1,
     }
 
     public class Order

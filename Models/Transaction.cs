@@ -11,23 +11,23 @@ namespace swp_be.Models
         /// <summary>
         /// The transaction is pending for payment confirmation from paymentMethod.
         /// </summary>
-        Pending,
+        Pending = 0,
 
         /// <summary>
         /// The transaction is completed.
         /// </summary>
-        Completed,
+        Completed = 1,
 
         /// <summary>
         /// The transaction failed to complete.
         /// </summary>
         /// TODO:this one might need consideration when having more information about the payment method
-        Failed,
+        Failed = 2,
 
         /// <summary>
         /// The transaction is cancelled.
         /// </summary>
-        Cancelled,
+        Cancelled = 3,
     }
 
     /// <summary>
@@ -38,12 +38,12 @@ namespace swp_be.Models
         /// <summary>
         /// The transaction is for Consignment for fostering.
         /// </summary>
-        Consignment,
+        Consignment = 0,
 
         /// <summary>
         /// The transaction is for Shopping.
         /// </summary>
-        Shopping,
+        Shopping = 1,
     }
 
     public class Transaction

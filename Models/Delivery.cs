@@ -7,10 +7,10 @@ namespace swp_be.Models
 {
     public enum DeliveryStatus
     {
-        Delivering,    
-        Delivered,     // Đã giao hàng thành công
-        Failed,        // Giao hàng thất bại
-        Cancelled      // Đơn hàng bị hủy
+        Delivering = 0,    
+        Delivered = 1,     // Đã giao hàng thành công
+        Failed = 2,        // Giao hàng thất bại
+        Cancelled = 3      // Đơn hàng bị hủy
     }
 
     public class Delivery
