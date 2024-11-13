@@ -4,19 +4,36 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using swp_be.Models;
 using swp_be.Services;
+using swp_be.Utils;
 
 namespace swp_be.Controllers
 {
 
+   
+
+    public class BatchRequest() {
+        public int BatchID { get; set; }
+        public string Name { get; set; }
+    public long PricePerBatch { get; set; }
+    public string? Description { get; set; }
+    public IFormFile? Image { get; set; }
+    public int QuantityPerBatch { get; set; }
+    public int RemainBatch { get; set; }
+    public string? Species { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class BatchController : ControllerBase
     {
         private readonly BatchService batchService;
-
+        private readonly BatchRequest batchRequest;
+        private readonly FirebaseUtils fbUtils = new FirebaseUtils();
         public BatchController(BatchService service)
         {
             this.batchService = service;
+            batchRequest = new BatchRequest();
+
+
         }
 
         [HttpGet]
@@ -48,21 +65,41 @@ namespace swp_be.Controllers
 
         [HttpPost]
         [Authorize("all")]
-        public async Task<ActionResult<Batch>> PostBatch(Batch batch)
+        public async Task<ActionResult<Batch>> PostBatch([FromForm]BatchRequest batchReq)
         {
+            var batch = new Batch
+            {      
+                
+                Species = batchReq.Species,
+                RemainBatch =batchReq.RemainBatch,
+                QuantityPerBatch = batchReq.QuantityPerBatch,
+                PricePerBatch = batchReq.PricePerBatch,
+                Name = batchReq.Name,
+                Description = batchReq.Description,
+                Image = await fbUtils.UploadImage(batchReq.Image?.OpenReadStream(), batchReq.BatchID.ToString(), "Image"),
+            };
+           
             var createdBatch = await batchService.CreateBatch(batch);
             return CreatedAtAction(nameof(GetBatch), new { id = createdBatch.BatchID }, createdBatch);
         }
 
         [HttpPut("{id}")]
         [Authorize("staff, admin")]
-        public async Task<IActionResult> PutBatch(int id, Batch batch)
+        public async Task<IActionResult> PutBatch(int id, [FromForm] BatchRequest batchReq)
         {
-            if (id != batch.BatchID)
+            
+            if (id != batchReq.BatchID)
             {
                 return BadRequest();
             }
-
+            var batch = await batchService.GetBatchById(id);
+            batch.Species = batchReq.Species;
+            batch.RemainBatch = batchReq.RemainBatch;
+            batch.Name = batchReq.Name;
+            batch.Description = batchReq.Description;
+            batch.PricePerBatch = batchReq.PricePerBatch;
+            batch.QuantityPerBatch = batchReq.QuantityPerBatch;
+            batch.Image = await fbUtils.UploadImage(batchReq.Image?.OpenReadStream(), batchReq.BatchID.ToString(), "Image");
             try
             {
                 await batchService.UpdateBatch(batch);

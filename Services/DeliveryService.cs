@@ -69,8 +69,8 @@ namespace swp_be.Services
                 Address = user.Address   
             };
 
-            customer.LoyaltyPoints += 10;
-            userService.UpdateCustomer(customer);
+            //customer.LoyaltyPoints += 10;
+            //userService.UpdateCustomer(customer);
 
             unitOfWork.DeliverRepository.Create(delivery);
             unitOfWork.Save();
