@@ -218,9 +218,10 @@ namespace swp_be.Controllers
 
             // Create a new consignment object
 
-            var newConsignment = new Consignment();
-            if (consignKoiRequest.Type == (ConsignmentType.Sell))
-            {
+            var newConsignment = new Consignment(); 
+            if (consignKoiRequest.Type==(ConsignmentType.Sell)) {
+
+
                 newConsignment.CustomerID = customerID;
                 newConsignment.Type = consignKoiRequest.Type;
                 newConsignment.CreateAt = DateTime.Now;
@@ -229,18 +230,21 @@ namespace swp_be.Controllers
                 newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
                 newConsignment.Status = ConsignmentStatus.negotiate; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
+                
+            }
+           else if (consignKoiRequest.Type == (ConsignmentType.Foster)) {
 
-            } else if (consignKoiRequest.Type == (ConsignmentType.Foster)) {
+
                 newConsignment.CustomerID = customerID;
                 newConsignment.Type = consignKoiRequest.Type;
                 newConsignment.CreateAt = DateTime.Now;
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
                 newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
-                newConsignment.Status = ConsignmentStatus.raising; // Ensure this is correctly spelled
+                newConsignment.Status = ConsignmentStatus.negotiate; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
-                // Create a new ConsignmentKoi object
             }
+            // Create a new ConsignmentKoi object
             var consignmentKoi = new ConsignmentKoi
             {
                 Name = consignKoiRequest.Name,
@@ -257,6 +261,7 @@ namespace swp_be.Controllers
                 ConsignmentID = newConsignment.ConsignmentID, // Set this only after saving the consignment
                 AddOn = new AddOn()
             };
+
             // Add the new consignment to the database
             _context.Consignments.Add(newConsignment);
             consignmentKoi.Image = await fbUtils.UploadImage(consignKoiRequest.Image?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "koiImage");
@@ -280,8 +285,11 @@ namespace swp_be.Controllers
                 // Log the exception for debugging purposes if needed
                 return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
-            string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
-            return Ok(new { paymentUrl });
+            return Ok(new { 
+                message = "Consignment created successfully", 
+                consignmentID = newConsignment.ConsignmentID,
+                consignmentKoiID = consignmentKoi.ConsignmentKoiID 
+            });
         }
 
         [Authorize("staff, admin")]
