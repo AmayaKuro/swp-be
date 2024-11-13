@@ -45,6 +45,11 @@ namespace swp_be.Services
             unitOfWork = new UnitOfWork(_context);
         }
 
+        public List<Order> GetOrders()
+        {
+            return orderRepository.GetOrders();
+        }
+
         public Order GetByID(int id)
         {
             return orderRepository.GetOrderByID(id);
