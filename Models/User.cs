@@ -8,9 +8,9 @@ namespace swp_be.Models
 {
     public enum Role
     {
-        Admin,
-        Staff,
-        Customer
+        Admin = 0,
+        Staff = 1,
+        Customer = 2
     }
 
     public class User

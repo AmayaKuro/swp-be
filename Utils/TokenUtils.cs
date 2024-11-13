@@ -11,8 +11,8 @@ namespace swp_be.Utils
 {
     public enum TokenType
     {
-        ACCESS_TOKEN,
-        REFRESH_TOKEN
+        ACCESS_TOKEN = 0,
+        REFRESH_TOKEN = 1
     }
 
     public class TokenUtils

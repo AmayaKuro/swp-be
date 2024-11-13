@@ -175,10 +175,5 @@ namespace swp_be.Services
             return null;
         }
 
-        public async Task<bool> UpdateCustomer(Customer customer)
-        {
-            return await unitOfWork.UserRepository.UpdateCustomer(customer);
-        }
-
     }
 }

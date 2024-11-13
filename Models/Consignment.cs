@@ -6,17 +6,17 @@ namespace swp_be.Models
 {
     public enum ConsignmentType
     {
-        Sell, //0
-        Foster,//1
+        Sell=0, //0
+        Foster=1,//1
     }
     public enum ConsignmentStatus
     {
-        awaitingPayment, //Đợi người ký gửi thanh toán 
-        available,//Ca van con ban 
-        finished,//Da ban hoac het han nuoi ca
-        raising,//Ca dang nuoi
-        pending,//Dang cho thanh toan
-        negotiate//Da cho thuong luong
+        awaitingPayment = 0, //Đợi người ký gửi thanh toán 
+        available = 1,//Ca van con ban 
+        finished = 2,//Da ban hoac het han nuoi ca
+        raising = 3,//Ca dang nuoi
+        pending = 4,//Dang cho thanh toan
+        negotiate = 5//Da cho thuong luong
     }
     public class Consignment
     {

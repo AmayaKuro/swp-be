@@ -45,6 +45,11 @@ namespace swp_be.Services
             unitOfWork = new UnitOfWork(_context);
         }
 
+        public List<Order> GetOrders()
+        {
+            return orderRepository.GetOrders();
+        }
+
         public Order GetByID(int id)
         {
             return orderRepository.GetOrderByID(id);
@@ -217,7 +222,15 @@ namespace swp_be.Services
             //Customer customer = userService.GetCustomerByID(customerID).GetAwaiter().GetResult();
             //customer.LoyaltyPoints += 10;
             //userService.UpdateCustomer(customer);
-
+            int customerID = order.CustomerID ?? 0;
+            Customer customer = unitOfWork.CustomerRepository.GetById(customerID);
+            if (customer == null)
+            {
+                return;
+            }
+            customer.LoyaltyPoints += 10;
+            unitOfWork.CustomerRepository.Update(customer);
+            unitOfWork.Save();
 
             // Update order status to completed
             order.Status = OrderStatus.Completed;

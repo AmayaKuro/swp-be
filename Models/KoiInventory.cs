@@ -6,9 +6,9 @@ namespace swp_be.Models
 {
     public enum InvenKoiStatus
     {
-        Bought,
-        Foster,
-        Sold
+        Bought = 0,
+        Foster = 1,
+        Sold = 2
     }
 
     public class KoiInventory
