@@ -12,6 +12,7 @@ using swp_be.Data;
 using swp_be.Data.Repositories;
 using swp_be.Models;
 using swp_be.Services;
+using swp_be.Utils;
 
 namespace swp_be.Controllers
 {
@@ -24,15 +25,16 @@ namespace swp_be.Controllers
         public DateTime? StartDeliDay { get; set; }
         public DateTime? EndDeliDay { get; set; }
         public string? Address { get; set; }
+        public string? Reason { get; set; }
+        public IFormFile? ReasonImage { get; set; }
     }
-
     [Route("api/koi/[controller]")]
     [ApiController]
     public class DeliveryController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
         private readonly DeliveryService deliveryService;
-
+        private readonly FirebaseUtils fbUtils = new FirebaseUtils();
 
         public DeliveryController(ApplicationDBContext context)
         {
@@ -49,7 +51,6 @@ namespace swp_be.Controllers
             return Ok(await deliveryService.GetDeliveries());
           
         }
-
         // GET: api/Koi/5
         [Authorize("all")]
         [HttpGet("{id}")]
@@ -65,7 +66,7 @@ namespace swp_be.Controllers
             return delivery;
         }
         [Authorize("all")]
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> PutDeliver(DeliveryRequest deliveryRequest)
         {
             Delivery delivery = deliveryService.GetDeliveryById(deliveryRequest.DeliveryID);
@@ -73,13 +74,14 @@ namespace swp_be.Controllers
             {
                 return BadRequest();
             }
-
             delivery.StartDeliDay = deliveryRequest.StartDeliDay ?? delivery.StartDeliDay;
             delivery.EndDeliDay = deliveryRequest.EndDeliDay ?? delivery.EndDeliDay;
             delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
             delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
             delivery.Status = deliveryRequest.Status ?? delivery.Status;
             delivery.Address = deliveryRequest.Address ?? delivery.Address;
+            delivery.Reason= deliveryRequest.Reason ?? delivery.Reason;
+            delivery.ReasonImage= await fbUtils.UploadImage(deliveryRequest.ReasonImage?.OpenReadStream(),deliveryRequest.DeliveryID.ToString(), "ReasonImage");
             await deliveryService.UpdateDelivery(delivery);
             return NoContent();
         }
@@ -88,7 +90,7 @@ namespace swp_be.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize("all")]
         [HttpPost]
-        public async Task<IActionResult> CreateDelivery(DeliveryRequest deliveryRequest)
+        public async Task<IActionResult> CreateDelivery([FromForm]DeliveryRequest deliveryRequest)
         {
             if (deliveryRequest.StartDeliDay == null)
             {
@@ -111,13 +113,15 @@ namespace swp_be.Controllers
             }
 
             Delivery delivery = new Delivery();
-
+            await fbUtils.UploadImage(deliveryRequest.ReasonImage?.OpenReadStream(), deliveryRequest.DeliveryID.ToString(), "ReasonImage");
             delivery.StartDeliDay = deliveryRequest.StartDeliDay.Value;
             delivery.EndDeliDay = deliveryRequest.EndDeliDay;
             delivery.OrderID = deliveryRequest.OrderID.Value;
             delivery.CustomerID = deliveryRequest.CustomerID.Value;
             delivery.Status = deliveryRequest.Status.Value;
             delivery.Address = deliveryRequest.Address;
+            delivery.Reason=deliveryRequest.Reason;
+            delivery.ReasonImage = await fbUtils.UploadImage(deliveryRequest.ReasonImage?.OpenReadStream(), deliveryRequest.DeliveryID.ToString(), "ReasonImage"); ;
             _context.Deliveries.Add(delivery);
             try
             {
