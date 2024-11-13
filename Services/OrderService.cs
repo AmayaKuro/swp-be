@@ -29,6 +29,7 @@ namespace swp_be.Services
         private ConsignmentRepository consignmentRepository;
         private DeliveryRepository deliveryRepository;
         private readonly UserService userService;
+        UnitOfWork unitOfWork;
 
         public OrderService(ApplicationDBContext context)
         {
@@ -41,6 +42,7 @@ namespace swp_be.Services
             consignmentRepository = new ConsignmentRepository(_context);
             deliveryRepository = new DeliveryRepository(_context);
             userService = new UserService(_context);
+            unitOfWork = new UnitOfWork(_context);
         }
 
         public Order GetByID(int id)

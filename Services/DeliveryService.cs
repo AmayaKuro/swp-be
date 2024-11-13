@@ -80,11 +80,12 @@ namespace swp_be.Services
 
         public Delivery CreateDeliveryFromOrder(Order order, string? address)
         {
-            var user = userService.GetUserProfile(order.CustomerID.Value);
+            var user = unitOfWork.UserRepository.GetById(order.CustomerID.Value);
+            var customer = unitOfWork.CustomerRepository.GetById(order.CustomerID.Value);
             Delivery delivery = new Delivery
             {
                 OrderID = order.OrderID,
-                CustomerID = user.UserID,
+                Customer = customer,
                 Status = DeliveryStatus.Delivering,
                 // Set the start delivery day to the current day if no consignment after order, otherwise set to consignment end date
                 StartDeliDay = (order.Consignment != null) ? order.Consignment.EndDate : DateTime.Now,
