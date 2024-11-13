@@ -55,6 +55,29 @@ namespace swp_be.Services
             return delivery;
         }
 
+        public Delivery CreateDeliveryFromOrder(Order order)
+        {
+            var customer = unitOfWork.CustomerRepository.GetById(order.CustomerID.Value);
+            var user = unitOfWork.UserRepository.GetById(customer.UserID);
+
+            Delivery delivery = new Delivery
+            {
+                OrderID = order.OrderID,
+                Customer = customer,
+                Status = DeliveryStatus.Delivering,
+                StartDeliDay = DateTime.Now,
+                Address = user.Address   
+            };
+
+            customer.LoyaltyPoints += 10;
+            userService.UpdateCustomer(customer);
+
+            unitOfWork.DeliverRepository.Create(delivery);
+            unitOfWork.Save();
+            return delivery;
+        }
+
+
         public Delivery CreateDeliveryFromOrder(Order order, string? address)
         {
             var user = userService.GetUserProfile(order.CustomerID.Value);

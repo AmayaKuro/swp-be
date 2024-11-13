@@ -38,5 +38,28 @@ namespace swp_be.Data.Repositories
 
             return true;
         }
+
+        public async Task<Customer> GetCustomerByID(int id)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.UserID == id);
+        }
+
+        public async Task<bool> UpdateCustomer(Customer customer)
+        {
+            try
+            {
+                var tracker = _context.Attach(customer);
+                tracker.State = EntityState.Modified;
+
+                 await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log exception or handle it as needed
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
     }
 }
