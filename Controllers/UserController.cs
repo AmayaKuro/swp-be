@@ -190,5 +190,21 @@ namespace swp_be.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [Route("CusProfile")]
+        [Authorize("all")]
+        public async Task<IActionResult> GetCusProfile()
+        {
+            int userID = int.Parse(User.FindFirstValue("userID"));
+            Customer customer = await userService.GetCustomerByID(userID);
+
+            if (customer == null)
+            {
+                return NotFound(new { message = "Customer not found or user is not a customer." });
+            }
+
+            return Ok(customer);
+        }
+
     }
 }

@@ -41,7 +41,9 @@ namespace swp_be.Data.Repositories
 
         public async Task<Customer> GetCustomerByID(int id)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.UserID == id);
+            return await _context.Customers
+        .Include(c => c.User) 
+        .FirstOrDefaultAsync(c => c.UserID == id);
         }
 
         public async Task<bool> UpdateCustomer(Customer customer)
