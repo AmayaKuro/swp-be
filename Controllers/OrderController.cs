@@ -34,6 +34,8 @@ namespace swp_be.Controllers
         public string? address { get; set; }
         public OrderType paymentMethod { get; set; }
         public ConsignmentOnOrder? consignment { get; set; }
+
+        
     }
 
     [Route("api/[controller]")]

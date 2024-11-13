@@ -18,7 +18,6 @@ namespace swp_be.Models
         pending,//Dang cho thanh toan
         negotiate//Da cho thuong luong
     }
-
     public class Consignment
     {
         public Consignment()
