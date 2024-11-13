@@ -66,9 +66,10 @@ namespace swp_be.Controllers
             return delivery;
         }
         [Authorize("all")]
-        [HttpPut]
-        public async Task<IActionResult> PutDeliver(DeliveryRequest deliveryRequest)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutDeliver(DeliveryRequest deliveryRequest,int id)
         {
+            deliveryRequest.DeliveryID=id;
             Delivery delivery = deliveryService.GetDeliveryById(deliveryRequest.DeliveryID);
             if (delivery == null)
             {
