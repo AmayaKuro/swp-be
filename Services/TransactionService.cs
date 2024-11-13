@@ -202,7 +202,8 @@ namespace swp_be.Services
             // Tạo Transaction mới
             transaction.OrderID = orderID;
             transaction.CreateAt = DateTime.Now;
-            transaction.Status = TransactionStatus.Pending;
+            transaction.Status = TransactionStatus.Completed;
+
             transaction.Type = TransactionType.Shopping;
             transaction.Amount = depositAmount;
             transaction.CreateAt = DateTime.Now;

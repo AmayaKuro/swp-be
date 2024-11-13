@@ -12,5 +12,7 @@ namespace swp_be.Models
         public User User { get; set; }           // Reference to User
         public ICollection<KoiInventory>? KoiInventories { get; set; }
 
+        public ICollection<Promotion>? Promotions { get; set; }
+
     }
 }

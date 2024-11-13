@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using swp_be.Data;
 using swp_be.Models;
 using swp_be.Services;
+using System.Security.Claims;
 
 namespace swp_be.Controllers
 {
@@ -92,6 +93,36 @@ namespace swp_be.Controllers
         public async Task<ActionResult<IEnumerable<Promotion>>> SearchPromotions([FromQuery] string? code, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             return Ok(await promotionService.SearchPromotions(code, startDate, endDate));
+        }
+
+        [HttpPost("Redeem")]
+        [Authorize("customer")]
+        public async Task<IActionResult> RedeemPromotion()
+        {
+            try
+            {
+                int customerId = int.Parse(User.FindFirstValue("userID"));
+                var promotion = await promotionService.RedeemPromotion(customerId);
+                return Ok(new
+                {
+                    message = "Redeemed promotion successfully",
+                    promotion
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        // GET: api/Promotion/UserAvailable
+        [HttpGet("UserAvailable")]
+        [Authorize("customer")]
+        public async Task<IActionResult> GetUserAvailablePromotions()
+        {
+            int customerId = int.Parse(User.FindFirstValue("userID"));
+            var promotions = await promotionService.GetUserAvailablePromotions(customerId);
+            return Ok(promotions);
         }
     }
 }

@@ -18,6 +18,16 @@ namespace swp_be.Data.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Promotion>> GetAvailablePromotionsAsync(int customerId)
+        {
+            DateTime currentDate = DateTime.Now;
+            return await _context.Promotions
+                .Where(p =>
+                    (p.CustomerID == null || p.CustomerID == customerId) && 
+                    (p.EndDate == null || p.EndDate >= currentDate)         
+                )
+                .ToListAsync();
+        }
 
     }
 }

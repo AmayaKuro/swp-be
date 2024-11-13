@@ -23,5 +23,9 @@ namespace swp_be.Models
         public DateTime? EndDate { get; set; }
 
         public int? RemainingRedeem { get; set; }
+
+        public int? CustomerID { get; set; } 
+
+        public Customer? Customer { get; set; }
     }
 }

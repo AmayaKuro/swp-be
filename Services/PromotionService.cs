@@ -75,5 +75,51 @@ namespace swp_be.Services
 
             return promotions;
         }
+
+        public async Task<Promotion> RedeemPromotion(int customerId)
+        {
+            // Lấy thông tin Customer
+            var customer = await unitOfWork.CustomerRepository.GetByIdAsync(customerId);
+
+            if (customer == null)
+            {
+                throw new InvalidOperationException("Customer not found");
+            }
+
+            // Kiểm tra điểm LoyaltyPoints
+            if (customer.LoyaltyPoints < 100)
+            {
+                throw new InvalidOperationException("Not enough Loyalty Points to redeem promotion");
+            }
+
+            // Tạo Promotion mới
+            var promotion = new Promotion
+            {
+                Code = $"PROMO-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                Description = "Loyalty Points Promotion - 10% Discount",
+                DiscountRate = 10,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddMonths(1), // Promotion có hạn sử dụng 1 tháng
+                RemainingRedeem = 1,
+                CustomerID = customerId
+            };
+
+            // Trừ điểm LoyaltyPoints
+            customer.LoyaltyPoints -= 100;
+
+            // Lưu thay đổi
+            unitOfWork.PromotionRepository.Create(promotion);
+            unitOfWork.CustomerRepository.Update(customer);
+            unitOfWork.Save();
+
+            return promotion;
+        }
+
+        public async Task<IEnumerable<Promotion>> GetUserAvailablePromotions(int customerId)
+        {
+            // Gọi trực tiếp repository
+            return await unitOfWork.PromotionRepository.GetAvailablePromotionsAsync(customerId);
+        }
+
     }
 }
