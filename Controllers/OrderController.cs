@@ -194,7 +194,6 @@ namespace swp_be.Controllers
 
                         consignment.ConsignmentKois.Add(consignmentKoi);
                     }
-
                 }
             }
 
