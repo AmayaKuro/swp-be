@@ -228,7 +228,7 @@ namespace swp_be.Controllers
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
                 newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
-                newConsignment.Status = ConsignmentStatus.negotiate; // Ensure this is correctly spelled
+                newConsignment.Status = ConsignmentStatus.pending; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
                 
             }
@@ -241,7 +241,7 @@ namespace swp_be.Controllers
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
                 newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
-                newConsignment.Status = ConsignmentStatus.negotiate; // Ensure this is correctly spelled
+                newConsignment.Status = ConsignmentStatus.pending; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
             }
             // Create a new ConsignmentKoi object
