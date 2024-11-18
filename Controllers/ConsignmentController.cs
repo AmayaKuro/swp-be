@@ -270,6 +270,7 @@ namespace swp_be.Controllers
             consignmentKoi.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoiRequest.OwnershipCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "ownershipCertificate");
             await _context.SaveChangesAsync();
             // Save changes to the database
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -285,11 +286,13 @@ namespace swp_be.Controllers
                 // Log the exception for debugging purposes if needed
                 return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
+            string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             return Ok(new { 
                 message = "Consignment created successfully", 
                 consignmentID = newConsignment.ConsignmentID,
-                consignmentKoiID = consignmentKoi.ConsignmentKoiID 
-            });
+                consignmentKoiID = consignmentKoi.ConsignmentKoiID,
+                paymentUrl 
+        });
         }
 
         [Authorize("staff, admin")]
