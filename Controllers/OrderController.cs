@@ -177,22 +177,37 @@ namespace swp_be.Controllers
                             Origin = orderDetail.Koi.Origin,
                             SelectionRate = orderDetail.Koi.SelectionRate,
                             Image = orderDetail.Koi.Image,
-                            AddOn = orderDetail.Koi.AddOn,
+                            AddOn = new AddOn() {
+                                HealthCertificate = orderDetail.Koi.AddOn.HealthCertificate,
+                                OriginCertificate = orderDetail.Koi.AddOn.OriginCertificate,
+                                OwnershipCertificate = orderDetail.Koi.AddOn.OwnershipCertificate,
+                            },
                         };
-
-                        // Ensure AddOn is created new
-                        consignmentKoi.AddOn.AddOnID = 0;
 
                         consignment.ConsignmentKois.Add(consignmentKoi);
                     }
                     else if (orderDetail.Type == OrderDetailType.ConsignmentKoi)
                     {
-                        // Create new ConsingmentKoi from OrderDetail then save
-                        ConsignmentKoi consignmentKoi = orderDetail.ConsignmentKoi;
-                        consignmentKoi.ConsignmentID = 0;
-                        // Ensure AddOn is created new
-                        consignmentKoi.AddOnId = null;
-                        consignmentKoi.AddOn.AddOnID = 0;
+                        ConsignmentKoi consignmentKoi = new ConsignmentKoi
+                        {
+                            Species = orderDetail.ConsignmentKoi.Species,
+                            Price = orderDetail.ConsignmentKoi.Price,
+                            Age = orderDetail.ConsignmentKoi.Age,
+                            Gender = orderDetail.ConsignmentKoi.Gender,
+                            Size = orderDetail.ConsignmentKoi.Size,
+                            Color = orderDetail.ConsignmentKoi.Color,
+                            DailyFeedAmount = orderDetail.ConsignmentKoi.DailyFeedAmount,
+                            Personality = orderDetail.ConsignmentKoi.Personality,
+                            Origin = orderDetail.ConsignmentKoi.Origin,
+                            SelectionRate = orderDetail.ConsignmentKoi.SelectionRate,
+                            Image = orderDetail.ConsignmentKoi.Image,
+                            AddOn = new AddOn()
+                            {
+                                HealthCertificate = orderDetail.ConsignmentKoi.AddOn.HealthCertificate,
+                                OriginCertificate = orderDetail.ConsignmentKoi.AddOn.OriginCertificate,
+                                OwnershipCertificate = orderDetail.ConsignmentKoi.AddOn.OwnershipCertificate,
+                            },
+                        };
 
                         consignment.ConsignmentKois.Add(consignmentKoi);
                     }
