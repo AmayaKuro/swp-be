@@ -1,4 +1,5 @@
-﻿using swp_be.Controllers;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using swp_be.Controllers;
 using swp_be.data.Repositories;
 using swp_be.Data;
 using swp_be.Data.Repositories;
@@ -55,7 +56,7 @@ namespace swp_be.Services
             if (order.Type == OrderType.Online)
             {
                 transaction.Amount = order.TotalAmount;
-                
+
                 // Add Fostering fee if consignment exist
                 if (order.Consignment != null)
                 {
@@ -64,7 +65,13 @@ namespace swp_be.Services
             }
             else
             {
-                transaction.Amount = order.TotalAmount /= 2;
+                transaction.Amount = order.TotalAmount / 2;
+            }
+
+            // Add consignment fee if exist
+            if (order.Consignment != null)
+            {
+                transaction.Amount += order.Consignment.FosterPrice;
             }
 
             transaction.CreateAt = DateTime.Now;
@@ -104,11 +111,30 @@ namespace swp_be.Services
             vnpay.AddRequestData("vnp_IpAddr", clientIPAddr);
 
             vnpay.AddRequestData("vnp_Locale", "vn");
-            vnpay.AddRequestData("vnp_OrderInfo",
-                (order.Type == OrderType.Online
-                ? "Thanh toan don hang: "
-                : "Dat coc don hang: ")
-                + order.OrderID);
+
+            // Prepare order info
+            string orderInfo;
+
+            // If order is online, it's a payment
+            if (order.Type == OrderType.Online)
+            {
+                orderInfo = "Thanh toan don hang: " + order.OrderID;
+
+            }
+            // Else if order is offline, it's a deposit
+            else
+            {
+                orderInfo = "Dat coc don hang: " + order.OrderID;
+            }
+
+            // Add consignment info if exist
+            if (order.Consignment != null)
+            {
+                orderInfo += " va ky gui: " + order.Consignment.ConsignmentID;
+            }
+
+            vnpay.AddRequestData("vnp_OrderInfo", orderInfo);
+
             vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
 
             vnpay.AddRequestData("vnp_ReturnUrl", vnp_Returnurl);

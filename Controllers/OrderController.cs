@@ -217,11 +217,9 @@ namespace swp_be.Controllers
                 else if (orderRequest.paymentMethod == OrderType.Online)
                 {
                     // Create delivery if order is online
-                    if (order.Type == OrderType.Online)
-                    {
-                        deliveryService.CreateDeliveryFromOrder(order, orderRequest.address);
-                    }
+                    deliveryService.CreateDeliveryFromOrder(order, orderRequest.address);
 
+                    // Create transaction
                     paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
 
                     Console.WriteLine("VNPAY URL: {0}", paymentUrl);

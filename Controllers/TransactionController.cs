@@ -235,7 +235,7 @@ namespace swp_be.Controllers
             }
 
             // Redirect to FE /paymentSuccess if success (status_code == 00) else redirect to /paymentFail
-            return Redirect(Configuration.GetConfiguration()["FEUrl"] + feRedirectQuery["status_code"] != "00" ? "/paymentFail" : "/paymentSuccess" + feQueryString);
+            return Redirect(Configuration.GetConfiguration()["FEUrl"] + (feRedirectQuery["status_code"] != "00" ? "/paymentFail" : "/paymentSuccess") + feQueryString);
         }
     }
 }
