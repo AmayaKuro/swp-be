@@ -34,8 +34,6 @@ namespace swp_be.Controllers
         public string? address { get; set; }
         public OrderType paymentMethod { get; set; }
         public ConsignmentOnOrder? consignment { get; set; }
-
-        
     }
 
     [Route("api/[controller]")]
@@ -137,7 +135,7 @@ namespace swp_be.Controllers
 
             if (orderDetails == null || orderDetails.Count == 0)
             {
-                return BadRequest("Can't create order Details!");
+                return BadRequest(new { message = "Can't create order Details!" });
             }
 
             // Set every koi to be consignmentKoi if user want to consign after order
@@ -150,7 +148,7 @@ namespace swp_be.Controllers
 
                 if (price == null)
                 {
-                    return BadRequest("Can't get Foster Price");
+                    return BadRequest(new { message = "Can't get Foster Price" });
                 }
 
                 consignment.CustomerID = userID;
@@ -168,7 +166,7 @@ namespace swp_be.Controllers
                     {
                         ConsignmentKoi consignmentKoi = new ConsignmentKoi
                         {
-                            
+
                             Species = orderDetail.Koi.Species,
                             Price = orderDetail.Koi.Price,
                             Age = orderDetail.Koi.Age,
@@ -202,7 +200,7 @@ namespace swp_be.Controllers
             // order == null mean data was not complete or wrongly input 
             if (order == null)
             {
-                return BadRequest("Can't create order!");
+                return BadRequest(new { message = "Can't create order!" });
             }
 
             try
