@@ -149,7 +149,7 @@ namespace swp_be.Services
             {
                 if (koiID < 1) break;
 
-                Koi koiInfo = koiRepository.GetById(koiID);
+                Koi koiInfo = koiRepository.GetKoisById(koiID);
 
                 // If koi not exist, cancel
                 if (koiInfo == null)

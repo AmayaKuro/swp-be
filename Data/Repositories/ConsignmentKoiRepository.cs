@@ -18,8 +18,10 @@ namespace swp_be.Data.Repositories
 
         public ConsignmentKoi GetById(int id)
         {
-            return _context.ConsignmentKois.Include(koi => koi.Consignment)
-                                           .FirstOrDefault(koi => koi.ConsignmentKoiID == id);
+            return _context.ConsignmentKois
+                .Include(koi => koi.Consignment)
+                .Include(koi => koi.AddOn)
+                .FirstOrDefault(koi => koi.ConsignmentKoiID == id);
         }
 
         public async Task<List<ConsignmentKoi>> GetConsignmentKoisByUserId(int userId)
