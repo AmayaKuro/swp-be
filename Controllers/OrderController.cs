@@ -166,7 +166,6 @@ namespace swp_be.Controllers
                     {
                         ConsignmentKoi consignmentKoi = new ConsignmentKoi
                         {
-
                             Species = orderDetail.Koi.Species,
                             Price = orderDetail.Koi.Price,
                             Age = orderDetail.Koi.Age,
@@ -178,17 +177,22 @@ namespace swp_be.Controllers
                             Origin = orderDetail.Koi.Origin,
                             SelectionRate = orderDetail.Koi.SelectionRate,
                             Image = orderDetail.Koi.Image,
-                            AddOnId = orderDetail.Koi.AddOnId,
+                            AddOn = orderDetail.Koi.AddOn,
                         };
 
-                        consignment.ConsignmentKois.Add(consignmentKoi);
+                        // Ensure AddOn is created new
+                        consignmentKoi.AddOn.AddOnID = 0;
 
+                        consignment.ConsignmentKois.Add(consignmentKoi);
                     }
                     else if (orderDetail.Type == OrderDetailType.ConsignmentKoi)
                     {
                         // Create new ConsingmentKoi from OrderDetail then save
                         ConsignmentKoi consignmentKoi = orderDetail.ConsignmentKoi;
                         consignmentKoi.ConsignmentID = 0;
+                        // Ensure AddOn is created new
+                        consignmentKoi.AddOnId = null;
+                        consignmentKoi.AddOn.AddOnID = 0;
 
                         consignment.ConsignmentKois.Add(consignmentKoi);
                     }
