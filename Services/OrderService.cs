@@ -68,8 +68,9 @@ namespace swp_be.Services
         // Create standalone CreateOrder if you like
         public Order CreateOrder(int customerID, OrderType orderType, int promotionID, Consignment? consignment = null)
         {
+            Promotion promotion = promotionRepository.GetById(promotionID);
             // If promotionID present and not exist in db, cancel create
-            if (promotionID > 0 && promotionRepository.GetById(promotionID) == null)
+            if (promotionID > 0 && promotion == null || promotion.RemainingRedeem <= 0)
             {
                 return null;
             }
@@ -85,9 +86,13 @@ namespace swp_be.Services
             order.CustomerID = customerID;
             order.OrderDetails = orderDetails;
 
-            if (promotionRepository.GetById(promotionID) != null)
+            if (promotion != null)
             {
-                order.PromotionID = promotionID; //promotionID;
+                order.PromotionID = promotionID;
+                promotion.RemainingRedeem -= 1;
+
+                promotionRepository.Update(promotion);
+                promotionRepository.Save();
             }
 
             orderRepository.Create(order);
