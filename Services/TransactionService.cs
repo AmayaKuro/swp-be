@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using swp_be.Controllers;
+﻿using swp_be.Controllers;
 using swp_be.data.Repositories;
 using swp_be.Data;
 using swp_be.Data.Repositories;
@@ -56,18 +55,12 @@ namespace swp_be.Services
             if (order.Type == OrderType.Online)
             {
                 transaction.Amount = order.TotalAmount;
-
-                // Add Fostering fee if consignment exist
-                if (order.Consignment != null)
-                {
-                    transaction.Amount += order.Consignment.FosterPrice;
-                }
             }
             else
             {
                 transaction.Amount = order.TotalAmount / 2;
             }
-
+           
             // Add consignment fee if exist
             if (order.Consignment != null)
             {
@@ -98,7 +91,7 @@ namespace swp_be.Services
             // Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự
             // tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần
             // nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
-            vnpay.AddRequestData("vnp_Amount", ((long)(order.TotalAmount * 100)).ToString());
+            vnpay.AddRequestData("vnp_Amount", ((long)(transaction.Amount * 100)).ToString());
             // Mã ngân hàng thanh toán. Ví dụ: VNPAYQR, VNBANK, INTCARD
             //if (bankcode_Vnpayqr.Checked == true)
             //{
