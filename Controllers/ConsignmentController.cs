@@ -115,6 +115,11 @@ namespace swp_be.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
         {
+            if (consignmentRequest.FosterPrice < 0 || consignmentRequest.StartDate > consignmentRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Find the consignment by ID
             var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
 
@@ -153,6 +158,11 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
         {
+            if (consignKoiRequest.Price < 0 || consignKoiRequest.StartDate >  consignKoiRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             var priceList = consignmentPriceListRepository.GetById(consignKoiRequest.PriceListId);
 
             if (priceList == null)
@@ -206,6 +216,11 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> NegotiatingConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
         {
+            if (consignKoiRequest.Price < 0 || consignKoiRequest.StartDate > consignKoiRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Retrieve the customer ID from the user's claims
             int customerID = int.Parse(User.FindFirstValue("userID"));
 
@@ -337,6 +352,11 @@ namespace swp_be.Controllers
         [HttpPut]
         public async Task<IActionResult> Reasign(ConsignmentRequest consignmentRequest)
         {
+            if (consignmentRequest.StartDate > consignmentRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Find the consignment by ID
             int customerID = int.Parse(User.FindFirstValue("userID"));
             var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);

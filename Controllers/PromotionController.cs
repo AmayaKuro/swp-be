@@ -45,6 +45,11 @@ namespace swp_be.Controllers
         [Authorize("all")]
         public async Task<ActionResult<Promotion>> CreatePromotion(Promotion promotion)
         {
+            if (promotion == null || promotion.StartDate > promotion.EndDate || promotion.RemainingRedeem < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             try
             {
                 await promotionService.CreatePromotion(promotion);
@@ -64,6 +69,11 @@ namespace swp_be.Controllers
             if (id != promotion.PromotionID)
             {
                 return BadRequest();
+            }
+
+            if (promotion == null || promotion.StartDate > promotion.EndDate || promotion.RemainingRedeem < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
             }
 
             await promotionService.UpdatePromotion(promotion);

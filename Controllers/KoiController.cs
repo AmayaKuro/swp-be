@@ -108,6 +108,11 @@ namespace swp_be.Controllers
             info.SelectionRate = koi.SelectionRate ?? info.SelectionRate;
             info.Species = koi.Species ?? info.Species;
 
+            if (info.Price < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Add image base on input
             info.Image = await fbUtils.UploadImage(koi.Image?.OpenReadStream(), info.KoiID.ToString(), "koiImage") ?? info.Image;
             info.AddOn.OriginCertificate = await fbUtils.UploadImage(koi.OriginCertificate?.OpenReadStream(), info.KoiID.ToString(), "originCertificate") ?? info.AddOn.OriginCertificate;
@@ -158,9 +163,9 @@ namespace swp_be.Controllers
                 return BadRequest(new { message = "Species is required!" });
             }
 
-            if (koiRequest.Price == null)
+            if (koiRequest.Price < 0)
             {
-                return BadRequest(new { message = "Species is required!" });
+                return BadRequest(new { message = "Wrong input format" });
             }
 
 

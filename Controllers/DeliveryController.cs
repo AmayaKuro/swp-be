@@ -77,6 +77,12 @@ namespace swp_be.Controllers
             }
             delivery.StartDeliDay = deliveryRequest.StartDeliDay ?? delivery.StartDeliDay;
             delivery.EndDeliDay = deliveryRequest.EndDeliDay ?? delivery.EndDeliDay;
+
+            if (delivery.StartDeliDay > delivery.EndDeliDay)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             delivery.OrderID = deliveryRequest.OrderID ?? delivery.OrderID;
             delivery.CustomerID = deliveryRequest.CustomerID ?? delivery.CustomerID;
             delivery.Status = deliveryRequest.Status ?? delivery.Status;
@@ -93,6 +99,11 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateDelivery([FromForm]DeliveryRequest deliveryRequest)
         {
+            if (deliveryRequest.StartDeliDay > deliveryRequest.EndDeliDay)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             if (deliveryRequest.StartDeliDay == null)
             {
                 return BadRequest("StartDeliDay is required.");

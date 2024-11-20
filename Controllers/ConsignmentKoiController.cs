@@ -124,6 +124,11 @@ namespace swp_be.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFosterKoi(int id, [FromForm] ConsignKoiReq consignKoi)
         {
+            if (consignKoi.price < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Find the foster koi, ensuring you await the result
             var info = await ConsignmentKoiservice.GetById(id);
 
@@ -194,6 +199,11 @@ namespace swp_be.Controllers
         [HttpPost("CreateFosterKoi")]
         public async Task<IActionResult> CreateConsignKoi([FromForm] ConsignKoiReq consignKoi)
         {
+            if (consignKoi.price < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             if (string.IsNullOrWhiteSpace(consignKoi.species) || consignKoi.species.Length > 255)
             {
                 return BadRequest("Invalid species.");

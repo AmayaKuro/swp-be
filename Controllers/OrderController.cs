@@ -100,6 +100,11 @@ namespace swp_be.Controllers
                 return BadRequest();
             }
 
+            if (order.TotalAmount < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             _context.Entry(order).State = EntityState.Modified;
 
             try
@@ -128,6 +133,10 @@ namespace swp_be.Controllers
         [Route("create")]
         public async Task<ActionResult> CreateOrder(OrderRequest orderRequest)
         {
+            if (orderRequest.consignment != null && orderRequest.consignment.EndDate < DateTime.Now)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
 
             int userID = int.Parse(User.FindFirstValue("userID"));
 
