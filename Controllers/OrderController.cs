@@ -179,9 +179,9 @@ namespace swp_be.Controllers
                             SelectionRate = orderDetail.Koi.SelectionRate,
                             Image = orderDetail.Koi.Image,
                             AddOn = new AddOn() {
-                                HealthCertificate = orderDetail.Koi.AddOn.HealthCertificate,
-                                OriginCertificate = orderDetail.Koi.AddOn.OriginCertificate,
-                                OwnershipCertificate = orderDetail.Koi.AddOn.OwnershipCertificate,
+                                HealthCertificate = orderDetail.Koi.AddOn?.HealthCertificate,
+                                OriginCertificate = orderDetail.Koi.AddOn?.OriginCertificate,
+                                OwnershipCertificate = orderDetail.Koi.AddOn?.OwnershipCertificate,
                             },
                         };
 
@@ -205,9 +205,9 @@ namespace swp_be.Controllers
                             Image = orderDetail.ConsignmentKoi.Image,
                             AddOn = new AddOn()
                             {
-                                HealthCertificate = orderDetail.ConsignmentKoi.AddOn.HealthCertificate,
-                                OriginCertificate = orderDetail.ConsignmentKoi.AddOn.OriginCertificate,
-                                OwnershipCertificate = orderDetail.ConsignmentKoi.AddOn.OwnershipCertificate,
+                                HealthCertificate = orderDetail.ConsignmentKoi.AddOn?.HealthCertificate,
+                                OriginCertificate = orderDetail.ConsignmentKoi.AddOn?.OriginCertificate,
+                                OwnershipCertificate = orderDetail.ConsignmentKoi.AddOn?.OwnershipCertificate,
                             },
                         };
 
