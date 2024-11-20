@@ -111,5 +111,68 @@ namespace swp_be.Services
             unitOfWork.KoiInventoryRepository.Remove(koiInventory);
             unitOfWork.Save();
         }
+
+        public void CreateKoiInventoryFromKoi(int koiId, int customerID, bool isConsignment)
+        {
+            KoiInventory koiInventory = new KoiInventory();
+
+            if (isConsignment)
+            {
+                var consignmentKoi = unitOfWork.ConsignmentKoiRepository.GetById(koiId);
+                if (consignmentKoi == null) throw new Exception("Consignment Koi not found.");
+
+                // Chuyển thông tin từ ConsignmentKoi sang KoiInventory
+                koiInventory.Name = consignmentKoi.Name;
+                koiInventory.Gender = consignmentKoi.Gender;
+                koiInventory.Age = consignmentKoi.Age;
+                koiInventory.Size = consignmentKoi.Size;
+                koiInventory.Color = consignmentKoi.Color;
+                koiInventory.DailyFeedAmount = consignmentKoi.DailyFeedAmount;
+                koiInventory.Price = consignmentKoi.Price;
+                koiInventory.Personality = consignmentKoi.Personality;
+                koiInventory.Origin = consignmentKoi.Origin;
+                koiInventory.SelectionRate = consignmentKoi.SelectionRate;
+                koiInventory.Species = consignmentKoi.Species;
+                koiInventory.Image = consignmentKoi.Image;
+                koiInventory.AddOnId = consignmentKoi.AddOnId;
+                koiInventory.CustomerID = customerID;
+                koiInventory.StartDate = consignmentKoi.Consignment.StartDate;
+                koiInventory.EndDate = consignmentKoi.Consignment.EndDate;
+                koiInventory.FosterPrice = consignmentKoi.Consignment.FosterPrice;
+                if (consignmentKoi.Consignment.Type == 0)
+                {
+                    koiInventory.Status = InvenKoiStatus.Sold;
+                }
+                else
+                {
+                    koiInventory.Status = InvenKoiStatus.Foster;
+                }
+            }
+            else
+            {
+                var koi = unitOfWork.KoiRepository.GetById(koiId);
+                if (koi == null) throw new Exception("Koi not found.");
+
+                // Chuyển thông tin từ Koi sang KoiInventory
+                koiInventory.Name = koi.Name;
+                koiInventory.Gender = koi.Gender;
+                koiInventory.Age = koi.Age;
+                koiInventory.Size = koi.Size;
+                koiInventory.Color = koi.Color;
+                koiInventory.DailyFeedAmount = koi.DailyFeedAmount;
+                koiInventory.Price = koi.Price;
+                koiInventory.Personality = koi.Personality;
+                koiInventory.Origin = koi.Origin;
+                koiInventory.SelectionRate = koi.SelectionRate;
+                koiInventory.Species = koi.Species;
+                koiInventory.Image = koi.Image;
+                koiInventory.AddOnId = koi.AddOnId;
+                koiInventory.CustomerID = customerID;
+                koiInventory.Status = InvenKoiStatus.Bought;
+            }
+
+            unitOfWork.KoiInventoryRepository.Create(koiInventory);
+            unitOfWork.Save();
+        }
     }
 }

@@ -21,6 +21,13 @@ namespace swp_be.Data.Repositories
                     .ToListAsync();
         }
 
+        public Koi GetKoisById(int id )
+        {
+            return _context.Kois
+                    .Include(c => c.AddOn)
+                    .FirstOrDefault(c => c.KoiID == id);
+        }
+
         public async Task<List<object>> GetAvailableKoisAsync()
         {
             var availableKois = await _context.Kois

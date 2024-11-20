@@ -45,6 +45,11 @@ namespace swp_be.Controllers
         [Authorize("all")]
         public async Task<ActionResult<Promotion>> CreatePromotion(Promotion promotion)
         {
+            if (promotion == null || promotion.StartDate > promotion.EndDate || promotion.RemainingRedeem < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             try
             {
                 await promotionService.CreatePromotion(promotion);
@@ -64,6 +69,11 @@ namespace swp_be.Controllers
             if (id != promotion.PromotionID)
             {
                 return BadRequest();
+            }
+
+            if (promotion == null || promotion.StartDate > promotion.EndDate || promotion.RemainingRedeem < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
             }
 
             await promotionService.UpdatePromotion(promotion);
@@ -97,12 +107,12 @@ namespace swp_be.Controllers
 
         [HttpPost("Redeem")]
         [Authorize("customer")]
-        public async Task<IActionResult> RedeemPromotion()
+        public async Task<IActionResult> RedeemPromotion(decimal DiscountRate)
         {
             try
             {
                 int customerId = int.Parse(User.FindFirstValue("userID"));
-                var promotion = await promotionService.RedeemPromotion(customerId);
+                var promotion = await promotionService.RedeemPromotion(customerId, DiscountRate);
                 return Ok(new
                 {
                     message = "Redeemed promotion successfully",

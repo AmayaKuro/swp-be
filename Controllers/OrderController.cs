@@ -34,8 +34,6 @@ namespace swp_be.Controllers
         public string? address { get; set; }
         public OrderType paymentMethod { get; set; }
         public ConsignmentOnOrder? consignment { get; set; }
-
-        
     }
 
     [Route("api/[controller]")]
@@ -102,6 +100,11 @@ namespace swp_be.Controllers
                 return BadRequest();
             }
 
+            if (order.TotalAmount < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             _context.Entry(order).State = EntityState.Modified;
 
             try
@@ -130,6 +133,10 @@ namespace swp_be.Controllers
         [Route("create")]
         public async Task<ActionResult> CreateOrder(OrderRequest orderRequest)
         {
+            if (orderRequest.consignment != null && orderRequest.consignment.EndDate < DateTime.Now)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
 
             int userID = int.Parse(User.FindFirstValue("userID"));
 
@@ -137,7 +144,7 @@ namespace swp_be.Controllers
 
             if (orderDetails == null || orderDetails.Count == 0)
             {
-                return BadRequest("Can't create order Details!");
+                return BadRequest(new { message = "Can't create order Details!" });
             }
 
             // Set every koi to be consignmentKoi if user want to consign after order
@@ -150,7 +157,7 @@ namespace swp_be.Controllers
 
                 if (price == null)
                 {
-                    return BadRequest("Can't get Foster Price");
+                    return BadRequest(new { message = "Can't get Foster Price" });
                 }
 
                 consignment.CustomerID = userID;
@@ -160,7 +167,7 @@ namespace swp_be.Controllers
                 consignment.CreateAt = DateTime.Now;
                 consignment.StartDate = DateTime.Now;
                 consignment.EndDate = orderRequest.consignment.EndDate;
-                consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays) * price.PricePerDay;
+                consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays + 1) * price.PricePerDay;
 
                 foreach (OrderDetail orderDetail in orderDetails)
                 {
@@ -168,7 +175,7 @@ namespace swp_be.Controllers
                     {
                         ConsignmentKoi consignmentKoi = new ConsignmentKoi
                         {
-                            
+                            Name = orderDetail.Koi.Name,
                             Species = orderDetail.Koi.Species,
                             Price = orderDetail.Koi.Price,
                             Age = orderDetail.Koi.Age,
@@ -180,21 +187,41 @@ namespace swp_be.Controllers
                             Origin = orderDetail.Koi.Origin,
                             SelectionRate = orderDetail.Koi.SelectionRate,
                             Image = orderDetail.Koi.Image,
-                            AddOnId = orderDetail.Koi.AddOnId,
+                            AddOn = new AddOn() {
+                                HealthCertificate = orderDetail.Koi.AddOn?.HealthCertificate,
+                                OriginCertificate = orderDetail.Koi.AddOn?.OriginCertificate,
+                                OwnershipCertificate = orderDetail.Koi.AddOn?.OwnershipCertificate,
+                            },
                         };
 
                         consignment.ConsignmentKois.Add(consignmentKoi);
-
                     }
                     else if (orderDetail.Type == OrderDetailType.ConsignmentKoi)
                     {
-                        // Create new ConsingmentKoi from OrderDetail then save
-                        ConsignmentKoi consignmentKoi = orderDetail.ConsignmentKoi;
-                        consignmentKoi.ConsignmentID = 0;
+                        ConsignmentKoi consignmentKoi = new ConsignmentKoi
+                        {
+                            Name = orderDetail.ConsignmentKoi.Name,
+                            Species = orderDetail.ConsignmentKoi.Species,
+                            Price = orderDetail.ConsignmentKoi.Price,
+                            Age = orderDetail.ConsignmentKoi.Age,
+                            Gender = orderDetail.ConsignmentKoi.Gender,
+                            Size = orderDetail.ConsignmentKoi.Size,
+                            Color = orderDetail.ConsignmentKoi.Color,
+                            DailyFeedAmount = orderDetail.ConsignmentKoi.DailyFeedAmount,
+                            Personality = orderDetail.ConsignmentKoi.Personality,
+                            Origin = orderDetail.ConsignmentKoi.Origin,
+                            SelectionRate = orderDetail.ConsignmentKoi.SelectionRate,
+                            Image = orderDetail.ConsignmentKoi.Image,
+                            AddOn = new AddOn()
+                            {
+                                HealthCertificate = orderDetail.ConsignmentKoi.AddOn?.HealthCertificate,
+                                OriginCertificate = orderDetail.ConsignmentKoi.AddOn?.OriginCertificate,
+                                OwnershipCertificate = orderDetail.ConsignmentKoi.AddOn?.OwnershipCertificate,
+                            },
+                        };
 
                         consignment.ConsignmentKois.Add(consignmentKoi);
                     }
-
                 }
             }
 
@@ -203,7 +230,7 @@ namespace swp_be.Controllers
             // order == null mean data was not complete or wrongly input 
             if (order == null)
             {
-                return BadRequest("Can't create order!");
+                return BadRequest(new { message = "Can't create order!" });
             }
 
             try
@@ -220,11 +247,9 @@ namespace swp_be.Controllers
                 else if (orderRequest.paymentMethod == OrderType.Online)
                 {
                     // Create delivery if order is online
-                    if (order.Type == OrderType.Online)
-                    {
-                        deliveryService.CreateDeliveryFromOrder(order, orderRequest.address);
-                    }
+                    deliveryService.CreateDeliveryFromOrder(order, orderRequest.address);
 
+                    // Create transaction
                     paymentUrl = transactionService.CreateVNPayTransaction(order, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
 
                     Console.WriteLine("VNPAY URL: {0}", paymentUrl);

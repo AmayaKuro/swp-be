@@ -67,6 +67,11 @@ namespace swp_be.Controllers
         [Authorize("all")]
         public async Task<ActionResult<Batch>> PostBatch([FromForm]BatchRequest batchReq)
         {
+            if (batchReq.PricePerBatch < 0 || batchReq.QuantityPerBatch < 0 || batchReq.RemainBatch < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" } );
+            }
+
             var batch = new Batch
             {      
                 
@@ -87,7 +92,11 @@ namespace swp_be.Controllers
         [Authorize("staff, admin")]
         public async Task<IActionResult> PutBatch(int id, [FromForm] BatchRequest batchReq)
         {
-            
+            if (batchReq.PricePerBatch < 0 || batchReq.QuantityPerBatch < 0 || batchReq.RemainBatch < 0)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             if (id != batchReq.BatchID)
             {
                 return BadRequest();

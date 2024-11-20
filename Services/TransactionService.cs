@@ -55,16 +55,16 @@ namespace swp_be.Services
             if (order.Type == OrderType.Online)
             {
                 transaction.Amount = order.TotalAmount;
-                
-                // Add Fostering fee if consignment exist
-                if (order.Consignment != null)
-                {
-                    transaction.Amount += order.Consignment.FosterPrice;
-                }
             }
             else
             {
-                transaction.Amount = order.TotalAmount /= 2;
+                transaction.Amount = order.TotalAmount / 2;
+            }
+           
+            // Add consignment fee if exist
+            if (order.Consignment != null)
+            {
+                transaction.Amount += order.Consignment.FosterPrice;
             }
 
             transaction.CreateAt = DateTime.Now;
@@ -91,7 +91,7 @@ namespace swp_be.Services
             // Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự
             // tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần
             // nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
-            vnpay.AddRequestData("vnp_Amount", ((long)(order.TotalAmount * 100)).ToString());
+            vnpay.AddRequestData("vnp_Amount", ((long)(transaction.Amount * 100)).ToString());
             // Mã ngân hàng thanh toán. Ví dụ: VNPAYQR, VNBANK, INTCARD
             //if (bankcode_Vnpayqr.Checked == true)
             //{
@@ -104,11 +104,30 @@ namespace swp_be.Services
             vnpay.AddRequestData("vnp_IpAddr", clientIPAddr);
 
             vnpay.AddRequestData("vnp_Locale", "vn");
-            vnpay.AddRequestData("vnp_OrderInfo",
-                (order.Type == OrderType.Online
-                ? "Thanh toan don hang: "
-                : "Dat coc don hang: ")
-                + order.OrderID);
+
+            // Prepare order info
+            string orderInfo;
+
+            // If order is online, it's a payment
+            if (order.Type == OrderType.Online)
+            {
+                orderInfo = "Thanh toan don hang: " + order.OrderID;
+
+            }
+            // Else if order is offline, it's a deposit
+            else
+            {
+                orderInfo = "Dat coc don hang: " + order.OrderID;
+            }
+
+            // Add consignment info if exist
+            if (order.Consignment != null)
+            {
+                orderInfo += " va ky gui: " + order.Consignment.ConsignmentID;
+            }
+
+            vnpay.AddRequestData("vnp_OrderInfo", orderInfo);
+
             vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
 
             vnpay.AddRequestData("vnp_ReturnUrl", vnp_Returnurl);

@@ -65,7 +65,7 @@ namespace swp_be.Controllers
 
         public ConsignmentController(ApplicationDBContext context)
         {
-            this._context = context;    
+            this._context = context;
             consignmentService = new ConsignmentService(context);
             transactionService = new TransactionService(context);
             consignmentKoiService = new ConsignmentKoiService(context);
@@ -115,6 +115,11 @@ namespace swp_be.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateConsignment(ConsignmentRequest consignmentRequest)
         {
+            if (consignmentRequest.FosterPrice < 0 || consignmentRequest.StartDate > consignmentRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Find the consignment by ID
             var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
 
@@ -153,6 +158,11 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
         {
+            if (consignKoiRequest.Price < 0 || consignKoiRequest.StartDate >  consignKoiRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             var priceList = consignmentPriceListRepository.GetById(consignKoiRequest.PriceListId);
 
             if (priceList == null)
@@ -165,7 +175,7 @@ namespace swp_be.Controllers
             {
                 CustomerID = consignKoiRequest.CustomerID,
                 Type = consignKoiRequest.Type,
-                FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay,
+                FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays + 1) * priceList.PricePerDay,
                 Status = consignKoiRequest.Status, // Ensure this is correctly spelled
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
@@ -206,6 +216,11 @@ namespace swp_be.Controllers
         [HttpPost]
         public async Task<IActionResult> NegotiatingConsignment([FromForm] ConsignKoiRequest consignKoiRequest)
         {
+            if (consignKoiRequest.Price < 0 || consignKoiRequest.StartDate > consignKoiRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Retrieve the customer ID from the user's claims
             int customerID = int.Parse(User.FindFirstValue("userID"));
 
@@ -218,8 +233,9 @@ namespace swp_be.Controllers
 
             // Create a new consignment object
 
-            var newConsignment = new Consignment(); 
-            if (consignKoiRequest.Type==(ConsignmentType.Sell)) {
+            var newConsignment = new Consignment();
+            if (consignKoiRequest.Type == (ConsignmentType.Sell))
+            {
 
 
                 newConsignment.CustomerID = customerID;
@@ -227,12 +243,13 @@ namespace swp_be.Controllers
                 newConsignment.CreateAt = DateTime.Now;
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
-                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
-                newConsignment.Status = ConsignmentStatus.negotiate; // Ensure this is correctly spelled
+                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays + 1) * priceList.PricePerDay;
+                newConsignment.Status = ConsignmentStatus.pending; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
-                
+
             }
-           else if (consignKoiRequest.Type == (ConsignmentType.Foster)) {
+            else if (consignKoiRequest.Type == (ConsignmentType.Foster))
+            {
 
 
                 newConsignment.CustomerID = customerID;
@@ -240,8 +257,8 @@ namespace swp_be.Controllers
                 newConsignment.CreateAt = DateTime.Now;
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
-                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
-                newConsignment.Status = ConsignmentStatus.negotiate; // Ensure this is correctly spelled
+                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays + 1) * priceList.PricePerDay;
+                newConsignment.Status = ConsignmentStatus.pending; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
             }
             // Create a new ConsignmentKoi object
@@ -270,6 +287,7 @@ namespace swp_be.Controllers
             consignmentKoi.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoiRequest.OwnershipCertificate?.OpenReadStream(), consignmentKoi.ConsignmentKoiID.ToString(), "ownershipCertificate");
             await _context.SaveChangesAsync();
             // Save changes to the database
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -285,10 +303,13 @@ namespace swp_be.Controllers
                 // Log the exception for debugging purposes if needed
                 return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
-            return Ok(new { 
-                message = "Consignment created successfully", 
+            string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
+            return Ok(new
+            {
+                message = "Consignment created successfully",
                 consignmentID = newConsignment.ConsignmentID,
-                consignmentKoiID = consignmentKoi.ConsignmentKoiID 
+                consignmentKoiID = consignmentKoi.ConsignmentKoiID,
+                paymentUrl
             });
         }
 
@@ -331,6 +352,11 @@ namespace swp_be.Controllers
         [HttpPut]
         public async Task<IActionResult> Reasign(ConsignmentRequest consignmentRequest)
         {
+            if (consignmentRequest.StartDate > consignmentRequest.EndDate)
+            {
+                return BadRequest(new { message = "Wrong input format" });
+            }
+
             // Find the consignment by ID
             int customerID = int.Parse(User.FindFirstValue("userID"));
             var consignment = await _context.Consignments.FindAsync(consignmentRequest.ConsignmentID);
@@ -348,7 +374,7 @@ namespace swp_be.Controllers
             // Update the consignment properties
             consignment.CustomerID = customerID;
             consignment.Type = consignmentRequest.Type;
-            consignment.FosterPrice = (long)Math.Ceiling((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays) * priceList.PricePerDay;
+            consignment.FosterPrice = (long)Math.Ceiling((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays + 1) * priceList.PricePerDay;
             consignment.Status = consignmentRequest.Status;
             consignment.StartDate = consignmentRequest.StartDate;
             consignment.EndDate = consignmentRequest.EndDate;
@@ -360,7 +386,7 @@ namespace swp_be.Controllers
             // Save changes
             try
             {
-               await consignmentService.UpdateConsignment(consignment);
+                await consignmentService.UpdateConsignment(consignment);
             }
             catch (Exception ex)
             {

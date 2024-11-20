@@ -30,6 +30,7 @@ namespace swp_be.Services
         private DeliveryRepository deliveryRepository;
         private readonly UserService userService;
         UnitOfWork unitOfWork;
+        private KoiInventoryService koiInventoryService;
 
         public OrderService(ApplicationDBContext context)
         {
@@ -43,6 +44,7 @@ namespace swp_be.Services
             deliveryRepository = new DeliveryRepository(_context);
             userService = new UserService(_context);
             unitOfWork = new UnitOfWork(_context);
+            koiInventoryService = new KoiInventoryService(_context);
         }
 
         public List<Order> GetOrders()
@@ -66,8 +68,9 @@ namespace swp_be.Services
         // Create standalone CreateOrder if you like
         public Order CreateOrder(int customerID, OrderType orderType, int promotionID, Consignment? consignment = null)
         {
+            Promotion promotion = promotionRepository.GetById(promotionID);
             // If promotionID present and not exist in db, cancel create
-            if (promotionID > 0 && promotionRepository.GetById(promotionID) == null)
+            if (promotionID > 0 && promotion == null || promotion.RemainingRedeem <= 0)
             {
                 return null;
             }
@@ -83,9 +86,13 @@ namespace swp_be.Services
             order.CustomerID = customerID;
             order.OrderDetails = orderDetails;
 
-            if (promotionRepository.GetById(promotionID) != null)
+            if (promotion != null)
             {
-                order.PromotionID = promotionID; //promotionID;
+                order.PromotionID = promotionID;
+                promotion.RemainingRedeem -= 1;
+
+                promotionRepository.Update(promotion);
+                promotionRepository.Save();
             }
 
             orderRepository.Create(order);
@@ -147,7 +154,7 @@ namespace swp_be.Services
             {
                 if (koiID < 1) break;
 
-                Koi koiInfo = koiRepository.GetById(koiID);
+                Koi koiInfo = koiRepository.GetKoisById(koiID);
 
                 // If koi not exist, cancel
                 if (koiInfo == null)
@@ -249,6 +256,8 @@ namespace swp_be.Services
                     koi.Status = KoiStatus.Sold;
 
                     koiRepository.Update(koi);
+
+                    koiInventoryService.CreateKoiInventoryFromKoi(koi.KoiID, customerID, false);
                 }
                 else if (detail.Type == OrderDetailType.ConsignmentKoi)
                 {
@@ -257,6 +266,8 @@ namespace swp_be.Services
                     consignmentKoi.Consignment.Status = ConsignmentStatus.finished;
 
                     consignmentKoiRepository.Update(consignmentKoi);
+
+                    koiInventoryService.CreateKoiInventoryFromKoi(consignmentKoi.ConsignmentKoiID, customerID, true);
                 }
             }
 
