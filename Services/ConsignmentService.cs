@@ -141,7 +141,7 @@ namespace swp_be.Services
         {
             var price = unitOfWork.ConsignmentPriceListRepository.GetById(consignment.ConsignmentPriceListID);
 
-            consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays) * price.PricePerDay;
+            consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays + 1) * price.PricePerDay;
 
             consignmentRepository.Create(consignment);
             _context.SaveChanges();

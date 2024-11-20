@@ -65,7 +65,7 @@ namespace swp_be.Controllers
 
         public ConsignmentController(ApplicationDBContext context)
         {
-            this._context = context;    
+            this._context = context;
             consignmentService = new ConsignmentService(context);
             transactionService = new TransactionService(context);
             consignmentKoiService = new ConsignmentKoiService(context);
@@ -165,7 +165,7 @@ namespace swp_be.Controllers
             {
                 CustomerID = consignKoiRequest.CustomerID,
                 Type = consignKoiRequest.Type,
-                FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay,
+                FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays + 1) * priceList.PricePerDay,
                 Status = consignKoiRequest.Status, // Ensure this is correctly spelled
                 CreateAt = DateTime.Now,
                 StartDate = consignKoiRequest.StartDate,
@@ -218,8 +218,9 @@ namespace swp_be.Controllers
 
             // Create a new consignment object
 
-            var newConsignment = new Consignment(); 
-            if (consignKoiRequest.Type==(ConsignmentType.Sell)) {
+            var newConsignment = new Consignment();
+            if (consignKoiRequest.Type == (ConsignmentType.Sell))
+            {
 
 
                 newConsignment.CustomerID = customerID;
@@ -227,12 +228,13 @@ namespace swp_be.Controllers
                 newConsignment.CreateAt = DateTime.Now;
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
-                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
+                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays + 1) * priceList.PricePerDay;
                 newConsignment.Status = ConsignmentStatus.pending; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
-                
+
             }
-           else if (consignKoiRequest.Type == (ConsignmentType.Foster)) {
+            else if (consignKoiRequest.Type == (ConsignmentType.Foster))
+            {
 
 
                 newConsignment.CustomerID = customerID;
@@ -240,7 +242,7 @@ namespace swp_be.Controllers
                 newConsignment.CreateAt = DateTime.Now;
                 newConsignment.StartDate = consignKoiRequest.StartDate;
                 newConsignment.EndDate = consignKoiRequest.EndDate;
-                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays) * priceList.PricePerDay;
+                newConsignment.FosterPrice = (long)Math.Ceiling((consignKoiRequest.EndDate - consignKoiRequest.StartDate).TotalDays + 1) * priceList.PricePerDay;
                 newConsignment.Status = ConsignmentStatus.pending; // Ensure this is correctly spelled
                 newConsignment.ConsignmentPriceListID = consignKoiRequest.PriceListId;
             }
@@ -287,12 +289,13 @@ namespace swp_be.Controllers
                 return StatusCode(500, new { message = "Error creating consignment", details = ex.Message });
             }
             string paymentUrl = transactionService.CreateVNPayTransaction(newConsignment, HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
-            return Ok(new { 
-                message = "Consignment created successfully", 
+            return Ok(new
+            {
+                message = "Consignment created successfully",
                 consignmentID = newConsignment.ConsignmentID,
                 consignmentKoiID = consignmentKoi.ConsignmentKoiID,
-                paymentUrl 
-        });
+                paymentUrl
+            });
         }
 
         [Authorize("staff, admin")]
@@ -351,7 +354,7 @@ namespace swp_be.Controllers
             // Update the consignment properties
             consignment.CustomerID = customerID;
             consignment.Type = consignmentRequest.Type;
-            consignment.FosterPrice = (long)Math.Ceiling((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays) * priceList.PricePerDay;
+            consignment.FosterPrice = (long)Math.Ceiling((consignmentRequest.EndDate - consignmentRequest.StartDate).TotalDays + 1) * priceList.PricePerDay;
             consignment.Status = consignmentRequest.Status;
             consignment.StartDate = consignmentRequest.StartDate;
             consignment.EndDate = consignmentRequest.EndDate;
@@ -363,7 +366,7 @@ namespace swp_be.Controllers
             // Save changes
             try
             {
-               await consignmentService.UpdateConsignment(consignment);
+                await consignmentService.UpdateConsignment(consignment);
             }
             catch (Exception ex)
             {

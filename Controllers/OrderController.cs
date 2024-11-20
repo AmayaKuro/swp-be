@@ -158,7 +158,7 @@ namespace swp_be.Controllers
                 consignment.CreateAt = DateTime.Now;
                 consignment.StartDate = DateTime.Now;
                 consignment.EndDate = orderRequest.consignment.EndDate;
-                consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays) * price.PricePerDay;
+                consignment.FosterPrice = (long)Math.Ceiling((consignment.EndDate - consignment.StartDate).TotalDays + 1) * price.PricePerDay;
 
                 foreach (OrderDetail orderDetail in orderDetails)
                 {
@@ -166,6 +166,7 @@ namespace swp_be.Controllers
                     {
                         ConsignmentKoi consignmentKoi = new ConsignmentKoi
                         {
+                            Name = orderDetail.Koi.Name,
                             Species = orderDetail.Koi.Species,
                             Price = orderDetail.Koi.Price,
                             Age = orderDetail.Koi.Age,
@@ -190,6 +191,7 @@ namespace swp_be.Controllers
                     {
                         ConsignmentKoi consignmentKoi = new ConsignmentKoi
                         {
+                            Name = orderDetail.ConsignmentKoi.Name,
                             Species = orderDetail.ConsignmentKoi.Species,
                             Price = orderDetail.ConsignmentKoi.Price,
                             Age = orderDetail.ConsignmentKoi.Age,
