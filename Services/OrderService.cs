@@ -70,7 +70,7 @@ namespace swp_be.Services
         {
             Promotion promotion = promotionRepository.GetById(promotionID);
             // If promotionID present and not exist in db, cancel create
-            if (promotionID > 0 && promotion == null || promotion.RemainingRedeem <= 0)
+            if (promotionID > 0 && promotion == null)
             {
                 return null;
             }
@@ -88,11 +88,18 @@ namespace swp_be.Services
 
             if (promotion != null)
             {
-                order.PromotionID = promotionID;
-                promotion.RemainingRedeem -= 1;
+                if (promotion.RemainingRedeem <= 0 || (!promotion.CustomerID.Equals(customerID)))
+                {
+                    throw new InvalidOperationException("Promotion is not valid");
+                }
+                else
+                {
+                    order.PromotionID = promotionID;
+                    promotion.RemainingRedeem -= 1;
 
-                promotionRepository.Update(promotion);
-                promotionRepository.Save();
+                    promotionRepository.Update(promotion);
+                    promotionRepository.Save();
+                }
             }
 
             orderRepository.Create(order);
