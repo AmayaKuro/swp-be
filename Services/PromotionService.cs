@@ -111,7 +111,7 @@ namespace swp_be.Services
             var promotion = new Promotion
             {
                 Code = $"PROMO-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
-                Description = "'s Loyalty Points Promotion - " + discountRate + "% Discount",
+                Description = "Loyalty Points Promotion - " + discountRate + "% Discount",
                 DiscountRate = discountRate,
                 StartDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddMonths(1), 
