@@ -65,7 +65,7 @@ namespace swp_be.Controllers
 
         [HttpPost]
         [Authorize("all")]
-        public async Task<ActionResult<Batch>> PostBatch([FromForm]BatchRequest batchReq)
+        public async Task<ActionResult<Batch>> PostBatch([FromBody] BatchRequest batchReq)
         {
             if (batchReq.PricePerBatch < 0 || batchReq.QuantityPerBatch < 0 || batchReq.RemainBatch < 0)
             {
@@ -90,7 +90,7 @@ namespace swp_be.Controllers
 
         [HttpPut("{id}")]
         [Authorize("staff, admin")]
-        public async Task<IActionResult> PutBatch(int id, [FromForm] BatchRequest batchReq)
+        public async Task<IActionResult> PutBatch(int id, [FromBody] BatchRequest batchReq)
         {
             if (batchReq.PricePerBatch < 0 || batchReq.QuantityPerBatch < 0 || batchReq.RemainBatch < 0)
             {
