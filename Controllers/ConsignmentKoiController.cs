@@ -165,10 +165,16 @@ namespace swp_be.Controllers
             // Update image
             // Add image base on input
             info.Image = await fbUtils.UploadImage(consignKoi.Image?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "koiImage");
-            info.AddOn.OriginCertificate = await fbUtils.UploadImage(consignKoi.OriginCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "originCertificate");
-            info.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoi.HealthCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "healthCertificate");
-            info.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoi.OwnershipCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "ownershipCertificate");
-
+            try
+            {
+                info.AddOn.OriginCertificate = await fbUtils.UploadImage(consignKoi.OriginCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "originCertificate");
+                info.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoi.HealthCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "healthCertificate");
+                info.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoi.OwnershipCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "ownershipCertificate");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
             // Save the changes to the database
             await _context.SaveChangesAsync();
