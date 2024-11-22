@@ -152,7 +152,7 @@ namespace swp_be.Controllers
             if (consignKoi.name != null) info.Name = consignKoi.name;
             if (consignKoi.gender != null) info.Gender = consignKoi.gender;
             if (consignKoi.age.HasValue) info.Age = consignKoi.age.Value;
-            if (consignKoi.size != null) info.Size = consignKoi.size;
+            if (consignKoi.size != null) info.Size = consignKoi.size;   
             if (consignKoi.color != null) info.Color = consignKoi.color;
             if (consignKoi.dailyFeedAmount != null) info.DailyFeedAmount = consignKoi.dailyFeedAmount;
             if (consignKoi.personality != null) info.Personality = consignKoi.personality;
@@ -164,37 +164,36 @@ namespace swp_be.Controllers
             await _context.SaveChangesAsync();
             // Update image
             // Add image base on input
-            info.Image = await fbUtils.UploadImage(consignKoi.Image?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "koiImage");
+            if (consignKoi.Image != null)
+            {
+                info.Image = await fbUtils.UploadImage(consignKoi.Image.OpenReadStream(), info.ConsignmentKoiID.ToString(), "koiImage");
+            }
             try
             {
-                info.AddOn.OriginCertificate = await fbUtils.UploadImage(consignKoi.OriginCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "originCertificate");
-                info.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoi.HealthCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "healthCertificate");
-                info.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoi.OwnershipCertificate?.OpenReadStream(), info.ConsignmentKoiID.ToString(), "ownershipCertificate");
+                if (consignKoi.OriginCertificate != null)
+                {
+                    info.AddOn.OriginCertificate = await fbUtils.UploadImage(consignKoi.OriginCertificate.OpenReadStream(), info.ConsignmentKoiID.ToString(), "originCertificate");
+                }
+                if (consignKoi.HealthCertificate != null)
+                {
+                    info.AddOn.HealthCertificate = await fbUtils.UploadImage(consignKoi.HealthCertificate.OpenReadStream(), info.ConsignmentKoiID.ToString(), "healthCertificate");
+                }
+                if (consignKoi.OwnershipCertificate != null)
+                {
+                    info.AddOn.OwnershipCertificate = await fbUtils.UploadImage(consignKoi.OwnershipCertificate.OpenReadStream(), info.ConsignmentKoiID.ToString(), "ownershipCertificate");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
+
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
             return Ok(info);
-            //if (size != null) consignmentKoi.Size = size;
-            //if (color != null) consignmentKoi.Color = color;
-            //if (dailyFeedAmount != null) consignmentKoi.DailyFeedAmount = dailyFeedAmount;
-            //if (personality != null) consignmentKoi.Personality = personality;
-            //if (origin != null) consignmentKoi.Origin = origin;
-            //if (selectionRate != null) consignmentKoi.SelectionRate = selectionRate;
-            //if (species != null) consignmentKoi.Species = species;
-            //if (price.HasValue) consignmentKoi.Price = price.Value;
-            //if (fosteringDays.HasValue) consignmentKoi.FosteringDays = fosteringDays.Value;
-            //if (consignmentId.HasValue) consignmentKoi.ConsignmentID = consignmentId.Value;
-
-            // Save the changes to the database
-            //await _context.SaveChangesAsync();
-
-            //return Ok(consignmentKoi);
+          
         }
 
 
