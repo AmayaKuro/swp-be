@@ -76,32 +76,50 @@ namespace swp_be.Services
             return promotions;
         }
 
-        public async Task<Promotion> RedeemPromotion(int customerId, decimal DiscountRate)
+        public async Task<Promotion> RedeemPromotion(int customerId, int loyaltyPointsToRedeem)
         {
             var customer = await unitOfWork.CustomerRepository.GetByIdAsync(customerId);
-            int numDiscount = (int)Math.Floor(DiscountRate);
+
             if (customer == null)
             {
                 throw new InvalidOperationException("Customer not found");
             }
 
-            if (customer.LoyaltyPoints < numDiscount)
+            if (customer.LoyaltyPoints < loyaltyPointsToRedeem)
             {
                 throw new InvalidOperationException("Not enough Loyalty Points to redeem promotion");
+            }
+
+            decimal discountRate = 0;
+            if(loyaltyPointsToRedeem==10)
+            {
+                discountRate = 10;
+            } else if (loyaltyPointsToRedeem==50)
+            { 
+                discountRate = 15; 
+            } else if (loyaltyPointsToRedeem == 100)
+            {
+                discountRate = 20;
+            } else if (loyaltyPointsToRedeem ==200)
+            {
+                discountRate = 30;
+            } else
+            {
+                throw new InvalidOperationException("Loyalty points are not valid for redeeming promotions.");
             }
 
             var promotion = new Promotion
             {
                 Code = $"PROMO-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
-                Description = "Loyalty Points Promotion - 10% Discount",
-                DiscountRate = DiscountRate,
+                Description = "Loyalty Points Promotion - " + discountRate + "% Discount",
+                DiscountRate = discountRate,
                 StartDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddMonths(1), 
                 RemainingRedeem = 1,
                 CustomerID = customerId
             };
 
-            customer.LoyaltyPoints -= numDiscount;
+            customer.LoyaltyPoints -= loyaltyPointsToRedeem;
 
             unitOfWork.PromotionRepository.Create(promotion);
             unitOfWork.CustomerRepository.Update(customer);

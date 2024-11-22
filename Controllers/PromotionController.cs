@@ -107,12 +107,12 @@ namespace swp_be.Controllers
 
         [HttpPost("Redeem")]
         [Authorize("customer")]
-        public async Task<IActionResult> RedeemPromotion(decimal DiscountRate)
+        public async Task<IActionResult> RedeemPromotion(int loyaltyPointsToRedeem)
         {
             try
             {
                 int customerId = int.Parse(User.FindFirstValue("userID"));
-                var promotion = await promotionService.RedeemPromotion(customerId, DiscountRate);
+                var promotion = await promotionService.RedeemPromotion(customerId, loyaltyPointsToRedeem);
                 return Ok(new
                 {
                     message = "Redeemed promotion successfully",

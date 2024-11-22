@@ -28,6 +28,8 @@ namespace swp_be.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Blog> Blogs { get; set; }  
         public DbSet<KoiInventory> KoiInventory { get; set; }
+        public DbSet<ConsignmentPriceList> ConsignmentPriceLists { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
